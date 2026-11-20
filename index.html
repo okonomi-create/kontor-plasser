@@ -1871,8 +1871,25 @@ button.pk-d.tm.pick:hover { box-shadow: inset 0 0 0 3px var(--ink); }
     }));
     adminEl.querySelectorAll("[data-revoke]").forEach(b => b.addEventListener("click", () => {
       const c = S.codes.find(x => x.code === b.dataset.revoke); if (!c) return;
-      if (!confirm(`Slette brukeren til ${c.name}? De mister tilgangen med en gang. Bookingene deres blir liggende.`)) return;
-      guard(async () => { await db.collection("codes").doc(c.code).delete(); flash(`${c.name} har ikke lenger tilgang.`); });
+      if (!confirm(`Slette brukeren til ${c.name}?\n\nDe mister tilgangen med en gang, og alle bookingene og den faste plassen deres blir slettet. Dette kan ikke angres.`)) return;
+      guard(async () => {
+        await db.collection("codes").doc(c.code).delete();
+        // Har personen en annen kode (samme medlem)? Da beholdes dataene.
+        if (S.codes.some(x => x.code !== c.code && x.member === c.member)) { flash(`${c.name} har ikke lenger tilgang.`); return; }
+        let n = 0;
+        for (const col of ["bookings", "away", "fixed"]) {
+          const snap = await db.collection(col).where("uid", "==", c.member).get();
+          const docs = snap.docs;
+          for (let i = 0; i < docs.length; i += 400) {
+            const b = db.batch();
+            docs.slice(i, i + 400).forEach(d => b.delete(d.ref));
+            await b.commit();
+          }
+          if (col === "bookings") n = docs.length;
+        }
+        await db.collection("members").doc(c.member).delete();
+        flash(`${c.name} er slettet${n ? `, sammen med ${n} booking${n === 1 ? "" : "er"}` : ""}.`);
+      });
     }));
     const figDoc = n => n === "2" ? "figure2" : "figure";
     const figCur = n => n === "2" ? S.figure2 : S.figure;
