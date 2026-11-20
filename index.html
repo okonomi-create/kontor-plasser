@@ -1,0 +1,2083 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Måseskjæret kontorplasser</title>
+<style>[hidden]{display:none!important} body{margin:0} img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: to visninger (plantegning / månedskalender). Plantegning til venstre, smal sidekolonne med valgt pult — stabler seg på mobil. */
+:root {
+  --bg: #eef2f3; --surface: #ffffff; --surface2: #f6f8f9; --ink: #14202a; --muted: #5a6a76; --line: #d3dce1;
+  --accent: #0e6e78; --accent-ink: #ffffff; --accent-soft: #d5eced;
+  --wall: #26323c; --wall2: #8e9ca6; --wall3: #b9c4cb; --furn: #dde4e8; --area: #e9eef0; --planbg: #fbfcfc;
+  --free: #5fc28e; --free-soft: #d7f1e3; --booked: #ea8a73; --booked-soft: #f8ddd5;
+  --partial: #b08be8; --partial-soft: #ebe1fa; --fixed: #7fa9de; --fixed-soft: #dbe7f6;
+  --mine: #e2a71e; --mine-soft: #fbedc6; --unknown: #c9d2d8; --danger: #b4402c; --deskink: #14202a; --wkend: #e4e8f1; --wkend-ink: #59627a; --hol: #fbe0e0; --hol-line: #e9a8a8;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1619; --surface: #172126; --surface2: #1c282e; --ink: #e6eef1; --muted: #93a5ae; --line: #2c3b42;
+  --accent: #4cc0c9; --accent-ink: #062226; --accent-soft: #163a3e;
+  --wall: #d5dee3; --wall2: #6c7d87; --wall3: #45545c; --furn: #26343b; --area: #1d2a30; --planbg: #131c20;
+  --free: #4fb882; --free-soft: #173a29; --booked: #e07c64; --booked-soft: #3e2219;
+  --partial: #a585e0; --partial-soft: #2e2445; --fixed: #6f9bd6; --fixed-soft: #1b2c42;
+  --mine: #f0bd3e; --mine-soft: #3d3112; --unknown: #3a484f; --danger: #f08a74; --deskink: #0c1418; --wkend: #1e2530; --wkend-ink: #94a0b8; --hol: #3a1d20; --hol-line: #7a3a3f; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0f1619; --surface: #172126; --surface2: #1c282e; --ink: #e6eef1; --muted: #93a5ae; --line: #2c3b42;
+  --accent: #4cc0c9; --accent-ink: #062226; --accent-soft: #163a3e;
+  --wall: #d5dee3; --wall2: #6c7d87; --wall3: #45545c; --furn: #26343b; --area: #1d2a30; --planbg: #131c20;
+  --free: #4fb882; --free-soft: #173a29; --booked: #e07c64; --booked-soft: #3e2219;
+  --partial: #a585e0; --partial-soft: #2e2445; --fixed: #6f9bd6; --fixed-soft: #1b2c42;
+  --mine: #f0bd3e; --mine-soft: #3d3112; --unknown: #3a484f; --danger: #f08a74; --deskink: #0c1418; --wkend: #1e2530; --wkend-ink: #94a0b8; --hol: #3a1d20; --hol-line: #7a3a3f; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 40px; }
+.wrap { max-width: 1380px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.brand h1 { font-size: 1.7rem; letter-spacing: -0.01em; }
+.brand p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
+.topright { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tabs { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+.tabs a { text-decoration: none; color: var(--muted); font-weight: 600; padding: 7px 14px; border-radius: 7px; font-size: 0.92rem; }
+.tabs a[aria-current="page"] { background: var(--accent); color: var(--accent-ink); }
+.me { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 0.9rem; }
+.me img { width: 26px; height: 26px; border-radius: 50%; }
+
+.banner { border-radius: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+.banner.warn { background: var(--booked-soft); border-color: transparent; color: var(--ink); }
+
+.days { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.iconbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; min-height: 40px; padding: 0 12px; font-weight: 500; }
+.iconbtn:hover { border-color: var(--accent); }
+.daylist { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) repeat(2, minmax(0, .62fr)); gap: 6px; flex: 1 1 560px; min-width: 0; }
+.day { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 7px 10px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.day:hover { border-color: var(--accent); }
+.day[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--accent-soft); }
+.day .dname { font-family: var(--f-display); font-weight: 600; font-size: 0.95rem; text-transform: capitalize; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.today-tag { font-family: var(--f-body); font-weight: 600; font-size: 0.68rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; margin-left: 4px; }
+.dcount { font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.bar { height: 5px; border-radius: 3px; background: var(--free-soft); overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; }
+.bar .b1 { background: var(--booked); } .bar .b2 { background: var(--partial); }
+.jump { display: flex; gap: 6px; align-items: center; }
+.jump input { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; min-height: 40px; padding: 0 8px; }
+
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 370px; gap: 16px; align-items: start; }
+@media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+.planbox { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.planhead { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.planhead h2 { font-size: 1.15rem; text-transform: capitalize; }
+.planscroll { overflow-x: auto; border-radius: 10px; background: var(--planbg); }
+#plan { display: block; width: 100%; min-width: 720px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 0.82rem; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.sw.mineframe { background: transparent; border: 3px solid var(--mine); }
+
+/* plan */
+.w-hash, .w-D { fill: var(--wall); } .w-g, .w-G { fill: var(--wall2); } .w-l { fill: var(--wall3); }
+.w-b { fill: var(--accent); opacity: .55; } .f-c, .f-y, .f-k, .f-v { fill: var(--furn); } .f-w { fill: var(--area); }
+.lbl { fill: var(--muted); font-family: var(--f-body); font-size: 26px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+.lbl.big { font-size: 30px; fill: var(--accent); font-weight: 600; }
+.desk { cursor: pointer; }
+.desk .body { transition: fill .15s; }
+.desk .frame { fill: none; stroke: var(--wall2); stroke-width: 2.5; }
+.desk.mine .frame { stroke: var(--mine); stroke-width: 7; }
+.desk:hover .frame { stroke: var(--ink); stroke-width: 5; }
+.desk.sel .frame { stroke: var(--accent); stroke-width: 8; }
+.desk:focus { outline: none; } .desk:focus-visible .frame { stroke: var(--accent); stroke-width: 8; }
+.k-free { fill: var(--free); } .k-booked { fill: var(--booked); } .k-partial { fill: var(--partial); } .k-fixed { fill: var(--fixed); } .k-unknown { fill: var(--unknown); } .k-closed { fill: var(--unknown); opacity: .55; }
+.holname { color: var(--danger); font-weight: 600; font-size: 0.8rem; }
+.wk { font-family: var(--f-body); font-size: 0.7rem; font-weight: 500; color: var(--muted); }
+.cday.hol, .day.hol { background: var(--hol); border-color: var(--hol-line); }
+.cday.wkend, .day.wkend { background: var(--wkend); border-color: transparent; color: var(--wkend-ink); cursor: default; }
+.cday.wkend:hover, .day.wkend:hover { border-color: transparent; }
+.wkname { font-size: 0.78rem; font-weight: 600; color: var(--wkend-ink); }
+.calwd.we { color: var(--wkend-ink); }
+.holpill { display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 999px; background: var(--hol); color: var(--danger); font-family: var(--f-body); font-size: 0.78rem; font-weight: 600; text-transform: none; vertical-align: middle; }
+.wdays { display: flex; flex-wrap: wrap; gap: 6px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.wdays legend { font-size: 0.82rem; color: var(--muted); padding: 0; margin-bottom: 4px; }
+.tog { position: relative; }
+.tog input { position: absolute; opacity: 0; pointer-events: none; }
+.tog span { display: inline-block; border: 1px solid var(--line); border-radius: 8px; padding: 5px 11px; font-size: 0.85rem; font-weight: 600; background: var(--surface2); cursor: pointer; user-select: none; }
+.tog input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tog input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 600px) { .day.wkend .dcount, .cday.wkend .wkname, .cday .wk { display: none; } .calgrid .cday .cmine { font-size: 0; width: 10px; height: 10px; padding: 0; border-radius: 50%; background: var(--mine); } .calgrid .cday .holname { font-size: 0.6rem; line-height: 1.2; hyphens: auto; } }
+.dnum { font-family: var(--f-mono); font-size: 22px; font-weight: 600; fill: var(--deskink); opacity: .65; pointer-events: none; }
+.dini { font-family: var(--f-display); font-size: 28px; font-weight: 700; fill: var(--deskink); pointer-events: none; }
+.dtime { font-family: var(--f-mono); font-size: 19px; font-weight: 600; fill: var(--deskink); pointer-events: none; }
+
+/* panel */
+aside { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card h3 { font-size: 1.05rem; }
+.eyebrow { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+.deskhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.deskhead h3 { font-size: 1.4rem; }
+.deskhead .room { color: var(--muted); font-size: 0.88rem; }
+.timeline { position: relative; height: 26px; border-radius: 6px; background: var(--free-soft); overflow: hidden; }
+.timeline i { position: absolute; top: 0; bottom: 0; }
+.timeline .t-booked { background: var(--booked); } .timeline .t-fixed { background: var(--fixed); } .timeline .t-mine { background: var(--mine); }
+.ticks { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+.occ { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.occ li { display: grid; grid-template-columns: 12px 92px minmax(0, 1fr) auto; gap: 8px; align-items: start; font-size: 0.9rem; }
+.occ .dot { width: 12px; height: 12px; border-radius: 3px; margin-top: 4px; }
+.occ .when { font-family: var(--f-mono); font-size: 0.85rem; }
+.occ .who { min-width: 0; overflow-wrap: anywhere; }
+.note { display: block; color: var(--muted); font-style: italic; font-size: 0.85rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface2); border-radius: 999px; padding: 3px 10px; font-family: var(--f-mono); font-size: 0.82rem; }
+.chip:hover { border-color: var(--accent); }
+.chip.part { background: var(--partial-soft); }
+form { display: flex; flex-direction: column; gap: 10px; margin: 0; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button { border: 1px solid var(--line); border-radius: 8px; padding: 5px 10px; font-size: 0.82rem; background: var(--surface2); }
+.presets button:hover { border-color: var(--accent); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; color: var(--muted); min-width: 0; }
+.field input { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 8px 10px; font-size: 0.92rem; color: var(--ink); min-width: 0; width: 100%; }
+.btn { border: 0; border-radius: 9px; padding: 10px 14px; font-weight: 600; background: var(--accent); color: var(--accent-ink); }
+.btn:hover { filter: brightness(1.08); }
+.btn:disabled { opacity: .55; cursor: default; }
+.btn.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+.btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--line); }
+.btn.small { padding: 4px 10px; font-size: 0.8rem; font-weight: 500; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+details { border-top: 1px solid var(--line); padding-top: 10px; }
+summary { cursor: pointer; font-weight: 600; font-size: 0.92rem; }
+details[open] summary { margin-bottom: 10px; }
+.msg { font-size: 0.86rem; border-radius: 8px; padding: 8px 10px; background: var(--free-soft); }
+.msg.err { background: var(--booked-soft); }
+.list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.list li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 0.88rem; }
+.list li:first-child { border-top: 0; }
+.list .lt { min-width: 0; overflow-wrap: anywhere; }
+.list .lt b { font-weight: 600; text-transform: capitalize; }
+.muted { color: var(--muted); font-size: 0.88rem; margin: 0; }
+.fixedbox { background: var(--fixed-soft); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; display: flex; flex-direction: column; gap: 8px; }
+.fixedbox.mine { background: var(--mine-soft); }
+
+/* calendar */
+.calbox { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.calhead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.calhead h2 { font-size: 1.4rem; text-transform: capitalize; }
+.calnav { display: flex; gap: 6px; }
+.calgrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) repeat(2, minmax(0, .7fr)); gap: 6px; }
+.calwd { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; padding: 0 4px; }
+.cday { border: 1px solid var(--line); background: var(--surface2); border-radius: 10px; padding: 8px 10px; min-height: 96px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.cday:hover { border-color: var(--accent); }
+.cday.out { opacity: .4; }
+.cday.past { opacity: .6; }
+.cday.today { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.cday .cnum { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; justify-content: space-between; align-items: baseline; gap: 4px; }
+.cday .cfree { font-size: 1.05rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.cday .cfree small { font-weight: 400; color: var(--muted); font-size: 0.75rem; }
+.cday .cmine { font-size: 0.74rem; background: var(--mine-soft); border-radius: 4px; padding: 1px 6px; align-self: flex-start; }
+@media (max-width: 600px) { .cday { min-height: 74px; padding: 6px; } .cday .cfree small, .cday .cpart { display: none; } .cday .cnum { font-size: 1rem; } }
+/* innlogging og admin */
+.gate { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 28px 22px; display: flex; flex-direction: column; gap: 14px; align-items: flex-start; max-width: 560px; }
+.gate h2 { font-size: 1.4rem; }
+.gate p { margin: 0; color: var(--muted); }
+.loginbtns { display: flex; flex-wrap: wrap; gap: 10px; }
+.loginbtns .btn { display: inline-flex; align-items: center; gap: 8px; }
+.me button { border: 0; background: transparent; color: var(--accent); font-weight: 600; padding: 0 0 0 6px; font-size: 0.85rem; }
+.addrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.addrow input { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 8px 10px; font-size: 0.92rem; min-width: 0; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ===== v3 tillegg ===== */
+.todaybar { display: inline-flex; align-items: center; gap: 8px; margin-top: 6px; background: var(--accent); color: var(--accent-ink); border-radius: 999px; padding: 4px 12px; font-size: 0.86rem; font-weight: 500; }
+.todaybar b { font-weight: 700; text-transform: capitalize; }
+.day .wkno { font-size: 0.72rem; color: var(--muted); font-weight: 600; letter-spacing: 0.02em; }
+.day.today { border: 2px solid var(--mine); padding: 6px 9px; }
+.day .todaybadge { display: inline-block; background: var(--mine); color: #1c1606; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; border-radius: 4px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }
+.cday.today { border: 2px solid var(--mine); box-shadow: none; }
+.cday.today .cnum > span:first-child { color: var(--ink); }
+.cday .todaybadge { background: var(--mine); color: #1c1606; font-family: var(--f-body); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.05em; border-radius: 4px; padding: 1px 5px; text-transform: uppercase; }
+.todaypill { display: inline-block; margin-left: 8px; padding: 2px 9px; border-radius: 999px; background: var(--mine); color: #1c1606; font-family: var(--f-body); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: middle; }
+.scrollhint { display: none; margin: 0; font-size: 0.78rem; color: var(--muted); }
+@media (max-width: 760px) { .scrollhint { display: block; } #plan { min-width: 640px; } }
+
+.field select { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 8px 10px; font-size: 0.92rem; color: var(--ink); min-width: 0; width: 100%; }
+.hint { font-size: 0.8rem; color: var(--muted); margin: 0; }
+.warnbox { background: var(--booked-soft); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; }
+.sched { display: flex; flex-direction: column; gap: 6px; }
+.schedrow { display: grid; grid-template-columns: 64px minmax(0, 1fr) 12px minmax(0, 1fr); gap: 6px; align-items: center; }
+.schedrow input[type=time] { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 6px 8px; font-size: 0.88rem; min-width: 0; width: 100%; color: var(--ink); }
+.schedrow input[type=time]:disabled { opacity: .35; }
+.schedrow .dash { text-align: center; color: var(--muted); }
+.holders { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 0.88rem; }
+.holders li b { font-weight: 600; }
+.notice { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; background: var(--booked-soft); border-radius: 8px; padding: 8px 10px; font-size: 0.86rem; }
+.inirow { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.inirow input { width: 70px; text-transform: uppercase; font-family: var(--f-mono); font-weight: 600; text-align: center; border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 6px 8px; color: var(--ink); }
+.who { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; font-size: 0.88rem; }
+.who li { display: flex; justify-content: space-between; gap: 8px; border-top: 1px solid var(--line); padding-top: 4px; }
+.who li:first-child { border-top: 0; padding-top: 0; }
+.who .wd { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 700; border-radius: 4px; padding: 1px 6px; background: var(--accent-soft); color: var(--accent); margin-left: 4px; vertical-align: middle; }
+.codefield { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+.codefield input, .admform input[type=text] { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 8px 10px; font-size: 0.92rem; min-width: 0; color: var(--ink); width: 100%; }
+.codefield input { font-family: var(--f-mono); }
+.admform { display: flex; flex-direction: column; gap: 8px; }
+.admlist li { flex-wrap: wrap; }
+.admlist .actions { flex-wrap: wrap; justify-content: flex-end; }
+.figprev { display: flex; align-items: center; gap: 10px; }
+.figprev img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+details.mybk > summary { list-style: none; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; background: var(--surface2); }
+details.mybk > summary::-webkit-details-marker { display: none; }
+details.mybk > summary::after { content: "▾"; color: var(--muted); }
+details.mybk[open] > summary::after { content: "▴"; }
+details.mybk { border-top: 0; padding-top: 0; }
+.walker { cursor: pointer; }
+.walker .ring { fill: none; stroke: var(--accent); stroke-width: 5; }
+.walker .wname { font-family: var(--f-body); font-size: 22px; font-weight: 600; fill: var(--ink); paint-order: stroke; stroke: var(--planbg); stroke-width: 5px; }
+.walker .whint { font-family: var(--f-body); font-size: 17px; fill: var(--muted); paint-order: stroke; stroke: var(--planbg); stroke-width: 4px; }
+.bubble rect { fill: #ffffff; stroke: var(--wall); stroke-width: 3; }
+.bubble text { font-family: var(--f-display); font-size: 30px; font-weight: 700; fill: #14202a; }
+.bubble .sm { fill: none; stroke: #14202a; stroke-width: 4; stroke-linecap: round; }
+@media (max-width: 600px) {
+  .daylist { grid-template-columns: repeat(5, minmax(0, 1fr)) repeat(2, minmax(0, .5fr)); gap: 4px; }
+  .day { padding: 5px 6px; }
+  .day.today { padding: 4px 5px; }
+  .day .dname { font-size: 0.8rem; }
+  .day .dcount { font-size: 0.68rem; }
+  .day .todaybadge { display: block; margin: 2px 0 0; width: max-content; }
+  .days { gap: 6px; }
+  .jump { width: 100%; }
+  .jump input { flex: 1; }
+  .schedrow { grid-template-columns: 58px minmax(0, 1fr) 10px minmax(0, 1fr); }
+}
+.day .short { display: none; }
+@media (max-width: 600px) { .day .full { display: none; } .day .short { display: inline; text-transform: capitalize; } }
+.inirow { flex-direction: row; }
+.walker:focus { outline: none; }
+.walker:focus-visible .ring { stroke: var(--mine); stroke-width: 8; }
+@media (max-width: 600px) {
+  .days { display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; align-items: stretch; }
+  .days .iconbtn#prevW, .days .iconbtn#nextW { padding: 0; min-width: 0; }
+  .days .jump { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) {
+  .daylist { display: flex; overflow-x: auto; scroll-snap-type: x proximity; gap: 5px; padding-bottom: 2px; }
+  .daylist .day { flex: 0 0 76px; scroll-snap-align: start; }
+  .daylist .day.wkend { flex: 0 0 52px; }
+  .day .dcount .pd { display: none; }
+}
+.daylist { position: relative; }
+@media (max-width: 600px) { .cday .todaybadge { display: none; } }
+/* v4: kalender, tidslinje, signatur */
+.cday .cnum { font-size: 1.35rem; }
+.cfree { display: inline-flex; align-items: baseline; gap: 3px; align-self: flex-start; background: var(--free-soft); color: var(--ink); border-radius: 999px; padding: 1px 9px; font-family: var(--f-body); font-size: 0.78rem; font-weight: 500; font-variant-numeric: tabular-nums; line-height: 1.5; }
+.cfree b { font-weight: 700; font-size: 0.86rem; }
+.cfree small { color: var(--muted); font-size: 0.74rem; font-weight: 500; }
+.cfree.none { background: var(--booked-soft); }
+.legend .cfree.demo { margin-right: 2px; }
+.cday .cfree { font-size: 0.78rem; }
+.timeline .t-core { background: repeating-linear-gradient(135deg, transparent 0 5px, color-mix(in srgb, var(--accent) 18%, transparent) 5px 8px); }
+.ticks.abs { position: relative; display: block; height: 15px; }
+.ticks.abs span { position: absolute; transform: translateX(-50%); }
+.ticks.abs span:first-child { transform: none; }
+.ticks.abs span:last-child { transform: translateX(-100%); }
+.presets.tp button { font-size: 0.8rem; padding: 5px 9px; }
+.presets.tp button b { font-weight: 600; }
+.credit { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 8px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; letter-spacing: 0.04em; opacity: .75; transition: opacity .2s; }
+.credit:hover { opacity: 1; }
+.credit b { font-family: var(--f-display); font-weight: 600; color: var(--ink); letter-spacing: 0.02em; }
+.credit svg { color: var(--accent); }
+@media (max-width: 600px) { .cfree { padding: 0 6px; } .cfree small { display: none; } .cday .cnum { font-size: 1.05rem; } }
+/* v5: fra–til-velger */
+.rangebtn { display: grid; grid-template-columns: 1fr 1fr auto; align-items: center; gap: 0; width: 100%; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface2); color: var(--ink); text-align: left; overflow: hidden; }
+.rangebtn:hover { border-color: var(--accent); }
+.rangebtn .rb { display: flex; flex-direction: column; padding: 7px 11px; min-width: 0; }
+.rangebtn .rb + .rb { border-left: 1px solid var(--line); }
+.rangebtn .rb small { font-size: 0.7rem; color: var(--muted); }
+.rangebtn .rb b { font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rangebtn .rbi { padding: 0 11px; color: var(--accent); display: flex; }
+body.pk-lock { overflow: hidden; }
+.pk-overlay { position: fixed; inset: 0; z-index: 50; background: rgba(10, 18, 24, .45); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.pk { background: var(--surface); color: var(--ink); border-radius: 16px; width: min(760px, 100%); max-height: calc(100vh - 32px); overflow: auto; box-shadow: 0 20px 60px rgba(0,0,0,.25); display: flex; flex-direction: column; }
+.pk-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px 10px; }
+.pk-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; max-width: 420px; }
+.pk-box { border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px; display: flex; flex-direction: column; }
+.pk-box.act { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.pk-box small { font-size: 0.72rem; color: var(--muted); }
+.pk-box b { font-weight: 600; text-transform: capitalize; }
+.pk-x { border: 0; background: transparent; font-size: 1.7rem; line-height: 1; color: var(--muted); padding: 4px 8px; }
+.pk-strip { display: flex; gap: 2px; overflow-x: auto; padding: 4px 16px 8px; border-bottom: 1px solid var(--line); }
+.pk-strip button { border: 0; background: transparent; color: var(--muted); font-size: 0.8rem; padding: 4px 10px; border-radius: 999px; white-space: nowrap; text-transform: capitalize; }
+.pk-strip button.on { background: var(--surface2); color: var(--ink); font-weight: 600; }
+.pk-strip button small { font-size: 0.68rem; color: var(--muted); }
+.pk-body { display: grid; grid-template-columns: 32px 1fr 32px; align-items: start; gap: 4px; padding: 12px 8px; }
+.pk-nav { border: 0; background: transparent; color: var(--accent); font-size: 1.6rem; line-height: 1; padding: 0; margin-top: 2px; }
+.pk-nav:disabled { color: var(--line); cursor: default; }
+.pk-months { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.pk-mtitle { text-align: center; font-family: var(--f-display); font-weight: 600; text-transform: capitalize; margin-bottom: 8px; }
+.pk-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px 0; }
+.pk-wd { text-align: center; font-size: 0.72rem; color: var(--muted); padding-bottom: 4px; }
+.pk-wd.we { color: var(--wkend-ink); }
+.pk-d { position: relative; height: 38px; border: 0; background: transparent; color: var(--ink); font-size: 0.9rem; font-variant-numeric: tabular-nums; display: flex; align-items: center; justify-content: center; border-radius: 0; }
+button.pk-d:hover { box-shadow: inset 0 0 0 2px var(--accent); border-radius: 8px; }
+.pk-d.dis { color: var(--muted); opacity: .45; cursor: default; }
+.pk-d.we.dis, .pk-d.hol.dis { opacity: 1; color: var(--wkend-ink); background: var(--wkend); }
+.pk-d.hol.dis { background: var(--hol); color: var(--danger); }
+.pk-d.today { font-weight: 700; text-decoration: underline; text-decoration-color: var(--mine); text-decoration-thickness: 3px; text-underline-offset: 4px; }
+.pk-d.inr { background: var(--accent-soft); }
+.pk-d.inr.dis { background: color-mix(in srgb, var(--accent-soft) 55%, var(--wkend)); }
+.pk-d.s, .pk-d.e, .pk-d.only { background: var(--accent); color: var(--accent-ink); font-weight: 700; border-radius: 8px; }
+.pk-d.b-full::after, .pk-d.b-part::after { content: ""; position: absolute; bottom: 4px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--booked); }
+.pk-d.b-part::after { background: var(--partial); }
+.pk-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; padding: 12px 16px 14px; border-top: 1px solid var(--line); }
+.pk-legend { display: flex; gap: 12px; font-size: 0.76rem; color: var(--muted); flex-wrap: wrap; }
+.pk-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+.pk-legend .lg-b { background: var(--booked); } .pk-legend .lg-p { background: var(--partial); } .pk-legend .lg-w { background: var(--wkend); border-radius: 2px; }
+.pk-sum { font-size: 0.88rem; flex: 1; min-width: 200px; text-align: right; }
+.pk-btns { display: flex; gap: 8px; }
+.pk-done { min-width: 96px; border-radius: 999px; }
+@media (max-width: 640px) {
+  .pk-overlay { align-items: flex-end; padding: 0; }
+  .pk { border-radius: 16px 16px 0 0; max-height: 92vh; }
+  .pk-months { grid-template-columns: 1fr; }
+  .pk-months .pk-month:nth-child(2) { display: none; }
+  .pk-sum { text-align: left; min-width: 0; flex-basis: 100%; }
+  .pk-btns { width: 100%; justify-content: flex-end; }
+}
+/* signatur på plantegningen */
+.plancredit .pc-gull { stroke: var(--accent); opacity: .7; }
+.plancredit .pc-t { font-family: var(--f-body); font-size: 22px; fill: var(--muted); letter-spacing: 0.06em; }
+.plancredit .pc-n { font-family: var(--f-display); font-size: 30px; font-weight: 600; fill: var(--muted); letter-spacing: 0.02em; }
+/* v6 */
+.tsel { border: 1px solid var(--line); background: var(--surface2); border-radius: 8px; padding: 8px 10px; font-family: var(--f-mono); font-size: 0.92rem; color: var(--ink); width: 100%; min-width: 0; cursor: pointer; }
+.tsel:disabled { opacity: .35; cursor: default; }
+.schedrow .tsel { padding: 6px 6px; font-size: 0.86rem; }
+.rangeextra { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 2px; }
+.linkbtn { border: 0; background: transparent; color: var(--accent); font-weight: 600; font-size: 0.82rem; padding: 2px 0; white-space: nowrap; margin-left: auto; }
+.linkbtn:hover { text-decoration: underline; }
+.btn.danger-solid { background: var(--danger); color: #fff; }
+.btn.danger-solid:hover { filter: brightness(1.08); }
+
+/* varsel-vindu */
+.md-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(10, 18, 24, .5); display: flex; align-items: center; justify-content: center; padding: 16px; animation: mdfade .15s ease-out; }
+@keyframes mdfade { from { opacity: 0; } to { opacity: 1; } }
+.md { background: var(--surface); color: var(--ink); width: min(560px, 100%); max-height: calc(100vh - 32px); overflow: auto; border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.3); border-top: 6px solid var(--mine); animation: mdpop .18s ease-out; }
+@keyframes mdpop { from { transform: translateY(8px) scale(.98); } to { transform: none; } }
+.md.md-danger { border-top-color: var(--danger); }
+.md-top { display: flex; gap: 14px; align-items: flex-start; padding: 20px 22px 6px; }
+.md-ic { flex: 0 0 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 700; background: var(--mine-soft); color: #8a5a00; }
+.md-danger .md-ic { background: var(--booked-soft); color: var(--danger); }
+.md-title { font-size: 1.3rem; margin: 2px 0 4px; }
+.md-lead { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.md-lead b { color: var(--ink); }
+.md-list { display: flex; flex-direction: column; gap: 10px; padding: 14px 22px 4px; }
+.md-person { border: 1px solid var(--line); border-left: 5px solid var(--booked); border-radius: 12px; padding: 10px 12px; background: var(--surface2); display: flex; flex-direction: column; gap: 8px; }
+.md-person.k-fixed { border-left-color: var(--fixed); }
+.md-person.k-guest { border-left-color: var(--partial); }
+.md-person.k-mine { border-left-color: var(--mine); }
+.md-ph { display: flex; align-items: center; gap: 10px; }
+.md-pn { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.md-pn b { font-size: 1rem; }
+.md-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--booked); }
+.k-fixed .md-tag { color: var(--fixed); } .k-guest .md-tag { color: var(--partial); } .k-mine .md-tag { color: #a77700; }
+.md-count { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+.md-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.md-chip { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.md-chip.more { color: var(--muted); }
+.md-note { margin: 12px 22px 0; padding: 10px 12px; border-radius: 10px; background: var(--booked-soft); font-size: 0.88rem; }
+.md-warn .md-note { background: var(--mine-soft); }
+.md-actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; padding: 16px 22px 20px; }
+.md-actions .btn { padding: 11px 18px; }
+@media (max-width: 640px) {
+  .md-overlay { align-items: flex-end; padding: 0; }
+  .md { border-radius: 18px 18px 0 0; max-height: 92vh; }
+  .md-actions { flex-direction: column-reverse; }
+  .md-actions .btn { width: 100%; }
+}
+.av { --h: 200; flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--f-display); font-weight: 700; font-size: 0.82rem; background: hsl(var(--h) 60% 88%); color: hsl(var(--h) 55% 24%); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .av { background: hsl(var(--h) 35% 26%); color: hsl(var(--h) 60% 86%); } }
+
+/* oversikt over ledige pulter */
+.ov-head { display: flex; flex-direction: column; gap: 8px; }
+.ov-big { font-family: var(--f-display); font-size: 1.15rem; font-weight: 500; display: flex; flex-direction: column; }
+.ov-big b { font-size: 1.9rem; font-weight: 700; color: var(--accent); margin-right: 4px; line-height: 1.1; }
+.ov-big { display: block; }
+.ov-big small { display: block; font-family: var(--f-body); font-size: 0.82rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.ov-big.hol { color: var(--danger); }
+.ov-bar { display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--surface2); gap: 2px; }
+.ov-bar i { display: block; min-width: 0; }
+.ov-bar .f { background: var(--free); } .ov-bar .p { background: var(--partial); } .ov-bar .b { background: var(--booked); }
+.ov-sec { display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.ov-dot { width: 9px; height: 9px; border-radius: 50%; } .ov-dot.f { background: var(--free); } .ov-dot.p { background: var(--partial); }
+.ov-cnt { background: var(--surface2); border-radius: 999px; padding: 0 8px; color: var(--ink); letter-spacing: 0; }
+.ov-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.ov-t { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; text-align: left; border: 1px solid var(--line); border-left: 4px solid var(--free); border-radius: 10px; padding: 7px 9px; background: var(--surface2); min-width: 0; transition: transform .1s, border-color .1s; }
+.ov-t:hover { transform: translateY(-1px); border-color: var(--accent); border-left-color: var(--free); }
+.ov-t.part { border-left-color: var(--partial); }
+.ov-t.part:hover { border-left-color: var(--partial); }
+.ov-n { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
+.ov-r { font-size: 0.72rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ov-s { font-size: 0.74rem; font-weight: 600; font-family: var(--f-mono); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ppl { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.ppl li { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+.ppl li:first-child { border-top: 0; }
+.ppl-n { flex: 1; min-width: 0; font-size: 0.92rem; font-weight: 500; }
+.ppl-n small { display: block; font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); font-weight: 400; }
+.ppl-d { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.dpill { border: 1px solid var(--line); background: var(--surface2); border-radius: 999px; padding: 3px 10px; font-size: 0.78rem; font-weight: 600; white-space: nowrap; }
+.dpill:hover { border-color: var(--accent); color: var(--accent); }
+.badge.g { background: var(--partial-soft); color: var(--partial); }
+/* v7: mine bookinger på en plass */
+.mybox { border: 1px solid color-mix(in srgb, var(--mine) 55%, var(--line)); background: var(--mine-soft); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.mybox-h { display: flex; gap: 10px; align-items: center; }
+.mybox-h b { display: block; font-size: 0.95rem; }
+.mybox-h small { color: var(--muted); font-size: 0.8rem; }
+.mybox-ic { flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--mine); color: #1c1606; display: flex; align-items: center; justify-content: center; font-size: 1rem; }
+.mybox-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.mybox .btn { align-self: flex-start; }
+.mk-title { font-size: 1.3rem; margin: 2px 0 0; }
+.mk-title small { font-family: var(--f-body); font-size: 0.85rem; color: var(--muted); font-weight: 400; margin-left: 6px; }
+.mkp .pk-head { align-items: flex-start; }
+.mk-cnt { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: var(--mine); color: #1c1606; font-size: 0.68rem; font-weight: 700; margin-left: 2px; }
+.pk-d.mk { flex-direction: column; gap: 0; height: 46px; border-radius: 9px; margin: 1px; cursor: pointer; }
+.pk-d.mk .mk-n { font-weight: 700; line-height: 1.1; }
+.pk-d.mk .mk-t { font-family: var(--f-mono); font-size: 0.6rem; line-height: 1.1; opacity: .85; }
+.pk-d.mk.on { background: var(--mine); color: #1c1606; }
+.pk-d.mk.off { background: var(--surface); color: var(--danger); box-shadow: inset 0 0 0 2px var(--danger); }
+.pk-d.mk.off .mk-n, .pk-d.mk.off .mk-t { text-decoration: line-through; }
+button.pk-d.mk:hover { box-shadow: inset 0 0 0 2px var(--ink); }
+.pk-d.mk.off:hover { box-shadow: inset 0 0 0 2px var(--danger); }
+.pk-legend .lg-on { background: var(--mine); border-radius: 3px; }
+.pk-legend .lg-off { background: transparent; border: 2px solid var(--danger); border-radius: 3px; width: 6px; height: 6px; }
+.pk-sum b { color: var(--danger); }
+.pk-d.dis.we, .pk-d.dis.hol { opacity: .6; }
+.pk > * { flex-shrink: 0; }
+/* v8: figurer, faste dager, CTA */
+.walker .wimg { filter: drop-shadow(0 3px 3px rgba(0,0,0,.35)); }
+.walker .wshadow { fill: rgba(0,0,0,.18); }
+.walker.f2 { cursor: default; }
+.heart { fill: #ff4f78; stroke: #fff; stroke-width: 2; }
+.figbox { display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
+.figbox > b { font-size: 0.88rem; }
+.figprev img { border-radius: 8px; object-fit: contain; width: 56px; height: 56px; background: repeating-conic-gradient(var(--surface2) 0 25%, var(--surface) 0 50%) 0 0 / 12px 12px; }
+details.cta { border: 0; padding: 0; }
+details.cta > summary { list-style: none; display: flex; align-items: center; gap: 12px; border: 2px solid var(--accent); background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; cursor: pointer; }
+details.cta > summary::-webkit-details-marker { display: none; }
+details.cta > summary::after { content: "▾"; margin-left: auto; color: var(--accent); font-size: 1.1rem; }
+details.cta[open] > summary::after { content: "▴"; }
+details.cta > summary:hover { filter: brightness(1.03); box-shadow: 0 2px 10px rgba(14, 110, 120, .15); }
+details.cta[open] > summary { margin-bottom: 10px; }
+.cta-ic { flex: 0 0 36px; height: 36px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: flex; align-items: center; justify-content: center; }
+.cta-t { display: flex; flex-direction: column; }
+.cta-t b { font-size: 0.98rem; }
+.cta-t small { color: var(--muted); font-size: 0.8rem; font-weight: 400; }
+.md-chip.fxc { border-color: color-mix(in srgb, var(--fixed) 60%, var(--line)); }
+.pk-d.mk.fx { background: var(--fixed); color: #0d1b2c; }
+.pk-d.mk.freed { background: var(--surface); color: var(--muted); box-shadow: inset 0 0 0 2px var(--line); }
+.pk-d.mk.freed .mk-n { text-decoration: line-through; }
+.pk-d.mk.back { background: var(--free-soft); color: var(--ink); box-shadow: inset 0 0 0 2px var(--free); }
+.pk-d.mk.taken { background: var(--booked-soft); color: var(--muted); cursor: default; }
+.pk-legend .lg-fx { background: var(--fixed); border-radius: 3px; }
+.pk-legend .lg-freed { background: transparent; border: 2px solid var(--line); border-radius: 3px; width: 6px; height: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Måseskjæret</h1>
+      <p>Kontorplasser · 20 pulter · kjernetid 09–15 · åpent 07–18</p>
+      <div class="todaybar" id="todaybar"></div>
+    </div>
+    <div class="topright">
+      <nav class="tabs" aria-label="Visning">
+        <a href="#plan" id="tabPlan">Plantegning</a>
+        <a href="#kalender" id="tabCal">Kalender</a>
+      </nav>
+      <div class="me" id="me" hidden></div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner">Laster…</div>
+
+  <section class="gate" id="gate" hidden></section>
+
+  <div id="viewPlan">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <section class="days" aria-label="Velg dag">
+        <button class="iconbtn" id="prevW" aria-label="Forrige uke">←</button>
+        <div class="daylist" id="daylist"></div>
+        <button class="iconbtn" id="nextW" aria-label="Neste uke">→</button>
+        <div class="jump">
+          <input type="date" id="jumpDate" aria-label="Gå til dato">
+          <button class="iconbtn" id="todayBtn">I dag</button>
+        </div>
+      </section>
+      <main class="layout">
+        <section class="planbox">
+          <div class="planhead">
+            <h2 id="planTitle">–</h2>
+            <div class="legend">
+              <span><i class="sw" style="background:var(--free)"></i>Ledig</span>
+              <span><i class="sw" style="background:var(--partial)"></i>Delvis booket</span>
+              <span><i class="sw" style="background:var(--booked)"></i>Opptatt</span>
+              <span><i class="sw" style="background:var(--fixed)"></i>Fast plass</span>
+              <span><i class="sw mineframe"></i>Din</span>
+            </div>
+          </div>
+          <p class="scrollhint">Sveip sidelengs for å se hele kartet. Du kan også velge plass i listen.</p>
+          <div class="planscroll"><svg id="plan" viewBox="-20 -20 2110 1440" role="img" aria-label="Plantegning over kontoret"></svg></div>
+        </section>
+        <aside>
+          <div class="card" id="panel"></div>
+          <div class="card" id="mine"></div>
+          <div class="card" id="admin" hidden></div>
+        </aside>
+      </main>
+    </div>
+  </div>
+
+  <div id="viewCal" hidden>
+    <section class="calbox">
+      <div class="calhead">
+        <h2 id="calTitle">–</h2>
+        <div class="calnav">
+          <button class="iconbtn" id="prevM" aria-label="Forrige måned">←</button>
+          <button class="iconbtn" id="thisM">Denne måneden</button>
+          <button class="iconbtn" id="nextM" aria-label="Neste måned">→</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><span class="cfree demo"><b>12</b> ledige</span> = pulter som er helt ledige</span>
+        <span><i class="sw" style="background:var(--booked)"></i>Opptatt</span>
+        <span><i class="sw" style="background:var(--partial)"></i>Delvis</span>
+        <span><i class="sw" style="background:var(--free-soft)"></i>Ledig</span>
+        <span><i class="sw" style="background:var(--wkend)"></i>Helg</span>
+        <span><i class="sw" style="background:var(--hol);border:1px solid var(--hol-line)"></i>Helligdag</span>
+        <span><i class="sw mineframe"></i>I dag</span>
+      </div>
+      <div class="calgrid" id="calgrid"></div>
+    </section>
+  </div>
+
+  <footer class="credit">
+    <svg viewBox="0 0 40 16" width="26" height="11" aria-hidden="true"><path d="M2 11 Q10 2 20 9 Q30 2 38 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>Laget av <b>Mathias</b></span>
+  </footer>
+</div>
+
+<!-- Firebase (gratis Spark-plan) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  // ======= LIM INN DIN EGEN FIREBASE-KONFIGURASJON HER =======
+  // Firebase-konsollen → Prosjektinnstillinger (tannhjulet) → Dine apper → Web-app → «firebaseConfig»
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC2b8kuA8c0XLYSquEyRnN9wIZ8OaCDzNc",
+    authDomain: "kontor-plasser.firebaseapp.com",
+    projectId: "kontor-plasser",
+    storageBucket: "kontor-plasser.firebasestorage.app",
+    messagingSenderId: "250875672771",
+    appId: "1:250875672771:web:55d8b436c348297896ca76",
+  };
+  // ===========================================================
+</script>
+<script>
+(() => {
+  const CW = 30, CH = 20;
+  const WD_S = 7 * 60, WD_E = 18 * 60;     // åpningstid 07–18 (tidligst/senest man kan booke)
+  const CORE_S = 9 * 60, CORE_E = 15 * 60; // kjernetid 09–15
+  const STD = ["08:00", "16:00"];
+  const TIMES = []; for (let m = 7 * 60; m <= 18 * 60; m += 15) TIMES.push(`${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`);
+  const timeSel = (id, val, label, dis) => { const opts = TIMES.includes(val) ? TIMES : [...TIMES, val].sort();
+    return `<select id="${id}" class="tsel" aria-label="${label}" ${dis ? "disabled" : ""}>${opts.map(t => `<option value="${t}"${t === val ? " selected" : ""}>${t}</option>`).join("")}</select>`; };          // vanlig dag (forslag når ingenting annet er valgt)
+  const RUNS = [["#",37,0,11],["g",48,0,6],["#",54,0,6],["g",60,0,7],["#",67,0,2],["#",37,1,1],["g",43,1,1],["g",55,1,1],["#",68,1,1],["#",37,2,1],["g",43,2,1],["g",55,2,1],["#",68,2,1],["#",37,3,1],["g",43,3,1],["g",55,3,1],["l",68,3,1],["#",37,4,1],["g",43,4,1],["g",55,4,1],["l",68,4,1],["#",37,5,1],["g",43,5,1],["g",55,5,1],["l",68,5,1],["#",37,6,1],["g",43,6,1],["g",55,6,1],["l",68,6,1],["#",37,7,1],["g",43,7,1],["g",55,7,1],["l",68,7,1],["#",37,8,1],["g",43,8,1],["g",55,8,1],["l",68,8,1],["#",37,9,1],["g",43,9,1],["g",55,9,1],["#",68,9,1],["#",37,10,1],["g",43,10,1],["g",55,10,1],["#",68,10,1],["#",37,11,1],["g",38,11,18],["#",68,11,1],["#",37,12,1],["g",55,12,1],["#",68,12,1],["#",37,13,1],["g",55,13,13],["#",68,13,1],["g",37,14,1],["#",68,14,1],["g",37,15,1],["#",68,15,1],["g",37,16,1],["w",61,16,7],["#",68,16,1],["g",37,17,1],["w",61,17,7],["#",68,17,1],["g",37,18,1],["w",61,18,7],["#",68,18,1],["#",37,19,1],["w",61,19,7],["#",68,19,1],["#",37,20,1],["w",61,20,7],["#",68,20,1],["#",37,21,21],["w",61,21,7],["#",68,21,1],["#",37,22,1],["l",47,22,1],["#",57,22,1],["w",61,22,7],["#",68,22,1],["#",37,23,1],["l",47,23,1],["#",57,23,1],["w",61,23,7],["#",68,23,1],["#",37,24,1],["l",47,24,1],["#",57,24,1],["w",61,24,7],["#",68,24,1],["#",37,25,1],["c",41,25,3],["l",47,25,1],["#",57,25,1],["w",61,25,7],["#",68,25,1],["#",37,26,1],["c",41,26,3],["l",47,26,1],["#",57,26,1],["w",61,26,7],["#",68,26,1],["#",37,27,1],["c",41,27,3],["G",47,27,1],["l",51,27,7],["w",61,27,7],["#",68,27,1],["#",37,28,1],["c",41,28,3],["G",47,28,1],["G",57,28,1],["w",61,28,7],["#",68,28,1],["#",37,29,1],["c",41,29,3],["G",47,29,1],["G",57,29,1],["w",61,29,7],["#",68,29,1],["#",37,30,1],["c",41,30,3],["#",46,30,1],["l",47,30,1],["G",57,30,1],["w",61,30,7],["#",68,30,1],["#",37,31,1],["c",41,31,3],["G",47,31,1],["G",57,31,1],["w",61,31,7],["#",68,31,1],["#",37,32,1],["c",41,32,3],["l",47,32,1],["l",52,32,6],["w",61,32,7],["#",68,32,1],["#",37,33,1],["c",41,33,3],["l",47,33,1],["#",57,33,1],["w",61,33,7],["#",68,33,1],["#",37,34,1],["c",41,34,3],["l",47,34,1],["#",57,34,1],["w",61,34,7],["#",68,34,1],["#",37,35,1],["c",41,35,3],["l",47,35,1],["#",57,35,1],["w",61,35,7],["#",68,35,1],["#",37,36,1],["l",47,36,1],["#",57,36,1],["w",61,36,7],["#",68,36,1],["#",37,37,1],["l",47,37,1],["#",57,37,1],["w",61,37,7],["#",68,37,1],["#",0,38,58],["w",61,38,7],["l",68,38,1],["#",0,39,1],["#",7,39,1],["#",15,39,1],["#",25,39,1],["#",37,39,1],["#",57,39,1],["l",68,39,1],["#",0,40,1],["#",7,40,1],["#",15,40,1],["#",25,40,1],["#",37,40,1],["#",57,40,1],["l",68,40,1],["#",0,41,1],["#",7,41,1],["#",15,41,1],["#",25,41,1],["#",37,41,1],["y",39,41,16],["l",68,41,1],["#",0,42,8],["#",15,42,1],["#",25,42,1],["#",37,42,1],["y",39,42,16],["l",68,42,1],["#",0,43,1],["#",7,43,1],["#",15,43,1],["#",25,43,1],["#",37,43,1],["y",39,43,16],["l",68,43,1],["#",0,44,1],["#",7,44,1],["#",15,44,1],["#",25,44,1],["#",37,44,1],["y",39,44,16],["l",68,44,1],["#",0,45,1],["#",7,45,1],["#",15,45,1],["#",25,45,1],["#",37,45,1],["#",68,45,1],["#",0,46,1],["#",7,46,1],["#",15,46,1],["#",25,46,1],["#",37,46,1],["#",68,46,1],["#",0,47,1],["#",7,47,1],["#",15,47,1],["#",25,47,1],["k",30,47,5],["#",37,47,1],["#",68,47,1],["#",0,48,1],["#",7,48,1],["#",15,48,1],["#",25,48,1],["k",30,48,5],["#",37,48,1],["#",57,48,1],["l",58,48,1],["g",59,48,3],["l",62,48,6],["#",68,48,1],["#",0,49,1],["#",7,49,1],["#",15,49,1],["#",25,49,1],["k",30,49,5],["#",37,49,1],["#",57,49,1],["#",68,49,1],["#",0,50,1],["#",7,50,1],["D",15,50,1],["l",16,50,1],["G",17,50,3],["l",20,50,7],["G",27,50,3],["l",30,50,7],["#",37,50,1],["l",46,50,11],["#",57,50,1],["#",68,50,1],["#",0,51,1],["#",7,51,1],["D",15,51,1],["G",37,51,1],["l",46,51,1],["#",57,51,1],["#",68,51,1],["#",0,52,1],["#",7,52,1],["D",15,52,1],["G",37,52,1],["l",46,52,1],["#",57,52,1],["#",68,52,1],["#",0,53,1],["#",7,53,1],["D",15,53,1],["G",37,53,1],["l",46,53,1],["#",57,53,1],["#",68,53,1],["#",0,54,1],["#",7,54,1],["w",21,54,12],["G",37,54,1],["G",46,54,1],["c",49,54,6],["#",57,54,1],["#",68,54,1],["#",0,55,8],["w",21,55,12],["G",37,55,1],["G",46,55,1],["c",49,55,6],["#",57,55,1],["#",68,55,1],["#",0,56,1],["#",7,56,1],["w",21,56,12],["G",37,56,1],["v",39,56,5],["G",46,56,1],["c",49,56,6],["#",57,56,1],["#",68,56,1],["#",0,57,1],["#",7,57,1],["w",21,57,12],["#",37,57,1],["v",39,57,5],["l",46,57,1],["#",57,57,1],["#",68,57,1],["#",0,58,1],["#",7,58,1],["#",11,58,5],["w",21,58,12],["#",37,58,1],["v",39,58,5],["l",46,58,1],["#",57,58,1],["#",68,58,1],["#",0,59,1],["#",7,59,1],["#",11,59,5],["w",21,59,12],["#",37,59,1],["v",39,59,5],["l",46,59,1],["#",57,59,1],["#",68,59,1],["#",0,60,1],["#",7,60,1],["D",11,60,5],["w",21,60,12],["#",37,60,1],["v",39,60,5],["l",46,60,1],["#",57,60,1],["#",68,60,1],["#",0,61,19],["g",19,61,3],["#",22,61,3],["l",25,61,5],["#",30,61,2],["l",32,61,1],["G",33,61,3],["l",36,61,1],["b",37,61,20],["#",57,61,1],["g",58,61,10],["#",68,61,1],["#",10,62,1],["#",23,62,1],["#",31,62,1],["g",57,62,1],["w",62,62,6],["#",68,62,1],["#",10,63,1],["l",23,63,1],["l",31,63,1],["g",57,63,1],["w",62,63,6],["#",68,63,1],["#",10,64,1],["l",23,64,1],["l",31,64,1],["g",57,64,1],["w",62,64,6],["#",68,64,1],["#",10,65,1],["l",23,65,1],["l",31,65,1],["l",57,65,1],["#",68,65,1],["#",10,66,1],["l",23,66,1],["l",31,66,1],["l",57,66,1],["#",68,66,1],["#",10,67,1],["l",23,67,1],["l",31,67,1],["l",57,67,1],["#",68,67,1],["#",10,68,1],["l",23,68,1],["l",31,68,1],["l",57,68,1],["#",68,68,1],["#",10,69,5],["l",15,69,5],["#",20,69,4],["#",31,69,7],["l",38,69,3],["#",41,69,9],["l",50,69,3],["#",53,69,8],["l",61,69,3],["#",64,69,5]];
+  // Pulter [kol, rad, bredde, høyde]
+  const DESKS = [
+    ["p1",  [40,3,3,5],  "Rom A"],
+    ["p2",  [46,2,3,5],  "Rom B"], ["p3", [50,2,3,5], "Rom B"],
+    ["p4",  [58,2,3,5],  "Rom C"], ["p5", [62,2,3,5], "Rom C"],
+    ["p6",  [52,24,5,3], "Ved møterommet"], ["p7", [52,33,5,3], "Ved møterommet"],
+    ["p8",  [16,41,3,7], "Rom D"], ["p9", [22,41,3,7], "Rom D"],
+    ["p10", [28,39,3,6], "Rom E"], ["p11", [32,39,3,6], "Rom E"],
+    ["p12", [65,49,3,5], "Rom F"], ["p13", [58,54,3,6], "Rom F"],
+    ["p14", [13,64,3,5], "Rom G"], ["p15", [18,64,3,5], "Rom G"],
+    ["p16", [36,64,3,5], "Backoffice"], ["p17", [40,64,3,5], "Backoffice"],
+    ["p18", [47,64,3,5], "Backoffice"], ["p19", [51,64,3,5], "Backoffice"],
+    ["p20", [62,66,6,3], "Rom H"],
+  ].map(([id, r, room]) => ({ id, num: Number(id.slice(1)), x: r[0], y: r[1], w: r[2], h: r[3], room }));
+  const DESK = Object.fromEntries(DESKS.map(d => [d.id, d]));
+  const LABELS = [
+    ["Støyskjerm", 49.5, 6.5, "v"], ["Sofa", 47, 19.6], ["Stumtjener", 39, 20.6, "s"], ["Møterom", 42.5, 30.5, "big"],
+    ["Møterom", 52, 58.3, "big"], ["Teknisk", 4, 40.6],
+    ["Kjøkken", 11.5, 43.6, "big"], ["Toaletter", 4, 48.6], ["Handicap", 4, 57.6], ["Skap BoH", 13.5, 59.3],
+    ["Backoffice", 44.5, 63.4, "big"], ["Terrasse", 27.5, 66.2], ["Støyskjerm mellom pultene", 17, 70.7, "s"],
+  ];
+  // Gangvei for figuren: start ute oppe til venstre → inngang → korridor → pult 10
+  const WALK = [[6, 8], [34, 16], [40, 16], [59, 17], [59, 46], [42, 46], [42, 53], [34, 53], [28.5, 53], [29.5, 47.6]].map(([x, y]) => [x * CW, y * CH]);
+
+  // ---------- dato og tid ----------
+  const pad = n => String(n).padStart(2, "0");
+  const iso = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const parse = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const addDays = (s, n) => { const d = parse(s); d.setDate(d.getDate() + n); return iso(d); };
+  const dow = s => parse(s).getDay();
+  const monday = s => { const d = dow(s); return addDays(s, d === 0 ? -6 : 1 - d); };
+  const weekday = s => { const d = dow(s); return d === 6 ? addDays(s, 2) : d === 0 ? addDays(s, 1) : s; };
+  const monthOf = s => s.slice(0, 7);
+  const addMonths = (m, n) => { const [y, mo] = m.split("-").map(Number); const d = new Date(y, mo - 1 + n, 1); return iso(d).slice(0, 7); };
+  const monthEnd = m => { const [y, mo] = m.split("-").map(Number); return iso(new Date(y, mo, 0)); };
+  const fmtShort = s => parse(s).toLocaleDateString("nb-NO", { weekday: "short", day: "numeric", month: "short" });
+  const fmtLong = s => parse(s).toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long" });
+  const fmtMonth = m => parse(m + "-01").toLocaleDateString("nb-NO", { month: "long", year: "numeric" });
+  const TODAY = iso(new Date());
+  const toMin = t => { const [h, m] = String(t).split(":").map(Number); return h * 60 + (m || 0); };
+  const toHHMM = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+  const shortT = m => (m % 60 ? toHHMM(m) : pad(m / 60));
+  const span = (s, e) => `${shortT(s)}–${shortT(e)}`;
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // Norske helligdager (påske via Gauss/Meeus) – virker for alle år
+  function easter(y) {
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+      g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4,
+      l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451),
+      mo = Math.floor((h + l - 7 * m + 114) / 31), da = ((h + l - 7 * m + 114) % 31) + 1;
+    return iso(new Date(y, mo - 1, da));
+  }
+  const HOL = {};
+  function holidays(y) {
+    if (HOL[y]) return HOL[y];
+    const e = easter(y), m = {};
+    const add = (d, n) => { m[d] = m[d] ? m[d] + " og " + n : n; };
+    add(`${y}-01-01`, "Nyttårsdag");
+    add(addDays(e, -3), "Skjærtorsdag"); add(addDays(e, -2), "Langfredag");
+    add(e, "1. påskedag"); add(addDays(e, 1), "2. påskedag");
+    add(`${y}-05-01`, "Offentlig høytidsdag"); add(`${y}-05-17`, "Grunnlovsdag");
+    add(addDays(e, 39), "Kristi himmelfartsdag"); add(addDays(e, 49), "1. pinsedag"); add(addDays(e, 50), "2. pinsedag");
+    add(`${y}-12-25`, "1. juledag"); add(`${y}-12-26`, "2. juledag");
+    return (HOL[y] = m);
+  }
+  const holiday = s => holidays(Number(s.slice(0, 4)))[s] || null;
+  const isWeekend = s => { const w = dow(s); return w === 0 || w === 6; };
+  const isoWeek = s => { const d = parse(s); d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7)); const w1 = new Date(d.getFullYear(), 0, 4); return 1 + Math.round(((d - w1) / 864e5 - 3 + ((w1.getDay() + 6) % 7)) / 7); };
+  const workdaysBetween = (a, b) => { const out = []; if (b < a) [a, b] = [b, a]; for (let d = a; d <= b && out.length < 270; d = addDays(d, 1)) { if (!isWeekend(d) && !holiday(d)) out.push(d); } return out; };
+
+  const WD_NAMES = ["", "man", "tir", "ons", "tor", "fre"];
+  const WD_CAP = ["", "Man", "Tir", "Ons", "Tor", "Fre"];
+  const WD_LONG = ["", "mandager", "tirsdager", "onsdager", "torsdager", "fredager"];
+  const ALL_DAYS = [1, 2, 3, 4, 5];
+  const joinOg = a => a.length <= 1 ? (a[0] || "") : a.slice(0, -1).join(", ") + " og " + a[a.length - 1];
+  const fmtDays = days => { const d = [...days].sort(); return d.length >= 5 ? "alle hverdager" : joinOg(d.map(x => WD_NAMES[x])); };
+
+  // ---------- faste plasser (kan deles: én innehaver per dag/tidsrom) ----------
+  const hDays = h => (Array.isArray(h?.days) && h.days.length ? h.days.map(Number) : ALL_DAYS);
+  function hSpan(h, w) { // [start, slutt] i minutter for ukedag w, eller null
+    if (!hDays(h).includes(w)) return null;
+    const t = h.hours?.[w] || h.hours?.[String(w)];
+    if (Array.isArray(t) && t.length === 2) { const s = toMin(t[0]), e = toMin(t[1]); if (e > s) return [s, e]; }
+    return [WD_S, WD_E];
+  }
+  function fmtSched(h) { // «man–ons 08–16 · fre 08–12»
+    const groups = [];
+    for (const w of ALL_DAYS) {
+      const sp = hSpan(h, w); if (!sp) continue;
+      const last = groups[groups.length - 1];
+      if (last && last.to === w - 1 && last.s === sp[0] && last.e === sp[1]) last.to = w;
+      else groups.push({ from: w, to: w, s: sp[0], e: sp[1] });
+    }
+    return groups.map(g => `${WD_NAMES[g.from]}${g.to > g.from ? (g.to - g.from > 1 ? "–" : ", ") + WD_NAMES[g.to] : ""} ${span(g.s, g.e)}`).join(" · ") || "ingen dager";
+  }
+
+  // ---------- state ----------
+  const S = {
+    view: "plan", date: weekday(TODAY), calMonth: monthOf(TODAY), selected: null,
+    me: null, canWrite: true, admin: false, dbOk: null, auth: "loading", code: "",
+    holders: new Map(), bIdx: new Map(), aIdx: new Map(), myBookings: [], myAway: [], notices: [], codes: [], members: {},
+    loaded: { fixed: false, bookings: false, away: false }, names: {}, inits: {}, msg: null, busy: false, figure: null,
+  };
+  let db = null, auth = null, rangeUnsubs = [], rangeKey = null, subs = [], gateMsg = "", loggingIn = false;
+  const ready = () => S.dbOk && S.loaded.fixed && S.loaded.bookings && S.loaded.away;
+
+  const HALF = { am: [8 * 60, 12 * 60], pm: [12 * 60, 16 * 60] };
+  function norm(id, d) {
+    let s, e;
+    if (d.start && d.end) { s = toMin(d.start); e = toMin(d.end); }
+    else if (d.half && HALF[d.half]) [s, e] = HALF[d.half];
+    else [s, e] = [8 * 60, 16 * 60];
+    return { id, desk: d.desk, date: d.date, uid: d.uid, by: d.by || d.uid, guest: d.guest || "", note: d.note || "", s, e };
+  }
+  function index(snap) {
+    const m = new Map();
+    snap.docs.forEach(doc => { const r = norm(doc.id, doc.data()); const k = r.date + "|" + r.desk; if (!m.has(k)) m.set(k, []); m.get(k).push(r); });
+    return m;
+  }
+
+  // ---------- belegg ----------
+  function subtract(base, cuts) {
+    let parts = [base];
+    for (const [cs, ce] of cuts) {
+      const next = [];
+      for (const [s, e] of parts) { if (ce <= s || cs >= e) next.push([s, e]); else { if (cs > s) next.push([s, cs]); if (ce < e) next.push([ce, e]); } }
+      parts = next;
+    }
+    return parts;
+  }
+  const holdersOf = desk => S.holders.get(desk) || [];
+  function fixedParts(h, date, bks, aways) { // tidsrom innehaveren faktisk har plassen denne dagen
+    const sp = hSpan(h, dow(date)); if (!sp) return [];
+    const mine = aways.filter(a => a.uid === h.uid);
+    return subtract(sp, mine.map(a => [a.s, a.e])).flatMap(p => subtract(p, bks.map(b => [b.s, b.e])));
+  }
+  function dayInfo(date, deskId) {
+    const hs = holdersOf(deskId);
+    if (holiday(date)) return { kind: "closed", ints: [], free: [], aways: [], holders: hs, mine: false };
+    if (!ready()) return { kind: "unknown", ints: [], free: [], aways: [], holders: hs, mine: false };
+    const k = date + "|" + deskId;
+    const bks = (S.bIdx.get(k) || []).map(b => ({ ...b, src: "booking" }));
+    const aways = S.aIdx.get(k) || [];
+    const ints = [...bks];
+    for (const h of hs) for (const [s, e] of fixedParts(h, date, bks, aways)) ints.push({ s, e, uid: h.uid, note: h.note || "", src: "fixed", hid: h.id });
+    ints.sort((a, b) => a.s - b.s);
+    const freeLeft = subtract([WD_S, WD_E], ints.map(i => [i.s, i.e]));
+    const coreFree = subtract([CORE_S, CORE_E], ints.map(i => [i.s, i.e])).reduce((t, [s, e]) => t + (e - s), 0);
+    let kind;
+    if (!ints.length) kind = "free";                       // ingen har plassen i dag
+    else if (coreFree === 0) kind = ints.every(i => i.src === "fixed") ? "fixed" : "booked"; // hele kjernetiden er tatt
+    else kind = "partial";
+    return { kind, ints, free: freeLeft, holders: hs, aways, mine: ints.some(i => i.uid === S.me) };
+  }
+  function dayStats(date) {
+    let free = 0, partial = 0, full = 0;
+    for (const d of DESKS) { const k = dayInfo(date, d.id).kind; if (k === "free") free++; else if (k === "partial") partial++; else full++; }
+    return { free, partial, full };
+  }
+  const nameOf = uid => (uid === S.me ? "Deg" : (S.names[uid] || "En kollega"));
+  const fullName = uid => S.names[uid] || "En kollega";
+  const who = i => i.guest ? `${i.guest} (gjest)` : nameOf(i.uid);
+  const iniFrom = n => { const p = String(n || "").trim().split(/\s+/).filter(Boolean); if (!p.length) return "•"; return ((p[0][0] || "") + (p.length > 1 ? p[p.length - 1][0] : (p[0][1] || ""))).toUpperCase(); };
+  const initials = i => i.guest ? iniFrom(i.guest) : (S.inits[i.uid] || iniFrom(S.names[i.uid]));
+
+  // ---------- plantegning ----------
+  const svg = document.getElementById("plan");
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+  function drawBase() {
+    const g = el("g", {}, svg);
+    for (const [t, x, y, w] of RUNS) {
+      const cls = t === "#" ? "w-hash" : ["c", "y", "k", "v", "w"].includes(t) ? "f-" + t : "w-" + t;
+      el("rect", { x: x * CW, y: y * CH, width: w * CW, height: CH, class: cls }, g);
+    }
+    for (const [txt, cx, cy, kind] of LABELS) {
+      const attrs = { x: cx * CW, y: cy * CH, "text-anchor": "middle", class: "lbl" + (kind === "big" ? " big" : "") };
+      if (kind === "s") attrs.style = "font-size:20px;text-transform:none;letter-spacing:0";
+      if (kind === "v") { attrs.transform = `rotate(90 ${cx * CW} ${cy * CH})`; attrs.style = "font-size:20px"; }
+      el("text", attrs, g).textContent = txt;
+    }
+    // Signatur nede til venstre, utenfor bygget
+    const cr = el("g", { class: "plancredit", transform: `translate(${0.6 * CW} ${66.6 * CH})` }, g);
+    el("path", { d: "M0 10 Q12 -2 24 8 Q36 -2 48 10", fill: "none", "stroke-width": 3.5, "stroke-linecap": "round", class: "pc-gull" }, cr);
+    const t1 = el("text", { x: 0, y: 44, class: "pc-t" }, cr); t1.textContent = "Laget av";
+    const t2 = el("text", { x: 0, y: 78, class: "pc-n" }, cr); t2.textContent = "Mathias";
+  }
+  const deskEls = {};
+  function drawDesks() {
+    const g = el("g", {}, svg);
+    for (const d of DESKS) {
+      const x = d.x * CW, y = d.y * CH, w = d.w * CW, h = d.h * CH;
+      const grp = el("g", { class: "desk", tabindex: "0", role: "button", "data-id": d.id }, g);
+      const title = el("title", {}, grp);
+      const body = el("rect", { x, y, width: w, height: h, rx: 6, class: "body" }, grp);
+      el("rect", { x, y, width: w, height: h, rx: 6, class: "frame" }, grp);
+      el("text", { x: x + 7, y: y + 21, class: "dnum" }, grp).textContent = d.num;
+      const txt = el("g", {}, grp);
+      grp.addEventListener("click", () => select(d.id));
+      grp.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(d.id); } });
+      deskEls[d.id] = { grp, body, txt, title, x, y, w, h };
+    }
+  }
+  function renderPlan() {
+    for (const d of DESKS) {
+      const E = deskEls[d.id];
+      const info = dayInfo(S.date, d.id);
+      E.body.setAttribute("class", "body k-" + info.kind);
+      E.grp.classList.toggle("sel", S.selected === d.id);
+      E.grp.classList.toggle("mine", info.mine);
+      E.txt.innerHTML = "";
+      const lines = [];
+      if (info.kind === "booked" || info.kind === "fixed") {
+        const ppl = [...new Set(info.ints.map(i => i.guest ? "g:" + i.guest : i.uid))];
+        if (ppl.length === 1) lines.push(["dini", initials(info.ints[0])]);
+        else info.ints.slice(0, 3).forEach(i => lines.push(["dtime", span(i.s, i.e)]));
+      } else if (info.kind === "partial") {
+        info.ints.slice(0, 3).forEach(i => lines.push(["dtime", span(i.s, i.e)]));
+        if (info.ints.length > 3) lines.push(["dtime", `+${info.ints.length - 3}`]);
+      }
+      const lh = 22, top = E.y + E.h / 2 - (lines.length - 1) * lh / 2 + (E.h > 70 ? 8 : 6);
+      lines.forEach(([cls, t], i) => { el("text", { x: E.x + E.w / 2, y: top + i * lh, "text-anchor": "middle", class: cls }, E.txt).textContent = t; });
+      const desc = info.kind === "closed" ? "stengt (helligdag)" : info.kind === "unknown" ? "ukjent" : info.kind === "free" ? "ledig hele dagen" :
+        info.ints.map(i => `${span(i.s, i.e)} ${who(i)}${i.src === "fixed" ? " (fast)" : ""}${i.note ? " – " + i.note : ""}`).join("; ");
+      E.title.textContent = `Plass ${d.num}: ${desc}`;
+    }
+  }
+
+  // ---------- figurer på kartet ----------
+  // Figur 1 står ute oppe til venstre og går til pult 10. Figur 2 dukker opp ved pult 10–11 når figur 1 kommer inn.
+  const walkers = { f1: null, f2: null };
+  let walking = false, figKey = null, figPending = false, figToken = 0;
+  const F2_POS = [34.2 * CW, 47.6 * CH];
+  const FIG_H = 118, FIG_WMAX = 150;
+  const loadSize = src => new Promise(res => { const i = new Image(); i.onload = () => res([i.naturalWidth || 1, i.naturalHeight || 1]); i.onerror = () => res([1, 1]); i.src = src; });
+  function bubbleEl(parent, side, top) {
+    const b = el("g", { class: "bubble", opacity: 0, "pointer-events": "none", transform: `translate(0 ${top})` }, parent);
+    const x0 = side < 0 ? -200 : 20;
+    el("rect", { x: x0, y: -78, width: 180, height: 70, rx: 22 }, b);
+    el("path", { d: side < 0 ? "M-48 -9 L-22 14 L-74 -9 Z" : "M48 -9 L22 14 L74 -9 Z", fill: "#fff", stroke: "none" }, b);
+    const t = el("text", { x: x0 + 20, y: -33 }, b); t.textContent = "Hei!";
+    const cx = x0 + 142;
+    el("circle", { cx, cy: -43, r: 21, fill: "#ffd84d", stroke: "#14202a", "stroke-width": 3 }, b);
+    el("circle", { cx: cx - 8, cy: -49, r: 3, fill: "#14202a" }, b); el("circle", { cx: cx + 8, cy: -49, r: 3, fill: "#14202a" }, b);
+    el("path", { d: `M${cx - 11} -38 Q${cx} -27 ${cx + 11} -38`, class: "sm" }, b);
+    return b;
+  }
+  async function makeFig(fig, main) {
+    const [nw, nh] = await loadSize(fig.img);
+    let h = FIG_H, w = h * nw / nh; if (w > FIG_WMAX) { w = FIG_WMAX; h = w * nh / nw; }
+    const g = el("g", { class: "walker" + (main ? "" : " f2"), tabindex: main ? "0" : "-1", role: main ? "button" : "img", "aria-label": main ? `${fig.name || "Figur"} – trykk for å sende ham til pult 10` : (fig.name || "Figur") });
+    el("ellipse", { cx: 0, cy: h / 2 + 2, rx: w * 0.36, ry: 8, class: "wshadow" }, g);
+    const body = el("g", {}, g);
+    const img = el("image", { x: -w / 2, y: -h / 2, width: w, height: h, preserveAspectRatio: "xMidYMid meet", class: "wimg" }, body);
+    img.setAttribute("href", fig.img);
+    const name = el("text", { x: 0, y: h / 2 + 28, "text-anchor": "middle", class: "wname" }, g); name.textContent = fig.name || "";
+    const hint = el("text", { x: 0, y: h / 2 + 50, "text-anchor": "middle", class: "whint" }, g); hint.textContent = main ? "trykk på meg" : "";
+    const bub = bubbleEl(body, main ? -1 : 1, -h / 2 + 6);
+    return { g, body, name, hint, bub, x: 0, y: 0, h };
+  }
+  function place(w, x, y, rot = 0, bob = 0) {
+    w.x = x; w.y = y;
+    w.g.setAttribute("transform", `translate(${x} ${y})`);
+    w.body.setAttribute("transform", `translate(0 ${bob}) rotate(${rot})`);
+  }
+  async function setupWalker() {
+    const f1 = S.figure?.img ? S.figure : null, f2 = S.figure2?.img ? S.figure2 : null;
+    const key = JSON.stringify([f1?.at, f1?.name, f1?.img?.length, f2?.at, f2?.name, f2?.img?.length]);
+    if (key === figKey) return;
+    if (walking) { figPending = true; return; }
+    figKey = key; const t = ++figToken;
+    for (const k of ["f1", "f2"]) { walkers[k]?.g.remove(); walkers[k] = null; }
+    if (!f1) return;
+    const w1 = await makeFig(f1, true);
+    const w2 = f2 ? await makeFig(f2, false) : null;
+    if (t !== figToken) return;
+    if (w2) { svg.appendChild(w2.g); place(w2, F2_POS[0], F2_POS[1]); w2.g.setAttribute("opacity", 0); w2.g.style.display = "none"; walkers.f2 = w2; }
+    svg.appendChild(w1.g); place(w1, WALK[0][0], WALK[0][1]); walkers.f1 = w1;
+    const go = () => startWalk();
+    w1.g.addEventListener("click", go);
+    w1.g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  }
+  // Fra pult 10 til plass 20 (rom H nede til høyre)
+  const TO20 = [[29.5, 47.6], [28.5, 53], [34.5, 53], [34.5, 62.6], [55.5, 62.6], [55.5, 65.8], [60.2, 65.8]].map(([x, y]) => [x * CW, y * CH]);
+  function spin(w, turns, ms) { // snurrer rundt seg selv og vugger litt opp og ned
+    return new Promise(res => {
+      const t0 = performance.now(), rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const f = now => {
+        if (!w.g.isConnected) return res();
+        const p = Math.min(1, (now - t0) / ms), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        place(w, w.x, w.y, rm ? 0 : e * 360 * turns, -Math.abs(Math.sin(p * Math.PI * turns)) * 12);
+        if (p < 1) requestAnimationFrame(f); else { place(w, w.x, w.y); res(); }
+      };
+      requestAnimationFrame(f);
+    });
+  }
+  const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const pathLen = (pts, upto = pts.length - 1) => { let L = 0; for (let i = 1; i <= upto; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; };
+  function walkPath(w, pts, speed, onDist) {
+    return new Promise(res => {
+      const segs = []; let total = 0;
+      for (let i = 1; i < pts.length; i++) { const L = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); segs.push([pts[i - 1], pts[i], L]); total += L; }
+      const t0 = performance.now();
+      const frame = now => {
+        if (!w.g.isConnected) return res();
+        const d = Math.min(total, (now - t0) / 1000 * speed); let rest = d;
+        let x = pts[pts.length - 1][0], y = pts[pts.length - 1][1];
+        for (const [a, b, L] of segs) { if (rest <= L) { const f = L ? rest / L : 1; x = a[0] + (b[0] - a[0]) * f; y = a[1] + (b[1] - a[1]) * f; break; } rest -= L; }
+        const ph = d / 16, rm = reduceMotion();
+        place(w, x, y, rm ? 0 : Math.sin(ph) * 10, rm ? 0 : -Math.abs(Math.sin(ph)) * 9);
+        onDist?.(d);
+        if (d < total) requestAnimationFrame(frame); else { place(w, x, y); res(); }
+      };
+      requestAnimationFrame(frame);
+    });
+  }
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  function fade(w, to, ms = 600) {
+    if (to > 0) w.g.style.display = "";
+    return new Promise(res => {
+      const from = Number(w.g.getAttribute("opacity") || 0), t0 = performance.now();
+      const f = now => { const p = Math.min(1, (now - t0) / ms); w.g.setAttribute("opacity", from + (to - from) * p);
+        if (!to) place(w, w.x, w.y, 0, 0); else place(w, w.x, w.y, 0, -Math.sin(p * Math.PI) * 14);
+        if (p < 1) requestAnimationFrame(f); else { if (!to) w.g.style.display = "none"; res(); } };
+      requestAnimationFrame(f);
+    });
+  }
+  function hopAll(ws, n) {
+    return Promise.all(ws.map(async w => {
+      for (let i = 0; i < n; i++) {
+        const t0 = performance.now();
+        await new Promise(res => { const f = now => { if (!w.g.isConnected) return res(); const p = Math.min(1, (now - t0) / 420); place(w, w.x, w.y, 0, -Math.sin(p * Math.PI) * 30); p < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); });
+      }
+    }));
+  }
+  function hearts(x, y, n = 9, spread = 160, size = 1) {
+    const g = el("g", { "pointer-events": "none" }, svg);
+    const parts = [];
+    for (let i = 0; i < n; i++) {
+      const h = el("path", { d: "M0 6 C0 -3 -12 -3 -12 6 C-12 13 0 19 0 24 C0 19 12 13 12 6 C12 -3 0 -3 0 6 Z", class: "heart" }, g);
+      parts.push({ h, dx: (Math.random() - 0.5) * spread, x0: (Math.random() - 0.5) * spread * 0.5, delay: i * 110 + Math.random() * 120, sc: size * (0.7 + Math.random() * 0.8), rot: (Math.random() - 0.5) * 40 });
+    }
+    const t0 = performance.now(), dur = 1700;
+    return new Promise(res => {
+      const f = now => {
+        let alive = false;
+        for (const p of parts) {
+          const t = (now - t0 - p.delay) / dur;
+          if (t < 0) { p.h.setAttribute("opacity", 0); alive = true; continue; }
+          if (t > 1) { p.h.setAttribute("opacity", 0); continue; }
+          alive = true;
+          const yy = y - t * 170, xx = x + p.x0 + p.dx * t + Math.sin(t * 9 + p.dx) * 10;
+          p.h.setAttribute("transform", `translate(${xx} ${yy}) rotate(${p.rot}) scale(${p.sc * (0.6 + t * 0.6)})`);
+          p.h.setAttribute("opacity", t < 0.2 ? t / 0.2 : 1 - (t - 0.2) / 0.8);
+        }
+        if (alive) requestAnimationFrame(f); else { g.remove(); res(); }
+      };
+      requestAnimationFrame(f);
+    });
+  }
+  async function startWalk() {
+    const w1 = walkers.f1; if (walking || !w1) return;
+    const w2 = walkers.f2;
+    walking = true; w1.hint.setAttribute("opacity", 0);
+    const SPEED = 150, dIn = pathLen(WALK, 5); // figur 2 dukker opp når figur 1 er nesten fremme
+    let shown = false;
+    await walkPath(w1, WALK, SPEED, d => { if (w2 && !shown && d >= dIn) { shown = true; fade(w2, 1); } });
+    if (w2 && !shown) await fade(w2, 1);
+    w1.bub.setAttribute("opacity", 1);
+    await sleep(w2 ? 600 : 200);
+    if (w2) w2.bub.setAttribute("opacity", 1);
+    const ws = [w1, w2].filter(Boolean);
+    const hx = w2 ? (w1.x + w2.x) / 2 : w1.x, hy = Math.min(w1.y, w2?.y ?? w1.y) - w1.h / 2 - 20;
+    let hp = null;
+    if (w2) { // mange små hjerter rundt begge, i flere bølger mens de hopper
+      const bursts = [];
+      for (let k = 0; k < 6; k++) bursts.push(sleep(k * 550).then(() => Promise.all([
+        hearts(hx, hy, 6, 150, 0.55),
+        hearts(w1.x, w1.y - w1.h / 2 + 10, 4, 120, 0.45),
+        hearts(w2.x, w2.y - w2.h / 2 + 10, 4, 120, 0.45),
+      ])));
+      hp = Promise.all(bursts);
+    }
+    await hopAll(ws, w2 ? 7 : 2);
+    await hp; await sleep(700);
+    ws.forEach(w => w.bub.setAttribute("opacity", 0));
+    // Videre til plass 20: ut av rom E, ned korridoren, gjennom døra til backoffice og inn til rom H
+    await walkPath(w1, TO20, SPEED);
+    await spin(w1, 3, 2200);
+    await hopAll([w1], 1);
+    await sleep(400);
+    // Ut igjen samme vei, og ut av bygget
+    const rev = [...TO20.slice(2).reverse(), ...WALK.slice(0, 8).reverse()], dOut = pathLen(rev) - pathLen(WALK, 1);
+    let hidden = false;
+    await walkPath(w1, rev, SPEED, d => { if (w2 && !hidden && d >= dOut) { hidden = true; fade(w2, 0); } });
+    if (w2 && !hidden) await fade(w2, 0);
+    w1.hint.setAttribute("opacity", 1);
+    walking = false;
+    if (figPending) { figPending = false; setupWalker(); }
+  }
+
+  // ---------- dagstripe ----------
+  const dayList = document.getElementById("daylist");
+  function renderDays() {
+    const mon = monday(S.date);
+    dayList.innerHTML = "";
+    const n = DESKS.length;
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(mon, i);
+      const isToday = date === TODAY;
+      const dn = `<span class="dname"><span class="full">${esc(fmtShort(date))}</span><span class="short">${esc(parse(date).toLocaleDateString("nb-NO", { weekday: "short" }).replace(".", ""))} ${parse(date).getDate()}</span>${isToday ? '<span class="todaybadge">I DAG</span>' : ""}</span><span class="wkno">Uke ${isoWeek(date)}</span>`;
+      if (i >= 5) {
+        const w = document.createElement("div");
+        w.className = "day wkend" + (isToday ? " today" : ""); w.setAttribute("aria-label", fmtLong(date) + ", helg");
+        w.innerHTML = `${dn}<span class="dcount wkname">${holiday(date) ? esc(holiday(date)) : "Helg"}</span>`;
+        dayList.appendChild(w); continue;
+      }
+      const st = dayStats(date);
+      const b = document.createElement("button");
+      b.className = "day" + (holiday(date) ? " hol" : "") + (isToday ? " today" : ""); b.type = "button"; b.setAttribute("aria-pressed", String(date === S.date));
+      if (isToday) b.setAttribute("aria-current", "date");
+      b.innerHTML = `${dn}
+        <span class="dcount">${holiday(date) ? `<span class="holname">${esc(holiday(date))}</span>` : ready() ? `${st.free} ledige${st.partial ? `<span class="pd"> · ${st.partial} delvis</span>` : ""}` : "…"}</span>
+        <span class="bar">${ready() && !holiday(date) ? `<i class="b1" style="width:${100 * st.full / n}%"></i><i class="b2" style="width:${100 * st.partial / n}%"></i>` : ""}</span>`;
+      b.addEventListener("click", () => setDate(date));
+      dayList.appendChild(b);
+    }
+    document.getElementById("planTitle").innerHTML = esc(fmtLong(S.date) + " · uke " + isoWeek(S.date)) +
+      (S.date === TODAY ? `<span class="todaypill">I dag</span>` : "") +
+      (holiday(S.date) ? `<span class="holpill">${esc(holiday(S.date))} – stengt</span>` : "");
+    document.getElementById("jumpDate").value = S.date;
+    if (dayList.scrollWidth > dayList.clientWidth && dayList._for !== S.date) {
+      const t = dayList.querySelector('[aria-pressed="true"]');
+      if (t) { dayList.scrollLeft = t.offsetLeft - (dayList.clientWidth - t.offsetWidth) / 2; dayList._for = S.date; }
+    }
+  }
+
+  // ---------- kalender ----------
+  const calGrid = document.getElementById("calgrid");
+  function renderCal() {
+    const m = S.calMonth;
+    document.getElementById("calTitle").textContent = fmtMonth(m);
+    const first = m + "-01", last = monthEnd(m);
+    let d = monday(first);
+    const end = addDays(monday(last), 6);
+    const wd = ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"];
+    let html = wd.map((w, i) => `<div class="calwd${i >= 5 ? " we" : ""}">${w}</div>`).join("");
+    const n = DESKS.length;
+    for (; d <= end; d = addDays(d, 1)) {
+      const out = monthOf(d) !== m;
+      const tTag = d === TODAY ? '<span class="todaybadge">I dag</span>' : "";
+      if (isWeekend(d)) {
+        html += `<div class="cday wkend${out ? " out" : ""}${d === TODAY ? " today" : ""}"><span class="cnum"><span>${parse(d).getDate()}</span>${tTag}</span><span class="wkname">${holiday(d) ? esc(holiday(d)) : "Helg"}</span></div>`;
+        continue;
+      }
+      const st = dayStats(d);
+      const mineHere = ready() && DESKS.some(x => dayInfo(d, x.id).mine);
+      html += `<button type="button" class="cday${out ? " out" : ""}${d < TODAY ? " past" : ""}${d === TODAY ? " today" : ""}${holiday(d) ? " hol" : ""}" data-date="${d}">
+        <span class="cnum"><span>${parse(d).getDate()}${dow(d) === 1 ? ` <small class="wk">uke ${isoWeek(d)}</small>` : ""}</span>${tTag}</span>
+        ${holiday(d) ? `<span class="holname">${esc(holiday(d))}</span>` : ready() ? `<span class="cfree${st.free === 0 ? " none" : ""}" title="${st.free} av ${n} pulter er helt ledige"><b>${st.free}</b><small> ledige</small></span>
+        <span class="bar"><i class="b1" style="width:${100 * st.full / n}%"></i><i class="b2" style="width:${100 * st.partial / n}%"></i></span>
+        ${st.partial ? `<span class="dcount cpart">${st.partial} delvis ledige</span>` : ""}
+        ${mineHere ? `<span class="cmine">Du har plass</span>` : ""}` : `<span class="dcount">…</span>`}
+      </button>`;
+    }
+    calGrid.innerHTML = html;
+    calGrid.querySelectorAll("[data-date]").forEach(b => b.addEventListener("click", () => { location.hash = "plan"; setDate(b.dataset.date); }));
+  }
+
+  // ---------- hjelpere for skjemaer ----------
+  function withKeep(root, html) { // bevarer det brukeren har skrevet når kortet tegnes på nytt
+    const keep = {}, open = {};
+    root.querySelectorAll("input[id]:not([type=file]), select[id], textarea[id]").forEach(i => { keep[i.id] = i.type === "checkbox" ? i.checked : i.value; });
+    root.querySelectorAll("details[id]").forEach(d => { open[d.id] = d.open; });
+    root.innerHTML = html;
+    for (const id in keep) { const i = root.querySelector("#" + CSS.escape(id)); if (i && !i.dataset.fresh) { if (i.type === "checkbox") i.checked = keep[id]; else i.value = keep[id]; } }
+    for (const id in open) { const d = root.querySelector("#" + CSS.escape(id)); if (d) d.open = open[id]; }
+  }
+  const togglesHTML = (prefix, checked) => `<fieldset class="wdays">${ALL_DAYS.map(n => `<label class="tog"><input type="checkbox" id="${prefix}${n}" value="${n}" ${checked.includes(n) ? "checked" : ""}><span>${WD_CAP[n]}</span></label>`).join("")}</fieldset>`;
+  const readToggles = (root, prefix) => ALL_DAYS.filter(n => root.querySelector("#" + prefix + n)?.checked);
+  function schedHTML(prefix, h) {
+    return `<div class="sched">${ALL_DAYS.map(w => { const sp = h ? hSpan(h, w) : [WD_S, WD_E]; const on = !!sp; const [s, e] = sp || [WD_S, WD_E];
+      return `<div class="schedrow"><label class="tog"><input type="checkbox" id="${prefix}D${w}" ${on ? "checked" : ""}><span>${WD_CAP[w]}</span></label>
+        ${timeSel(`${prefix}S${w}`, toHHMM(s), WD_CAP[w] + " fra", !on)}<span class="dash">–</span>
+        ${timeSel(`${prefix}E${w}`, toHHMM(e), WD_CAP[w] + " til", !on)}</div>`; }).join("")}
+      <div class="presets"><button type="button" data-sp="${prefix}|all">Alle dager, hele dagen</button></div></div>`;
+  }
+  function wireSched(root, prefix) {
+    for (const w of ALL_DAYS) {
+      const cb = root.querySelector(`#${prefix}D${w}`); if (!cb) continue;
+      cb.addEventListener("change", () => { root.querySelector(`#${prefix}S${w}`).disabled = !cb.checked; root.querySelector(`#${prefix}E${w}`).disabled = !cb.checked; });
+    }
+    root.querySelectorAll(`[data-sp^="${prefix}|"]`).forEach(b => b.addEventListener("click", () => {
+      const mode = b.dataset.sp.split("|")[1]; const [s, e] = mode === "am" ? ["07:00", "12:00"] : mode === "pm" ? ["12:00", "18:00"] : ["07:00", "18:00"];
+      for (const w of ALL_DAYS) { if (mode === "all") root.querySelector(`#${prefix}D${w}`).checked = true; const on = root.querySelector(`#${prefix}D${w}`).checked;
+        root.querySelector(`#${prefix}S${w}`).value = s; root.querySelector(`#${prefix}E${w}`).value = e; root.querySelector(`#${prefix}S${w}`).disabled = !on; root.querySelector(`#${prefix}E${w}`).disabled = !on; }
+    }));
+  }
+  function readSched(root, prefix) {
+    const days = [], hours = {};
+    for (const w of ALL_DAYS) {
+      if (!root.querySelector(`#${prefix}D${w}`)?.checked) continue;
+      const s = root.querySelector(`#${prefix}S${w}`).value, e = root.querySelector(`#${prefix}E${w}`).value;
+      if (!s || !e || toMin(e) <= toMin(s)) return { error: `Til-tiden må være etter fra-tiden (${WD_CAP[w]}).` };
+      days.push(w); hours[String(w)] = [s, e];
+    }
+    if (!days.length) return { error: "Velg minst én dag." };
+    return { days, hours };
+  }
+
+  // ---------- varsel-vindu (erstatter nettleserens confirm) ----------
+  const hue = str => { let h = 0; for (const c of String(str)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+  const avatar = (name, ini) => `<span class="av" style="--h:${hue(name)}">${esc(ini || iniFrom(name))}</span>`;
+  const mdEl = document.createElement("div"); mdEl.className = "md-overlay"; mdEl.hidden = true;
+  mdEl.setAttribute("role", "alertdialog"); mdEl.setAttribute("aria-modal", "true");
+  document.body.appendChild(mdEl);
+  function askChoice({ tone = "warn", icon = "!", title, lead = "", groups = [], note = "", actions }) {
+    return new Promise(res => {
+      const kindTxt = { booking: "Booking", fixed: "Fast plass", mine: "Din plass", guest: "Gjest" };
+      mdEl.innerHTML = `<div class="md md-${tone}">
+        <div class="md-top"><span class="md-ic" aria-hidden="true">${icon}</span><div><h3 class="md-title">${esc(title)}</h3>${lead ? `<p class="md-lead">${lead}</p>` : ""}</div></div>
+        ${groups.length ? `<div class="md-list">${groups.map(g => `<div class="md-person k-${g.kind}">
+          <div class="md-ph">${avatar(g.name, g.ini)}<div class="md-pn"><b>${esc(g.name)}</b><span class="md-tag">${kindTxt[g.kind] || ""}</span></div><span class="md-count">${g.items.length} ${g.items.length === 1 ? "dag" : "dager"}</span></div>
+          <div class="md-chips">${g.items.slice(0, 10).map(it => `<span class="md-chip">${esc(it)}</span>`).join("")}${g.items.length > 10 ? `<span class="md-chip more">+${g.items.length - 10} til</span>` : ""}</div></div>`).join("")}</div>` : ""}
+        ${note ? `<p class="md-note">${note}</p>` : ""}
+        <div class="md-actions">${actions.filter(Boolean).map(a => `<button type="button" class="btn ${a.cls || ""}" data-k="${a.key}">${esc(a.label)}</button>`).join("")}</div>
+      </div>`;
+      mdEl.hidden = false; document.body.classList.add("pk-lock");
+      const done = k => { mdEl.hidden = true; document.body.classList.remove("pk-lock"); document.removeEventListener("keydown", onKey); res(k); };
+      const onKey = e => { if (e.key === "Escape") done("cancel"); };
+      document.addEventListener("keydown", onKey);
+      mdEl.onclick = e => { if (e.target === mdEl) return done("cancel"); const b = e.target.closest("[data-k]"); if (b) done(b.dataset.k); };
+      mdEl.querySelector(".md-actions .btn")?.focus();
+    });
+  }
+
+  // ---------- datovelger fra–til (inspirert av flybooking) ----------
+  const CAL_ICON = `<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+  const fmtBox = d => parse(d).toLocaleDateString("nb-NO", { weekday: "short", day: "numeric", month: "short" });
+  function rangeFieldHTML(p, label) {
+    return `<div class="field">${label}
+      <button type="button" class="rangebtn" id="${p}Range">
+        <span class="rb"><small>Fra</small><b id="${p}FromTxt">${esc(fmtBox(S.date))}</b></span>
+        <span class="rb"><small>Til og med</small><b id="${p}ToTxt">${esc(fmtBox(S.date))}</b></span>
+        <span class="rbi">${CAL_ICON}</span>
+      </button>
+      <input type="hidden" id="${p}FromD" value="${S.date}"><input type="hidden" id="${p}ToD" value="${S.date}">
+      <span class="rangeextra"><span class="hint" id="${p}Sum"></span><button type="button" class="linkbtn" data-ytd="${p}">Ut året →</button></span></div>`;
+  }
+  function syncRange(root, p) {
+    const f = root.querySelector(`#${p}FromD`)?.value, t = root.querySelector(`#${p}ToD`)?.value;
+    if (!f) return;
+    root.querySelector(`#${p}FromTxt`).textContent = fmtBox(f);
+    root.querySelector(`#${p}ToTxt`).textContent = fmtBox(t || f);
+    const n = workdaysBetween(f, t || f).length;
+    root.querySelector(`#${p}Sum`).textContent = (t && t !== f) ? `${n} ${n === 1 ? "arbeidsdag" : "arbeidsdager"} (helg og helligdager hoppes over)` : "";
+    const dw = root.querySelector(`#${p}DaysWrap`); if (dw) dw.hidden = n <= 1;
+  }
+  function wireRange(root, p, desk) {
+    const btn = root.querySelector(`#${p}Range`); if (!btn) return;
+    syncRange(root, p);
+    root.querySelector(`[data-ytd="${p}"]`)?.addEventListener("click", () => {
+      const f = root.querySelector(`#${p}FromD`).value || S.date;
+      root.querySelector(`#${p}ToD`).value = f.slice(0, 4) + "-12-31"; syncRange(root, p);
+    });
+    btn.addEventListener("click", () => openPicker(desk, root.querySelector(`#${p}FromD`).value, root.querySelector(`#${p}ToD`).value, (a, b) => {
+      root.querySelector(`#${p}FromD`).value = a; root.querySelector(`#${p}ToD`).value = b; syncRange(root, p);
+    }));
+  }
+  const PK = { start: null, end: null, hover: null, view: null, desk: null, data: null, onDone: null };
+  const pkEl = document.createElement("div"); pkEl.className = "pk-overlay"; pkEl.hidden = true;
+  pkEl.setAttribute("role", "dialog"); pkEl.setAttribute("aria-modal", "true"); pkEl.setAttribute("aria-label", "Velg datoer");
+  document.body.appendChild(pkEl);
+  const bookable = d => d >= TODAY && !isWeekend(d) && !holiday(d);
+  const pkKey = e => { if (e.key === "Escape") closePicker(false); };
+  function openPicker(desk, start, end, onDone) {
+    Object.assign(PK, { start, end: end && end !== start ? end : null, hover: null, view: monthOf(start), desk, data: null, onDone, fresh: true });
+    pkEl.hidden = false; document.body.classList.add("pk-lock"); renderPicker();
+    document.addEventListener("keydown", pkKey);
+    if (desk) deskData(desk).then(d => { if (PK.desk === desk && !pkEl.hidden) { PK.data = d; renderPicker(); } }).catch(() => {});
+    pkEl.querySelector(".pk-done")?.focus();
+  }
+  function closePicker(commit) {
+    if (commit && PK.start && PK.onDone) PK.onDone(PK.start, PK.end || PK.start);
+    pkEl.hidden = true; document.body.classList.remove("pk-lock"); document.removeEventListener("keydown", pkKey);
+  }
+  function busyOf(d) {
+    if (!PK.data || !bookable(d)) return "";
+    const bks = PK.data.bks.filter(b => b.date === d), aws = PK.data.aws.filter(a => a.date === d);
+    const ints = bks.map(b => [b.s, b.e]);
+    for (const h of PK.data.hs) for (const p of fixedParts(h, d, bks, aws)) ints.push(p);
+    if (!ints.length) return "";
+    return subtract([CORE_S, CORE_E], ints).reduce((t, [a, b]) => t + b - a, 0) === 0 ? "full" : "part";
+  }
+  function pkMonth(m) {
+    const wd = ["M", "T", "O", "T", "F", "L", "S"];
+    let html = `<div class="pk-month"><div class="pk-mtitle">${esc(fmtMonth(m))}</div><div class="pk-grid">${wd.map((w, i) => `<span class="pk-wd${i >= 5 ? " we" : ""}">${w}</span>`).join("")}`;
+    const lo = PK.start, hi = PK.end || (PK.hover && PK.start && PK.hover > PK.start ? PK.hover : null);
+    for (let d = monday(m + "-01"), end = addDays(monday(monthEnd(m)), 6); d <= end; d = addDays(d, 1)) {
+      if (monthOf(d) !== m) { html += `<span></span>`; continue; }
+      const ok = bookable(d), b = busyOf(d);
+      const cls = ["pk-d", ok ? "" : "dis", isWeekend(d) ? "we" : "", holiday(d) ? "hol" : "", d === TODAY ? "today" : "",
+        lo && hi && d > lo && d < hi ? "inr" : "", d === lo ? "s" : "", d === hi ? "e" : "", lo && d === lo && !hi ? "only" : "", b ? "b-" + b : ""].filter(Boolean).join(" ");
+      const tip = holiday(d) ? holiday(d) : isWeekend(d) ? "Helg" : d < TODAY ? "Passert" : b === "full" ? "Plassen er opptatt" : b === "part" ? "Plassen er delvis opptatt" : "";
+      html += ok ? `<button type="button" class="${cls}" data-pd="${d}" title="${esc(tip)}">${parse(d).getDate()}</button>` : `<span class="${cls}" title="${esc(tip)}">${parse(d).getDate()}</span>`;
+    }
+    return html + `</div></div>`;
+  }
+  function renderPicker() {
+    const first = monthOf(TODAY), v = PK.view < first ? first : PK.view; PK.view = v;
+    const months = []; for (let i = 0; i < 12; i++) months.push(addMonths(first, i));
+    const shown = [v, addMonths(v, 1)];
+    const end = PK.end || PK.start, n = PK.start ? workdaysBetween(PK.start, end).length : 0;
+    const sum = PK.fresh && PK.start ? `${fmtBox(PK.start)}${PK.end ? " – " + fmtBox(PK.end) : ""} · trykk på en dato for å velge på nytt` : !PK.start ? "Velg første dag" : !PK.end ? `${fmtBox(PK.start)} · velg siste dag, eller trykk Ferdig for bare én dag` : `${fmtBox(PK.start)} – ${fmtBox(PK.end)} · ${n} ${n === 1 ? "arbeidsdag" : "arbeidsdager"}`;
+    pkEl.innerHTML = `<div class="pk">
+      <div class="pk-head">
+        <div class="pk-boxes"><div class="pk-box${!PK.start || PK.end ? " act" : ""}"><small>Fra</small><b>${PK.start ? esc(fmtBox(PK.start)) : "–"}</b></div><div class="pk-box${PK.start && !PK.end ? " act" : ""}"><small>Til og med</small><b>${PK.end ? esc(fmtBox(PK.end)) : "–"}</b></div></div>
+        <button type="button" class="pk-x" data-act="cancel" aria-label="Lukk">×</button>
+      </div>
+      <div class="pk-strip">${months.map(m => `<button type="button" data-pm="${m}" class="${shown.includes(m) ? "on" : ""}">${esc(parse(m + "-01").toLocaleDateString("nb-NO", { month: "short" }).replace(".", ""))}${m.endsWith("-01") ? ` <small>${m.slice(0, 4)}</small>` : ""}</button>`).join("")}</div>
+      <div class="pk-body">
+        <button type="button" class="pk-nav" data-nav="-1" aria-label="Forrige måned" ${v <= first ? "disabled" : ""}>‹</button>
+        <div class="pk-months">${shown.map(pkMonth).join("")}</div>
+        <button type="button" class="pk-nav" data-nav="1" aria-label="Neste måned">›</button>
+      </div>
+      <div class="pk-foot">
+        <div class="pk-legend"><span><i class="lg-b"></i>Opptatt</span><span><i class="lg-p"></i>Delvis opptatt</span><span><i class="lg-w"></i>Helg/helligdag</span></div>
+        <div class="pk-sum">${esc(sum)}</div>
+        <div class="pk-btns"><button type="button" class="btn ghost small" data-act="ytd" ${PK.start ? "" : "disabled"}>Ut året</button><button type="button" class="btn ghost small" data-act="reset">Nullstill</button><button type="button" class="btn pk-done" data-act="done" ${PK.start ? "" : "disabled"}>Ferdig</button></div>
+      </div></div>`;
+  }
+  pkEl.addEventListener("click", e => {
+    if (e.target === pkEl) return closePicker(false);
+    const t = e.target.closest("[data-pd],[data-pm],[data-nav],[data-act]"); if (!t) return;
+    if (t.dataset.pd) {
+      const d = t.dataset.pd;
+      if (!PK.start || PK.end || PK.fresh) { PK.start = d; PK.end = null; PK.fresh = false; }
+      else if (d < PK.start) PK.start = d;
+      else if (d === PK.start) PK.end = null;
+      else PK.end = d;
+      PK.hover = null;
+    } else if (t.dataset.pm) PK.view = t.dataset.pm;
+    else if (t.dataset.nav) PK.view = addMonths(PK.view, Number(t.dataset.nav));
+    else if (t.dataset.act === "cancel") return closePicker(false);
+    else if (t.dataset.act === "done") return closePicker(true);
+    else if (t.dataset.act === "ytd") { if (PK.start) { PK.end = PK.start.slice(0, 4) + "-12-31"; PK.fresh = false; if (PK.end === PK.start) PK.end = null; } }
+    else if (t.dataset.act === "reset") { PK.start = null; PK.end = null; PK.fresh = false; }
+    renderPicker();
+  });
+  pkEl.addEventListener("mouseover", e => {
+    const t = e.target.closest("[data-pd]");
+    const h = t ? t.dataset.pd : null;
+    if (PK.start && !PK.end && !PK.fresh && h !== PK.hover) { PK.hover = h; renderPicker(); }
+  });
+
+  // ---------- mine dager på én plass: kalender der du huker vekk dager (bookinger og fast plass) ----------
+  const MK = { desk: null, view: null, rmB: new Set(), free: new Set(), restore: new Set() };
+  const mkEl = document.createElement("div"); mkEl.className = "pk-overlay"; mkEl.hidden = true;
+  mkEl.setAttribute("role", "dialog"); mkEl.setAttribute("aria-modal", "true"); mkEl.setAttribute("aria-label", "Mine dager på plassen");
+  document.body.appendChild(mkEl);
+  const myOnDesk = desk => S.myBookings.filter(b => b.desk === desk).sort((a, b) => a.date.localeCompare(b.date) || a.s - b.s);
+  const byDate = list => { const m = new Map(); for (const b of list) { if (!m.has(b.date)) m.set(b.date, []); m.get(b.date).push(b); } return m; };
+  const myHolderOn = desk => holdersOf(desk).find(h => h.uid === S.me) || null;
+  function mkData(desk) {
+    const map = new Map();
+    for (const b of myOnDesk(desk)) { if (!map.has(b.date)) map.set(b.date, { bks: [], fx: null }); map.get(b.date).bks.push(b); }
+    const h = myHolderOn(desk);
+    if (h) {
+      const end = addMonths(monthOf(TODAY), 12) + "-01";
+      for (let d = TODAY; d < end; d = addDays(d, 1)) {
+        if (isWeekend(d) || holiday(d)) continue;
+        const sp = hSpan(h, dow(d)); if (!sp) continue;
+        const aw = S.myAway.filter(a => a.desk === desk && a.date === d);
+        const leftMin = subtract(sp, aw.map(a => [a.s, a.e])).reduce((t, [a, b]) => t + b - a, 0);
+        const taken = aw.find(a => a.by && a.by !== S.me);
+        if (!map.has(d)) map.set(d, { bks: [], fx: null });
+        map.get(d).fx = { s: sp[0], e: sp[1], state: leftMin === 0 ? (taken ? "taken" : "freed") : "on", by: taken?.by, aw };
+      }
+    }
+    return { map: new Map([...map].sort((a, b) => a[0].localeCompare(b[0]))), h };
+  }
+  const isActive = (d, v) => v.bks.length ? !MK.rmB.has(d) : v.fx ? (v.fx.state === "on" ? !MK.free.has(d) : v.fx.state === "freed" && MK.restore.has(d)) : false;
+  const mkKey = e => { if (e.key === "Escape") closeMine(); };
+  function openMine(desk) {
+    const { map } = mkData(desk); if (!map.size) return;
+    const first = [...map.keys()][0];
+    Object.assign(MK, { desk, view: monthOf(first), rmB: new Set(), free: new Set(), restore: new Set() });
+    mkEl.hidden = false; document.body.classList.add("pk-lock"); document.addEventListener("keydown", mkKey); renderMine2();
+  }
+  function closeMine() { mkEl.hidden = true; document.body.classList.remove("pk-lock"); document.removeEventListener("keydown", mkKey); }
+  function mkMonth(m, map) {
+    const wd = ["M", "T", "O", "T", "F", "L", "S"];
+    let html = `<div class="pk-month"><div class="pk-mtitle">${esc(fmtMonth(m))}</div><div class="pk-grid">${wd.map((w, i) => `<span class="pk-wd${i >= 5 ? " we" : ""}">${w}</span>`).join("")}`;
+    for (let d = monday(m + "-01"), end = addDays(monday(monthEnd(m)), 6); d <= end; d = addDays(d, 1)) {
+      if (monthOf(d) !== m) { html += `<span></span>`; continue; }
+      const v = map.get(d);
+      const base = ["pk-d", isWeekend(d) ? "we" : "", holiday(d) ? "hol" : "", d === TODAY ? "today" : ""];
+      const n = `<span class="mk-n">${parse(d).getDate()}</span>`;
+      if (v && v.bks.length) {
+        const off = MK.rmB.has(d);
+        const t = v.bks.length > 1 ? `${v.bks.length}×` : `${shortT(v.bks[0].s)}–${shortT(v.bks[0].e)}`;
+        html += `<button type="button" class="${[...base, "mk", off ? "off" : "on"].join(" ")}" data-md="${d}" title="${esc(`${fmtShort(d)}: booking ${v.bks.map(b => span(b.s, b.e) + (b.guest ? " (" + b.guest + ")" : "")).join(", ")} – ${off ? "trykk for å beholde" : "trykk for å fjerne"}`)}" aria-pressed="${!off}">${n}<span class="mk-t">${esc(t)}</span></button>`;
+      } else if (v && v.fx) {
+        const f = v.fx, t = `${shortT(f.s)}–${shortT(f.e)}`;
+        if (f.state === "taken") html += `<span class="${[...base, "mk", "taken"].join(" ")}" title="${esc(`${fmtShort(d)}: overtatt av ${fullName(f.by)}`)}">${n}<span class="mk-t">overtatt</span></span>`;
+        else if (f.state === "freed") { const back = MK.restore.has(d);
+          html += `<button type="button" class="${[...base, "mk", back ? "back" : "freed"].join(" ")}" data-md="${d}" title="${esc(`${fmtShort(d)}: ${back ? "du tar plassen tilbake" : "frigitt – trykk for å ta plassen tilbake"}`)}">${n}<span class="mk-t">${back ? "tilbake" : "frigitt"}</span></button>`; }
+        else { const off = MK.free.has(d);
+          html += `<button type="button" class="${[...base, "mk", off ? "off" : "fx"].join(" ")}" data-md="${d}" title="${esc(`${fmtShort(d)}: fast plass ${t} – ${off ? "trykk for å beholde" : "trykk hvis du ikke kommer"}`)}" aria-pressed="${!off}">${n}<span class="mk-t">${esc(t)}</span></button>`; }
+      } else html += `<span class="${[...base, "dis"].join(" ")}">${parse(d).getDate()}</span>`;
+    }
+    return html + `</div></div>`;
+  }
+  function renderMine2() {
+    const { map, h } = mkData(MK.desk);
+    if (!map.size) { closeMine(); return; }
+    const all = [...map.keys()];
+    const months = h ? Array.from({ length: 12 }, (_, i) => addMonths(monthOf(TODAY), i)) : [...new Set(all.map(monthOf))].sort();
+    if (!months.includes(MK.view)) MK.view = months[0];
+    const shown = [MK.view, addMonths(MK.view, 1)];
+    const cnt = m => all.filter(d => monthOf(d) === m && isActive(d, map.get(d))).length;
+    const nB = [...MK.rmB].filter(d => map.get(d)?.bks.length).length, nF = MK.free.size, nR = MK.restore.size;
+    const parts = [nB && `${nB} ${nB === 1 ? "booking" : "bookinger"} fjernes`, nF && `${nF} ${nF === 1 ? "fast dag" : "faste dager"} frigis`, nR && `${nR} ${nR === 1 ? "dag" : "dager"} tas tilbake`].filter(Boolean);
+    const nBook = all.filter(d => map.get(d).bks.length).length;
+    mkEl.innerHTML = `<div class="pk mkp">
+      <div class="pk-head">
+        <div><div class="eyebrow">Mine dager</div><h3 class="mk-title">Plass ${DESK[MK.desk].num} <small>${esc(DESK[MK.desk].room)}</small></h3>
+          <p class="hint" style="margin:2px 0 0">${h ? `Fast plass: <b>${esc(fmtSched(h))}</b>. ` : ""}${nBook ? `${nBook} ${nBook === 1 ? "booking" : "bookinger"} fremover. ` : ""}Trykk på en dag du ikke kommer, så blir plassen ledig for andre. Trykk igjen for å angre.</p></div>
+        <button type="button" class="pk-x" data-mk="close" aria-label="Lukk">×</button>
+      </div>
+      <div class="pk-strip">${months.map(m => { const c = cnt(m); return `<button type="button" data-mm="${m}" class="${shown.includes(m) ? "on" : ""}">${esc(parse(m + "-01").toLocaleDateString("nb-NO", { month: "short" }).replace(".", ""))}${m.slice(0, 4) !== TODAY.slice(0, 4) ? ` <small>${m.slice(0, 4)}</small>` : ""}${c ? ` <span class="mk-cnt">${c}</span>` : ""}</button>`; }).join("")}</div>
+      <div class="pk-body">
+        <button type="button" class="pk-nav" data-mn="-1" aria-label="Forrige måned" ${MK.view <= months[0] ? "disabled" : ""}>‹</button>
+        <div class="pk-months">${shown.map(m => mkMonth(m, map)).join("")}</div>
+        <button type="button" class="pk-nav" data-mn="1" aria-label="Neste måned" ${addMonths(MK.view, 1) >= months[months.length - 1] ? "disabled" : ""}>›</button>
+      </div>
+      <div class="pk-foot">
+        <div class="pk-legend">${nBook ? `<span><i class="lg-on"></i>Booket</span>` : ""}${h ? `<span><i class="lg-fx"></i>Fast plass</span><span><i class="lg-freed"></i>Frigitt</span>` : ""}<span><i class="lg-off"></i>Hukes vekk</span></div>
+        <div class="pk-sum">${parts.length ? parts.map(p => `<b>${esc(p)}</b>`).join(" · ") : "Ingen endringer ennå"}</div>
+        <div class="pk-btns">
+          ${h ? "" : `<button type="button" class="btn ghost small" data-mk="all">${nB === nBook ? "Behold alle" : "Huk vekk alle"}</button>`}
+          <button type="button" class="btn ghost small" data-mk="close">Lukk</button>
+          <button type="button" class="btn ${nB + nF && !nR ? "danger-solid" : ""} pk-done" data-mk="save" ${parts.length ? "" : "disabled"}>Lagre endringer</button>
+        </div>
+      </div></div>`;
+  }
+  mkEl.addEventListener("click", e => {
+    if (e.target === mkEl) return closeMine();
+    const t = e.target.closest("[data-md],[data-mm],[data-mn],[data-mk]"); if (!t) return;
+    const { map } = mkData(MK.desk);
+    if (t.dataset.md) {
+      const d = t.dataset.md, v = map.get(d); if (!v) return;
+      const tog = set => set.has(d) ? set.delete(d) : set.add(d);
+      if (v.bks.length) tog(MK.rmB); else if (v.fx?.state === "on") tog(MK.free); else if (v.fx?.state === "freed") tog(MK.restore);
+    }
+    else if (t.dataset.mm) MK.view = t.dataset.mm;
+    else if (t.dataset.mn) MK.view = addMonths(MK.view, Number(t.dataset.mn));
+    else if (t.dataset.mk === "close") return closeMine();
+    else if (t.dataset.mk === "all") { const bd = [...map.keys()].filter(d => map.get(d).bks.length); if (bd.every(d => MK.rmB.has(d))) MK.rmB.clear(); else bd.forEach(d => MK.rmB.add(d)); }
+    else if (t.dataset.mk === "save") {
+      const desk = MK.desk, rmB = [...MK.rmB], free = [...MK.free], restore = [...MK.restore];
+      closeMine();
+      guard(async () => {
+        let nb = 0;
+        for (const d of rmB) for (const b of map.get(d)?.bks || []) { await db.collection("bookings").doc(b.id).delete(); nb++; }
+        for (const d of free) { const f = map.get(d)?.fx; if (!f) continue;
+          await db.collection("away").add({ desk, date: d, start: toHHMM(f.s), end: toHHMM(f.e), uid: S.me, by: S.me, note: "Kommer ikke", at: Date.now() }); }
+        for (const d of restore) for (const a of map.get(d)?.fx?.aw || []) if (!a.by || a.by === S.me) await db.collection("away").doc(a.id).delete();
+        const msg = [rmB.length && `fjernet ${rmB.length} ${rmB.length === 1 ? "booking" : "bookinger"}`, free.length && `frigitt ${free.length} ${free.length === 1 ? "fast dag" : "faste dager"}`, restore.length && `tatt tilbake ${restore.length} ${restore.length === 1 ? "dag" : "dager"}`].filter(Boolean).join(", ");
+        flash(`Plass ${DESK[desk].num}: ${msg}.`);
+      });
+      return;
+    }
+    renderMine2();
+  });
+
+  // ---------- panel ----------
+  const panel = document.getElementById("panel");
+  let panelSig = "";
+  const tColor = i => i.uid === S.me ? "var(--mine)" : i.src === "fixed" ? "var(--fixed)" : "var(--booked)";
+  function timelineHTML(info) {
+    const W = WD_E - WD_S, pct = m => 100 * (m - WD_S) / W;
+    const core = `<i class="t-core" style="left:${pct(CORE_S)}%;width:${pct(CORE_E) - pct(CORE_S)}%"></i>`;
+    const segs = info.ints.map(i => { const s = Math.max(i.s, WD_S), e = Math.min(i.e, WD_E); if (e <= s) return ""; return `<i class="${i.uid === S.me ? "t-mine" : i.src === "fixed" ? "t-fixed" : "t-booked"}" style="left:${pct(s)}%;width:${pct(e) - pct(s)}%" title="${esc(span(i.s, i.e))}"></i>`; }).join("");
+    const ticks = [7, 9, 12, 15, 18].map(h => `<span style="left:${pct(h * 60)}%">${pad(h)}</span>`).join("");
+    return `<div><div class="timeline" aria-hidden="true">${core}${segs}</div><div class="ticks abs">${ticks}</div><p class="hint" style="margin-top:2px">Kjernetid 09–15 er markert.</p></div>`;
+  }
+  function memberOptions() {
+    const list = Object.entries(S.members).filter(([id]) => id !== S.me).sort((a, b) => a[1].localeCompare(b[1], "nb"));
+    return `<option value="">Meg selv</option>${list.map(([id, n]) => `<option value="m:${esc(id)}">${esc(n)}</option>`).join("")}<option value="guest">Annen person / gjest…</option>`;
+  }
+  function whoIsIn(date) {
+    const m = new Map();
+    for (const d of DESKS) for (const i of dayInfo(date, d.id).ints) {
+      const key = i.guest ? "g:" + i.guest : i.uid;
+      if (!m.has(key)) m.set(key, { name: i.guest || fullName(i.uid), guest: !!i.guest, me: !i.guest && i.uid === S.me, ini: initials(i), desks: [] });
+      m.get(key).desks.push({ id: d.id, num: d.num, t: span(i.s, i.e) });
+    }
+    return [...m.values()].sort((a, b) => (b.me - a.me) || a.name.localeCompare(b.name, "nb"));
+  }
+  function renderPanel() {
+    const sel = S.selected;
+    const info = sel ? dayInfo(S.date, sel) : null;
+    const sig = JSON.stringify([sel, S.date, S.me, S.admin, S.dbOk, S.msg, S.busy, info && [info.kind, info.ints, info.holders, info.aways], sel ? [myOnDesk(sel), S.myAway.filter(a => a.desk === sel)] : null, S.loaded, sel ? null : DESKS.map(d => dayInfo(S.date, d.id).ints).flat(), S.names, S.members]);
+    if (sig === panelSig) return;
+    const sameSel = panelSig && JSON.parse(panelSig)[0] === sel && JSON.parse(panelSig)[1] === S.date;
+    panelSig = sig;
+    if (!sameSel) panel.innerHTML = "";
+    const msg = S.msg ? `<div class="msg ${S.msg.err ? "err" : ""}" role="status">${esc(S.msg.text)}</div>` : "";
+    const can = S.canWrite && S.me && S.dbOk;
+    let html;
+    if (!sel) {
+      const free = [], part = []; let full = 0;
+      for (const d of DESKS) { const i = dayInfo(S.date, d.id); if (i.kind === "free") free.push(d); else if (i.kind === "partial") part.push([d, i.free.filter(([a, b]) => b - a >= 30).map(([a, b]) => span(a, b)).join(", ")]); else full++; }
+      const people = ready() && !holiday(S.date) ? whoIsIn(S.date) : [];
+      const N = DESKS.length;
+      const tile = (d, cls, sub) => `<button type="button" class="ov-t ${cls}" data-pick="${d.id}" title="Plass ${d.num} · ${esc(d.room)} · ledig ${esc(sub.toLowerCase())}"><span class="ov-n">${d.num}</span><span class="ov-r">${esc(d.room)}</span><span class="ov-s">${esc(sub)}</span></button>`;
+      html = `<div class="ov-head"><div class="eyebrow">${esc(fmtLong(S.date))}${S.date === TODAY ? " · i dag" : ""}</div>
+          ${holiday(S.date) ? `<div class="ov-big hol">${esc(holiday(S.date))}<small>Kontoret er stengt</small></div>` : ready() ? `<div class="ov-big"><b>${free.length}</b> av ${N} pulter ledige<small>${part.length ? `${part.length} delvis ledige · ` : ""}${full} opptatt</small></div>
+          <div class="ov-bar" aria-hidden="true"><i class="f" style="flex:${free.length}"></i><i class="p" style="flex:${part.length}"></i><i class="b" style="flex:${full}"></i></div>` : `<div class="ov-big">Henter…</div>`}
+        </div>
+        ${msg}
+        ${!ready() || holiday(S.date) ? "" : `
+          ${free.length ? `<div class="ov-sec"><span class="ov-dot f"></span>Ledig hele dagen</div><div class="ov-grid">${free.map(d => tile(d, "free", "Hele dagen")).join("")}</div>` : `<p class="muted">Ingen pulter er ledige hele dagen.</p>`}
+          ${part.length ? `<div class="ov-sec"><span class="ov-dot p"></span>Ledig deler av dagen</div><div class="ov-grid">${part.map(([d, t]) => tile(d, "part", t)).join("")}</div>` : ""}
+          ${people.length ? `<div class="ov-sec">På kontoret <span class="ov-cnt">${people.length}</span></div><ul class="ppl">${people.map(p => `<li>${avatar(p.name, p.ini)}<span class="ppl-n">${esc(p.name)}${p.me ? ` <span class="badge">deg</span>` : ""}${p.guest ? ` <span class="badge g">gjest</span>` : ""}<small>${esc(p.desks.map(x => x.t).join(", "))}</small></span><span class="ppl-d">${p.desks.map(x => `<button type="button" class="dpill" data-pick="${x.id}">Plass ${x.num}</button>`).join("")}</span></li>`).join("")}</ul>` : ""}
+          <p class="hint">Trykk på en pult for å se detaljer og booke.</p>`}`;
+    } else {
+      const d = DESK[sel];
+      const myH = info.holders.find(h => h.uid === S.me);
+      const others = info.holders.filter(h => h.uid !== S.me);
+      html = `<div class="deskhead"><h3>Plass ${d.num}</h3><span class="room">${esc(d.room)}</span></div>
+        <div class="eyebrow">${esc(fmtLong(S.date))}${S.date === TODAY ? " · i dag" : ""}</div>
+        ${info.kind !== "unknown" && info.kind !== "closed" ? timelineHTML(info) : ""}
+        ${info.kind === "free" ? `<p class="muted">Ledig hele dagen.</p>` : info.kind === "closed" ? `<p class="muted">${esc(holiday(S.date))} – helligdag, kontoret er stengt.</p>` : info.kind === "unknown" ? `<p class="muted">Henter…</p>` :
+          `<ul class="occ">${info.ints.map(i => `<li><i class="dot" style="background:${tColor(i)}"></i><span class="when">${span(i.s, i.e)}</span>
+            <span class="who">${i.src === "fixed" ? "Fast: " : ""}${esc(who(i))}${i.src === "booking" && i.by && i.by !== i.uid ? `<span class="note">booket av ${esc(nameOf(i.by))}</span>` : i.src === "booking" && i.guest ? `<span class="note">booket av ${esc(nameOf(i.uid))}</span>` : ""}${i.note ? `<span class="note">«${esc(i.note)}»</span>` : ""}</span>
+            <span>${can && i.src === "booking" && (i.uid === S.me || i.by === S.me || S.admin) ? `<button class="btn small danger" data-cancel="${i.id}">${i.uid === S.me || i.by === S.me ? "Avbestill" : "Fjern"}</button>` : ""}</span></li>`).join("")}</ul>`}
+        ${msg}`;
+      const mk = mkData(sel);
+      if (mk.map.size) {
+        const act = [...mk.map].filter(([, v]) => v.bks.length || v.fx?.state === "on");
+        const freed = [...mk.map].filter(([, v]) => !v.bks.length && v.fx && v.fx.state !== "on").length;
+        const nb = [...mk.map].filter(([, v]) => v.bks.length).length;
+        const chip = ([d, v]) => `<span class="md-chip${v.bks.length ? "" : " fxc"}">${esc(fmtShort(d))} · ${v.bks.length ? v.bks.map(b => span(b.s, b.e)).join(", ") : span(v.fx.s, v.fx.e)}</span>`;
+        html += `<div class="mybox">
+          <div class="mybox-h"><span class="mybox-ic" aria-hidden="true">★</span><div>${mk.h
+            ? `<b>Dette er din faste plass</b><small>${esc(fmtSched(mk.h))}${nb ? ` · pluss ${nb} ${nb === 1 ? "booking" : "bookinger"}` : ""}${freed ? ` · ${freed} ${freed === 1 ? "dag" : "dager"} frigitt` : ""}</small>`
+            : `<b>Du har denne plassen ${nb} ${nb === 1 ? "dag" : "dager"} fremover</b><small>${act.length ? `${esc(fmtShort(act[0][0]))}${act.length > 1 ? ` – ${esc(fmtShort(act[act.length - 1][0]))}` : ""}` : ""}</small>`}</div></div>
+          ${act.length ? `<div class="mybox-chips">${act.slice(0, 4).map(chip).join("")}${act.length > 4 && !mk.h ? `<span class="md-chip more">+${act.length - 4} til</span>` : ""}</div>` : ""}
+          <button type="button" class="btn small" id="openMine">${mk.h ? "Kommer du ikke en dag? Se og endre dagene" : "Se og endre dagene i kalender"}</button>
+        </div>`;
+      }
+      if (can && info.kind !== "closed" && info.kind !== "unknown") {
+        const [ds, de] = STD;
+        html += `${myH ? `<details id="bkWrap"><summary>Book plassen for noen andre eller andre tider</summary>` : ""}<form id="bookForm">
+          ${myH ? "" : `<div class="eyebrow">Book plassen</div>`}
+          ${(info.kind === "booked" || info.kind === "fixed") && info.ints.some(i => i.uid !== S.me) ? `<p class="warnbox">Plassen er opptatt. Booker du likevel, får du spørsmål om å overta den.</p>` : ""}
+          ${rangeFieldHTML("bk", "Når?")}
+          <div class="field" id="bkDaysWrap" hidden>Hvilke ukedager?${togglesHTML("bkD", ALL_DAYS)}</div>
+          <label class="field">For hvem?<select id="bkFor">${memberOptions()}</select></label>
+          <label class="field" id="bkGuestWrap" hidden>Navn på personen<input type="text" id="bkGuest" maxlength="60" placeholder="F.eks. Ola Nordmann"></label>
+          <div class="row2">
+            <label class="field">Fra kl.${timeSel("bkFrom", ds, "Fra kl.")}</label>
+            <label class="field">Til kl.${timeSel("bkTo", de, "Til kl.")}</label>
+          </div>
+          <label class="field">Notat (valgfritt)<input type="text" id="bkNote" maxlength="120" placeholder="F.eks. «Teams 10–11»"></label>
+          <button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Book plass ${d.num}</button>
+        </form>${myH ? "</details>" : ""}`;
+      }
+      if (can && !myH) {
+        html += `<details id="fxNew" class="cta"><summary><span class="cta-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 3l6 6-3 1-4 4 1 4-2 2-4-4-5 5-1-1 5-5-4-4 2-2 4 1 4-4z" fill="currentColor"/></svg></span><span class="cta-t"><b>Gjør til min faste plass</b><small>Reserver plassen fast på ukedagene du velger</small></span></summary>
+          <form id="fxForm"><p class="hint">Velg hvilke dager du sitter her fast, og eventuelt bare fra et klokkeslett til et annet. Plassen er da reservert til deg disse tidene hver uke, og ledig for andre resten av tiden.</p>
+          ${others.length ? `<p class="hint">Plassen deles allerede (se under). Overlapper du med noen, får du spørsmål før noe endres.</p>` : ""}
+          ${schedHTML("fx", null)}<button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Gjør til min faste plass</button></form></details>`;
+      }
+      // faste plasser
+      if (others.length || myH) html += `<div class="fixedbox"><div class="eyebrow">Faste innehavere</div><ul class="holders">${info.holders.map(h => `<li><b>${esc(h.uid === S.me ? "Deg" : fullName(h.uid))}</b> · ${esc(fmtSched(h))}${h.note ? ` – «${esc(h.note)}»` : ""}</li>`).join("")}</ul></div>`;
+      if (can && myH) {
+        html += `<details id="fxEdit"><summary>Endre mine faste dager og tider</summary>
+          <form id="fxForm"><p class="hint">Huk av dagene du sitter her fast, og velg klokkeslett for hver dag. Andre dager og tider er plassen ledig for andre.</p>
+          ${schedHTML("fx", myH)}<button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Lagre</button></form></details>
+          <details id="awDet"><summary>Jeg sitter ikke her en dag (ferie, hjemmekontor)</summary>
+          <form id="awayForm">
+            <p class="hint">Plassen blir ledig for andre i tidsrommet du velger.</p>
+            ${rangeFieldHTML("aw", "Hvilke dager?")}
+            <div class="row2">
+              <label class="field">Fra kl.${timeSel("awS", "07:00", "Fra kl.")}</label>
+              <label class="field">Til kl.${timeSel("awE", "18:00", "Til kl.")}</label>
+            </div>
+            <label class="field">Notat (valgfritt)<input type="text" id="awNote" maxlength="120" placeholder="F.eks. «Ferie»"></label>
+            <button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Frigi plassen</button>
+          </form></details>
+          ${info.aways.filter(a => a.uid === S.me).length ? `<div class="actions">${info.aways.filter(a => a.uid === S.me).map(a => `<button class="btn small ghost" data-undoaway="${a.id}">Angre frigitt ${span(a.s, a.e)}</button>`).join("")}</div>` : ""}
+          <div class="actions"><button class="btn danger small" type="button" id="releaseFixed" data-hid="${esc(myH.id)}">Gi fra meg fast plass</button></div>`;
+      }
+      html += `<div class="actions"><button class="btn small ghost" type="button" id="closeSel">Lukk</button></div>`;
+    }
+    withKeep(panel, html);
+    wirePanel();
+  }
+  function wirePanel() {
+    const q = s => panel.querySelector(s);
+    panel.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => select(b.dataset.pick)));
+    q("#closeSel")?.addEventListener("click", () => select(null));
+    q("#openMine")?.addEventListener("click", () => openMine(S.selected));
+    wireRange(panel, "bk", S.selected); wireRange(panel, "aw", null);
+    const forSel = q("#bkFor");
+    if (forSel) { const upd = () => { q("#bkGuestWrap").hidden = forSel.value !== "guest"; }; forSel.addEventListener("change", upd); upd(); }
+    q("#bookForm")?.addEventListener("submit", e => {
+      e.preventDefault();
+      const start = q("#bkFromD").value || S.date;
+      let until = q("#bkToD").value || start; if (until < start) until = start;
+      const multi = workdaysBetween(start, until).length > 1;
+      const fr = q("#bkFrom").value, to = q("#bkTo").value;
+      if (fr && to && (fr < "07:00" || to > "18:00")) { flash("Du kan booke mellom 07 og 18.", true); return; }
+      const days = multi ? readToggles(panel, "bkD") : ALL_DAYS;
+      if (!days.length) { flash("Velg minst én dag i uka.", true); return; }
+      const f = forSel.value;
+      let target = { uid: S.me, guest: "" };
+      if (f.startsWith("m:")) target = { uid: f.slice(2), guest: "" };
+      else if (f === "guest") { const g = q("#bkGuest").value.trim(); if (!g) { flash("Skriv navnet på personen du booker for.", true); return; } target = { uid: S.me, guest: g }; }
+      book(S.selected, fr, to, start, until, q("#bkNote").value.trim(), days, target);
+    });
+    if (q("#fxForm")) {
+      wireSched(panel, "fx");
+      q("#fxForm").addEventListener("submit", e => { e.preventDefault(); const r = readSched(panel, "fx"); if (r.error) { flash(r.error, true); return; } saveFixed(S.selected, r); });
+    }
+    panel.querySelectorAll("[data-cancel]").forEach(b => b.addEventListener("click", () => cancel(b.dataset.cancel)));
+    panel.querySelectorAll("[data-undoaway]").forEach(b => b.addEventListener("click", () => undoAway(b.dataset.undoaway)));
+    q("#awayForm")?.addEventListener("submit", e => { e.preventDefault(); markAway(S.selected, q("#awFromD").value || S.date, q("#awToD").value || q("#awFromD").value || S.date, q("#awS").value, q("#awE").value, q("#awNote").value.trim()); });
+    q("#releaseFixed")?.addEventListener("click", ev => releaseFixed(ev.currentTarget.dataset.hid));
+  }
+
+  // ---------- mine ----------
+  const mineEl = document.getElementById("mine");
+  let mineSig = "";
+  function renderMine() {
+    const myFixed = [...S.holders.values()].flat().filter(h => h.uid === S.me);
+    const sig = JSON.stringify([S.me, S.myBookings, S.myAway, myFixed, S.dbOk, S.notices, S.inits[S.me], S.names[S.me], S.busy]);
+    if (sig === mineSig) return; mineSig = sig;
+    if (!S.me || !S.dbOk) { mineEl.hidden = true; return; }
+    mineEl.hidden = false;
+    const bk = [...S.myBookings].sort((a, b) => a.date.localeCompare(b.date) || a.s - b.s);
+    const aw = [...S.myAway].sort((a, b) => a.date.localeCompare(b.date) || a.s - b.s);
+    const next = bk[0];
+    const myIni = S.inits[S.me] || iniFrom(S.names[S.me]);
+    const html = `<h3>Mine plasser</h3>
+      ${S.notices.map(n => `<div class="notice"><span>${esc(n.text)}</span><button class="btn small ghost" data-dismiss="${esc(n.id)}">OK</button></div>`).join("")}
+      ${myFixed.length ? myFixed.map(h => `<div class="fixedbox mine"><span>Fast plass: <b>Plass ${DESK[h.desk]?.num}</b> · ${esc(DESK[h.desk]?.room || "")}<br>${esc(fmtSched(h))}</span><div class="actions"><button class="btn small" data-mydesk="${h.desk}">Kommer ikke en dag?</button><button class="btn small ghost" data-pick="${h.desk}">Vis / endre</button></div></div>`).join("") : `<p class="muted">Du har ingen fast plass.</p>`}
+      <p class="muted" style="margin:0">${next ? `Neste booking: <b>${esc(fmtShort(next.date))}</b> · plass ${DESK[next.desk]?.num} · ${span(next.s, next.e)}${next.guest ? ` (for ${esc(next.guest)})` : ""}` : "Ingen bookinger fremover."}</p>
+      ${bk.length ? `<details class="mybk" id="myBk"><summary>Mine bookinger (${bk.length})</summary>
+        <ul class="list">${bk.slice(0, 120).map(b => `<li><span class="lt"><b>${esc(fmtShort(b.date))}</b> · Plass ${DESK[b.desk]?.num} · ${span(b.s, b.e)}${b.guest ? `<span class="note">for ${esc(b.guest)}</span>` : ""}${b.by && b.by !== S.me ? `<span class="note">booket av ${esc(nameOf(b.by))}</span>` : ""}${b.note ? `<span class="note">«${esc(b.note)}»</span>` : ""}</span><button class="btn small danger" data-cancel="${b.id}">Avbestill</button></li>`).join("")}</ul>
+        <div class="actions">${[...new Set(bk.map(b => b.desk))].map(dk => `<button class="btn small ghost" data-mydesk="${dk}">Endre plass ${DESK[dk]?.num} i kalender</button>`).join("")}<button class="btn small ghost" id="icsBtn">Legg i kalender (Outlook/Google)</button></div></details>` : ""}
+      ${aw.length ? `<details class="mybk" id="myAw"><summary>Dager jeg har frigitt fast plass (${aw.length})</summary>
+      <ul class="list">${aw.map(a => `<li><span class="lt"><b>${esc(fmtShort(a.date))}</b> · Plass ${DESK[a.desk]?.num} · ${span(a.s, a.e)}${a.by && a.by !== S.me ? `<span class="note">overtatt av ${esc(nameOf(a.by))}</span>` : ""}${a.note ? `<span class="note">«${esc(a.note)}»</span>` : ""}</span><button class="btn small ghost" data-undoaway="${a.id}">Angre</button></li>`).join("")}</ul></details>` : ""}
+      <div class="field">Initialene dine på kartet
+        <form class="inirow" id="iniForm"><input id="iniIn" maxlength="3" value="${esc(myIni)}" aria-label="Initialer" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form></div>`;
+    withKeep(mineEl, html);
+    mineEl.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => { location.hash = "plan"; select(b.dataset.pick); }));
+    mineEl.querySelectorAll("[data-cancel]").forEach(b => b.addEventListener("click", () => cancel(b.dataset.cancel)));
+    mineEl.querySelectorAll("[data-undoaway]").forEach(b => b.addEventListener("click", () => undoAway(b.dataset.undoaway)));
+    mineEl.querySelectorAll("[data-dismiss]").forEach(b => b.addEventListener("click", () => db.collection("notices").doc(b.dataset.dismiss).delete().catch(() => {})));
+    mineEl.querySelector("#icsBtn")?.addEventListener("click", downloadIcs);
+    mineEl.querySelectorAll("[data-mydesk]").forEach(b => b.addEventListener("click", () => openMine(b.dataset.mydesk)));
+    mineEl.querySelector("#iniForm").addEventListener("submit", e => { e.preventDefault(); saveInitials(mineEl.querySelector("#iniIn").value); });
+  }
+  function downloadIcs() {
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+    const dt = (d, m) => d.replace(/-/g, "") + "T" + toHHMM(m).replace(":", "") + "00";
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Maseskjaeret//Kontorplasser//NO", "CALSCALE:GREGORIAN"];
+    for (const b of S.myBookings) lines.push("BEGIN:VEVENT", `UID:${b.id}@maseskjaeret`, `DTSTAMP:${stamp}`, `DTSTART:${dt(b.date, b.s)}`, `DTEND:${dt(b.date, b.e)}`,
+      `SUMMARY:Kontorplass ${DESK[b.desk]?.num} – Måseskjæret${b.guest ? " (" + b.guest.replace(/[,;\\]/g, " ") + ")" : ""}`, `LOCATION:Måseskjæret\\, ${DESK[b.desk]?.room || ""}`, "END:VEVENT");
+    lines.push("END:VCALENDAR");
+    const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "mine-kontorplasser.ics"; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // ---------- admin ----------
+  const adminEl = document.getElementById("admin");
+  let adminSig = "";
+  const ALPHA = "abcdefghjkmnpqrstuvwxyz23456789";
+  const rand = n => [...crypto.getRandomValues(new Uint8Array(n))].map(x => ALPHA[x % ALPHA.length]).join("");
+  const slug = s => (String(s).toLowerCase().replace(/æ/g, "ae").replace(/ø/g, "o").replace(/å/g, "a")
+    .normalize("NFD").replace(/[̀-ͯ]/g, "").split(/\s+/)[0].replace(/[^a-z0-9]/g, "").slice(0, 12)) || "bruker";
+  const normCode = c => String(c || "").trim().toLowerCase().replace(/\s+/g, "");
+  const CODE_RE = /^[a-z0-9-]{4,40}$/;
+  async function copy(text) { try { await navigator.clipboard.writeText(text); flash(`Kopiert: ${text}`); } catch (e) { prompt("Kopier koden:", text); } }
+  function renderAdmin() {
+    const sig = JSON.stringify([S.admin, S.codes, S.code, S.figure?.at, S.figure?.name, S.figure2?.at, S.figure2?.name]);
+    if (sig === adminSig) return; adminSig = sig;
+    adminEl.hidden = !S.admin;
+    if (!S.admin) return;
+    const html = `<h3>Tilgang (admin)</h3>
+      <p class="muted">Lag en bruker til hver person. Koden er det eneste de trenger for å logge inn.</p>
+      <form class="admform" id="addForm">
+        <input type="text" id="addName" placeholder="Navn, f.eks. Kari Nordmann" maxlength="60" required aria-label="Navn">
+        <div class="codefield"><input type="text" id="addCode" placeholder="Kode/passord (tomt = tilfeldig)" maxlength="40" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Kode"><button class="btn small ghost" type="button" id="genCode">Generer</button></div>
+        <p class="hint">Små bokstaver, tall og bindestrek, minst 4 tegn (ikke æ, ø, å).</p>
+        <button class="btn" type="submit">Lag bruker</button>
+      </form>
+      ${S.codes.length ? `<ul class="list admlist">${S.codes.map(c => `<li><span class="lt">${esc(c.name || "Uten navn")}${c.admin ? `<span class="badge">admin</span>` : ""}<span class="note" style="font-family:var(--f-mono);font-style:normal">${esc(c.code)}</span></span>
+        <span class="actions"><button class="btn small ghost" data-copy="${esc(c.code)}">Kopier</button>${c.code === S.code ? "" : `<button class="btn small ghost" data-adm="${esc(c.code)}">${c.admin ? "Fjern admin" : "Gjør til admin"}</button><button class="btn small ghost" data-renew="${esc(c.code)}">Ny kode</button><button class="btn small danger" data-revoke="${esc(c.code)}">Slett</button>`}</span></li>`).join("")}</ul>` : `<p class="muted">Ingen brukere ennå.</p>`}
+      <details id="figDet"><summary>Figurer på kartet</summary>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <p class="hint">Bruk helst et bilde med gjennomsiktig bakgrunn (PNG), så følger figuren omrisset av personen. Et vanlig bilde vises som et rektangel. Bildene lagres bak innloggingen, ikke i den offentlige koden.</p>
+          ${[["1", S.figure, "Figur 1 – står ute og går til pult 10 når noen trykker på den", "Nils"], ["2", S.figure2, "Figur 2 – dukker opp ved pult 10–11 når figur 1 kommer inn", ""]].map(([n, f, label, def]) => `
+          <div class="figbox"><b>${label}</b>
+            ${f?.img ? `<div class="figprev"><img src="${esc(f.img)}" alt=""><span>${esc(f.name || "")}</span></div>` : `<span class="hint">Ingen figur lastet opp.</span>`}
+            <label class="field">Navn under figuren<input type="text" id="fig${n}Name" maxlength="30" value="${esc(f?.name ?? def)}"></label>
+            <label class="field">Velg bilde (lagres med en gang)<input type="file" id="fig${n}File" accept="image/*"></label>
+            <div class="actions"><button class="btn small" type="button" data-figsave="${n}">Lagre navn</button>${f?.img ? `<button class="btn small danger" type="button" data-figdel="${n}">Fjern</button>` : ""}</div>
+          </div>`).join("")}
+        </div></details>`;
+    withKeep(adminEl, html);
+    const q = s => adminEl.querySelector(s);
+    q("#genCode").addEventListener("click", () => { const n = q("#addName").value.trim(); q("#addCode").value = (n ? slug(n) + "-" : "") + rand(6); });
+    q("#addForm").addEventListener("submit", ev => {
+      ev.preventDefault();
+      const name = q("#addName").value.trim(); if (!name) return;
+      let code = normCode(q("#addCode").value) || slug(name) + "-" + rand(6);
+      if (!CODE_RE.test(code)) { flash("Koden kan bare ha små bokstaver, tall og bindestrek, og må være 4–40 tegn.", true); return; }
+      const member = "m" + rand(12);
+      guard(async () => {
+        const ex = await db.collection("codes").doc(code).get();
+        if (ex.exists) { flash("Den koden er allerede i bruk. Velg en annen.", true); return; }
+        await db.collection("members").doc(member).set({ name, at: Date.now() });
+        await db.collection("codes").doc(code).set({ name, member, admin: false, at: Date.now() });
+        q("#addName").value = ""; q("#addCode").value = "";
+        flash(`Bruker laget for ${name}. Kode: ${code} – send den sammen med lenken.`);
+      });
+    });
+    adminEl.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy)));
+    adminEl.querySelectorAll("[data-adm]").forEach(b => b.addEventListener("click", () => {
+      const c = S.codes.find(x => x.code === b.dataset.adm); if (!c) return;
+      if (!confirm(c.admin ? `Fjerne admin-rettighetene til ${c.name}?` : `Gi ${c.name} admin-rettigheter? De kan da lage, endre og slette brukere.`)) return;
+      guard(async () => { await db.collection("codes").doc(c.code).set({ name: c.name, member: c.member, admin: !c.admin, at: Date.now() }); flash(c.admin ? `${c.name} er ikke lenger admin.` : `${c.name} er nå admin.`); });
+    }));
+    adminEl.querySelectorAll("[data-renew]").forEach(b => b.addEventListener("click", () => {
+      const old = S.codes.find(c => c.code === b.dataset.renew); if (!old) return;
+      const custom = prompt(`Ny kode for ${old.name}. Skriv en kode, eller la feltet stå tomt for en tilfeldig:`, "");
+      if (custom === null) return;
+      const code = normCode(custom) || slug(old.name) + "-" + rand(6);
+      if (!CODE_RE.test(code)) { flash("Koden kan bare ha små bokstaver, tall og bindestrek, og må være 4–40 tegn.", true); return; }
+      guard(async () => {
+        const ex = await db.collection("codes").doc(code).get(); if (ex.exists) { flash("Den koden er allerede i bruk.", true); return; }
+        await db.collection("codes").doc(code).set({ name: old.name, member: old.member, admin: old.admin === true, at: Date.now() });
+        await db.collection("codes").doc(old.code).delete();
+        flash(`Ny kode for ${old.name}: ${code}`);
+      });
+    }));
+    adminEl.querySelectorAll("[data-revoke]").forEach(b => b.addEventListener("click", () => {
+      const c = S.codes.find(x => x.code === b.dataset.revoke); if (!c) return;
+      if (!confirm(`Slette brukeren til ${c.name}? De mister tilgangen med en gang. Bookingene deres blir liggende.`)) return;
+      guard(async () => { await db.collection("codes").doc(c.code).delete(); flash(`${c.name} har ikke lenger tilgang.`); });
+    }));
+    const figDoc = n => n === "2" ? "figure2" : "figure";
+    const figCur = n => n === "2" ? S.figure2 : S.figure;
+    const saveFig = (n, file) => {
+      const name = q(`#fig${n}Name`).value.trim().slice(0, 30);
+      guard(async () => {
+        let img = figCur(n)?.img || "";
+        if (file) img = await toThumb(file);
+        if (!img) { flash("Velg et bilde først.", true); return; }
+        await db.collection("assets").doc(figDoc(n)).set({ img, name, at: Date.now() });
+        flash(file ? `Figur ${n} er lagret og står nå på kartet.` : "Navnet er lagret.");
+      });
+    };
+    ["1", "2"].forEach(n => q(`#fig${n}File`).addEventListener("change", e => { const f = e.target.files?.[0]; if (f) saveFig(n, f); }));
+    adminEl.querySelectorAll("[data-figsave]").forEach(b => b.addEventListener("click", () => saveFig(b.dataset.figsave, null)));
+    adminEl.querySelectorAll("[data-figdel]").forEach(b => b.addEventListener("click", () => { const n = b.dataset.figdel; if (confirm(`Fjerne figur ${n} fra kartet?`)) guard(async () => { await db.collection("assets").doc(figDoc(n)).delete(); flash(`Figur ${n} er fjernet.`); }); }));
+  }
+  // Fjerner ensfarget bakgrunn (f.eks. hvit) ved å fylle innover fra kantene, så figuren følger omrisset
+  function cutBackground(cx, w, h) {
+    const img = cx.getImageData(0, 0, w, h), d = img.data;
+    const border = []; for (let x = 0; x < w; x++) border.push(x, (h - 1) * w + x); for (let y = 0; y < h; y++) border.push(y * w, y * w + w - 1);
+    const ch = i => [d[i * 4], d[i * 4 + 1], d[i * 4 + 2]];
+    const med = [0, 1, 2].map(k => { const v = border.map(i => d[i * 4 + k]).sort((a, b) => a - b); return v[v.length >> 1]; });
+    const dist = i => { const c = ch(i); return Math.hypot(c[0] - med[0], c[1] - med[1], c[2] - med[2]); };
+    const TOL = 42;
+    if (border.filter(i => dist(i) <= TOL).length < border.length * 0.6) return; // ikke ensfarget bakgrunn – la bildet være
+    const seen = new Uint8Array(w * h), st = border.filter(i => dist(i) <= TOL);
+    while (st.length) {
+      const i = st.pop(); if (seen[i]) continue; seen[i] = 1;
+      if (dist(i) > TOL) continue;
+      d[i * 4 + 3] = 0;
+      const x = i % w, y = (i / w) | 0;
+      if (x > 0) st.push(i - 1); if (x < w - 1) st.push(i + 1); if (y > 0) st.push(i - w); if (y < h - 1) st.push(i + w);
+    }
+    // myk kant: halvgjennomsiktige piksler inntil bakgrunnen
+    for (let i = 0; i < w * h; i++) if (d[i * 4 + 3] && dist(i) <= TOL * 1.6) { const x = i % w, y = (i / w) | 0;
+      if ((x > 0 && !d[(i - 1) * 4 + 3]) || (x < w - 1 && !d[(i + 1) * 4 + 3]) || (y > 0 && !d[(i - w) * 4 + 3]) || (y < h - 1 && !d[(i + w) * 4 + 3])) d[i * 4 + 3] = 120; }
+    cx.putImageData(img, 0, 0);
+  }
+  function trimCanvas(c) {
+    const cx = c.getContext("2d"), { width: w, height: h } = c, d = cx.getImageData(0, 0, w, h).data;
+    let x0 = w, y0 = h, x1 = -1, y1 = -1;
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    if (x1 < 0 || (x0 === 0 && y0 === 0 && x1 === w - 1 && y1 === h - 1)) return c;
+    const o = document.createElement("canvas"); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1;
+    o.getContext("2d").drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height); return o;
+  }
+  async function toThumb(file) { // beholder gjennomsiktighet, klipper bort tom kant, skalerer ned
+    const url = URL.createObjectURL(file);
+    try {
+      const im = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+      const W = im.naturalWidth, H = im.naturalHeight;
+      const c0 = document.createElement("canvas"); c0.width = W; c0.height = H;
+      const x0 = c0.getContext("2d"); x0.drawImage(im, 0, 0);
+      let minX = W, minY = H, maxX = -1, maxY = -1;
+      const data = x0.getImageData(0, 0, W, H).data;
+      for (let y = 0; y < H; y += 2) for (let x = 0; x < W; x += 2) if (data[(y * W + x) * 4 + 3] > 8) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
+      if (maxX < 0) { minX = 0; minY = 0; maxX = W - 1; maxY = H - 1; }
+      const cw = maxX - minX + 1, ch = maxY - minY + 1;
+      let side = 280, out = "";
+      let hadAlpha = false; for (let i = 3; i < data.length; i += 16) if (data[i] < 245) { hadAlpha = true; break; }
+      do {
+        const k = Math.min(1, side / Math.max(cw, ch));
+        const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(cw * k)); c.height = Math.max(1, Math.round(ch * k));
+        const cx = c.getContext("2d"); cx.drawImage(c0, minX, minY, cw, ch, 0, 0, c.width, c.height);
+        if (!hadAlpha) cutBackground(cx, c.width, c.height);
+        out = trimCanvas(c).toDataURL("image/png"); side = Math.round(side * 0.8);
+      } while (out.length > 380000 && side > 60);
+      return out;
+    } finally { URL.revokeObjectURL(url); }
+  }
+
+  // ---------- render og navigasjon ----------
+  function render() {
+    const inside = S.auth === "in";
+    renderGate();
+    document.querySelector(".tabs").hidden = !inside;
+    document.getElementById("viewPlan").hidden = !inside || S.view !== "plan";
+    document.getElementById("viewCal").hidden = !inside || S.view !== "cal";
+    document.getElementById("todaybar").innerHTML = `I dag: <b>${esc(fmtLong(TODAY))}</b> · uke ${isoWeek(TODAY)}`;
+    if (!inside) return;
+    renderAdmin();
+    if (S.view === "plan") { renderDays(); renderPlan(); renderPanel(); renderMine(); }
+    else renderCal();
+  }
+  function ensureRange() {
+    if (!db || S.auth !== "in") return;
+    const m = S.view === "cal" ? S.calMonth : monthOf(S.date);
+    let from = monday(m + "-01"), to = addDays(monday(monthEnd(m)), 6);
+    if (S.view === "plan") { const mon = monday(S.date); if (mon < from) from = mon; const sun = addDays(mon, 6); if (sun > to) to = sun; }
+    const key = from + "|" + to;
+    if (key === rangeKey) return;
+    rangeKey = key;
+    rangeUnsubs.forEach(u => u());
+    S.loaded.bookings = S.loaded.away = false;
+    rangeUnsubs = [["bookings", "bIdx"], ["away", "aIdx"]].map(([col, prop]) =>
+      db.collection(col).where("date", ">=", from).where("date", "<=", to).onSnapshot(snap => {
+        S[prop] = index(snap); S.loaded[col] = true; if (!snap.metadata.fromCache) markFresh(); render();
+      }, onErr));
+  }
+  function route() {
+    S.view = location.hash === "#kalender" ? "cal" : "plan";
+    if (S.view === "cal" && !S._calSet) { S.calMonth = monthOf(S.date); S._calSet = true; }
+    ensureRange(); render();
+  }
+  function select(id) { S.selected = id; S.msg = null; render(); if (id && window.matchMedia("(max-width: 980px)").matches) panel.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  function setDate(date) { S.date = weekday(date); S.calMonth = monthOf(S.date); S.msg = null; ensureRange(); render(); }
+  function flash(text, err) { S.msg = { text, err: !!err }; render(); if (window.matchMedia("(max-width: 980px)").matches) panel.querySelector(".msg")?.scrollIntoView({ behavior: "smooth", block: "center" }); }
+
+  // ---------- dataoperasjoner ----------
+  async function guard(fn) {
+    if (S.busy) return; S.busy = true; S.msg = null; render();
+    try { await fn(); }
+    catch (e) {
+      console.error(e);
+      if (e?.code === "permission-denied") flash("Du har ikke tilgang til å gjøre dette. Kontakt den som administrerer siden.", true);
+      else if (e?.code === "resource-exhausted") flash("Dagens gratiskvote i Firebase er brukt opp. Prøv igjen i morgen.", true);
+      else flash("Noe gikk galt under lagringen. Prøv igjen om litt.", true);
+    } finally { S.busy = false; render(); }
+  }
+  const ovl = (s, e, a, b) => s < b && e > a;
+  async function deskData(desk) {
+    const [bq, aq] = await Promise.all([
+      db.collection("bookings").where("desk", "==", desk).get(),
+      db.collection("away").where("desk", "==", desk).get(),
+    ]);
+    return { bks: bq.docs.map(x => norm(x.id, x.data())), aws: aq.docs.map(x => norm(x.id, x.data())), hs: holdersOf(desk) };
+  }
+  const sendNotice = (to, text) => to && to !== S.me ? db.collection("notices").add({ to, from: S.me, text: text.replace(/\.\.$/, ".").slice(0, 280), at: Date.now() }) : Promise.resolve();
+  const listDates = ds => ds.length > 6 ? `${ds.slice(0, 5).map(fmtShort).join(", ")} og ${ds.length - 5} dager til` : ds.map(fmtShort).join(", ");
+  function book(desk, from, to, d1, d2, note, days, target) {
+    const s = toMin(from), e = toMin(to);
+    if (!from || !to || e <= s) { flash("Til-klokkeslettet må være etter fra-klokkeslettet.", true); return; }
+    guard(async () => {
+      const dates = workdaysBetween(d1, d2).filter(d => days.includes(dow(d)));
+      if (!dates.length) { flash("Ingen arbeidsdager i det valgte tidsrommet.", true); return; }
+      const { bks, aws, hs } = await deskData(desk);
+      const sameAsTarget = b => b.uid === target.uid && (b.guest || "") === (target.guest || "");
+      const plan = dates.map(date => {
+        const dayB = bks.filter(b => b.date === date);
+        const cB = dayB.filter(b => !sameAsTarget(b) && ovl(s, e, b.s, b.e));
+        const own = dayB.filter(b => sameAsTarget(b) && ovl(s, e, b.s, b.e));
+        const dayA = aws.filter(a => a.date === date);
+        const cF = [];
+        for (const h of hs) { if (h.uid === target.uid && !target.guest) continue;
+          for (const [fs, fe] of fixedParts(h, date, dayB, dayA)) if (ovl(s, e, fs, fe)) cF.push({ h, s: Math.max(s, fs), e: Math.min(e, fe) }); }
+        return { date, cB, cF, dup: own.length > 0 };
+      }).filter(p => !p.dup);
+      if (!plan.length) { flash("Dette er allerede booket.", true); return; }
+      const conflicts = plan.filter(p => p.cB.length || p.cF.length);
+      let take = plan;
+      if (conflicts.length) {
+        const byPerson = new Map();
+        const addG = (key, name, kind, ini, txt) => { if (!byPerson.has(key)) byPerson.set(key, { name, kind, ini, items: [] }); byPerson.get(key).items.push(txt); };
+        for (const p of conflicts) {
+          const dl = fmtShort(p.date);
+          for (const b of p.cB) {
+            if (b.guest) addG("g:" + b.guest, b.guest, "guest", iniFrom(b.guest), `${dl} · ${span(b.s, b.e)}`);
+            else addG("b:" + b.uid, b.uid === S.me ? "Deg selv" : fullName(b.uid), b.uid === S.me ? "mine" : "booking", S.inits[b.uid] || iniFrom(fullName(b.uid)), `${dl} · ${span(b.s, b.e)}`);
+          }
+          for (const c of p.cF) addG("f:" + c.h.uid, c.h.uid === S.me ? "Deg selv" : fullName(c.h.uid), c.h.uid === S.me ? "mine" : "fixed", S.inits[c.h.uid] || iniFrom(fullName(c.h.uid)), `${dl} · ${span(c.s, c.e)}`);
+        }
+        const freeDays = plan.filter(p => !p.cB.length && !p.cF.length);
+        const ppl = byPerson.size;
+        const choice = await askChoice({
+          tone: "danger", icon: "⚠",
+          title: `Plass ${DESK[desk].num} er allerede tatt`,
+          lead: `Du prøver å booke <b>${span(s, e)}</b>${target.uid !== S.me || target.guest ? ` for <b>${esc(target.guest || fullName(target.uid))}</b>` : ""} på ${plan.length} ${plan.length === 1 ? "dag" : "dager"}. ${plan.length === 1 ? "Den" : conflicts.length === plan.length ? "Alle dagene" : `${conflicts.length} av dagene`} overlapper med ${ppl === 1 ? "denne" : "disse"}:`,
+          groups: [...byPerson.values()],
+          note: `Velger du <b>Overta plassen</b>, mister ${ppl === 1 ? "personen" : "personene"} over plassen i tidsrommet som er vist. De får beskjed neste gang de logger inn.`,
+          actions: [
+            { key: "take", label: "Overta plassen", cls: "danger-solid" },
+            freeDays.length ? { key: "free", label: `Book bare ledige dager (${freeDays.length})`, cls: "ghost" } : null,
+            { key: "cancel", label: "Avbryt", cls: "ghost" },
+          ],
+        });
+        if (choice === "cancel") { flash("Ingenting ble booket."); return; }
+        if (choice === "free") take = freeDays;
+      }
+      const me = fullName(S.me);
+      const victims = new Map(); // uid -> datoer
+      let made = 0;
+      for (const p of take) {
+        for (const b of p.cB) {
+          await db.collection("bookings").doc(b.id).delete();
+          if (b.uid !== S.me) { if (!victims.has(b.uid)) victims.set(b.uid, []); victims.get(b.uid).push(p.date); }
+          if (b.by && b.by !== b.uid && b.by !== S.me) { if (!victims.has(b.by)) victims.set(b.by, []); victims.get(b.by).push(p.date); }
+        }
+        for (const c of p.cF) {
+          await db.collection("away").add({ desk, date: p.date, start: toHHMM(c.s), end: toHHMM(c.e), uid: c.h.uid, by: S.me, note: `Overtatt av ${me}`.slice(0, 120), at: Date.now() });
+          if (!victims.has(c.h.uid)) victims.set(c.h.uid, []); victims.get(c.h.uid).push(p.date);
+        }
+        const doc = { desk, date: p.date, start: toHHMM(s), end: toHHMM(e), uid: target.uid, by: S.me, note, at: Date.now() };
+        if (target.guest) doc.guest = target.guest.slice(0, 60);
+        await db.collection("bookings").add(doc);
+        made++;
+        if (take.length > 10 && made % 10 === 0) flash(`Booker … ${made} av ${take.length}`);
+      }
+      for (const [uid, ds] of victims) await sendNotice(uid, `${me} har overtatt plass ${DESK[desk].num} (${span(s, e)}) ${listDates([...new Set(ds)].sort())}.`);
+      if (target.uid !== S.me && !target.guest) await sendNotice(target.uid, `${me} har booket plass ${DESK[desk].num} til deg ${span(s, e)} ${listDates(take.map(p => p.date))}.`);
+      const forTxt = target.guest ? ` for ${target.guest}` : target.uid !== S.me ? ` for ${fullName(target.uid)}` : "";
+      flash(`Booket plass ${DESK[desk].num}${forTxt} ${span(s, e)}${made > 1 ? ` på ${made} dager` : ""}${days.length < 5 && made > 1 ? ` (${fmtDays(days)})` : ""}.${victims.size ? " De som mistet plassen, har fått beskjed." : ""}`);
+    });
+  }
+  function cancel(id) {
+    guard(async () => {
+      const ref = db.collection("bookings").doc(id); const cur = await ref.get();
+      if (!cur.exists) return;
+      const b = cur.data();
+      if (b.uid === S.me || b.by === S.me || S.admin) { await ref.delete(); flash("Bookingen er avbestilt."); }
+    });
+  }
+  function markAway(desk, d1, d2, from, to, note) {
+    const s = toMin(from), e = toMin(to);
+    if (!from || !to || e <= s) { flash("Til-klokkeslettet må være etter fra-klokkeslettet.", true); return; }
+    guard(async () => {
+      const days = workdaysBetween(d1, d2);
+      for (const date of days) await db.collection("away").add({ desk, date, start: toHHMM(s), end: toHHMM(e), uid: S.me, by: S.me, note, at: Date.now() });
+      flash(days.length ? `Plass ${DESK[desk].num} er ledig for andre ${span(s, e)} ${days.length === 1 ? fmtShort(days[0]) : `på ${days.length} dager (${fmtShort(days[0])} – ${fmtShort(days[days.length - 1])})`}.` : "Ingen arbeidsdager i det valgte tidsrommet.", !days.length);
+    });
+  }
+  function undoAway(id) {
+    guard(async () => {
+      const ref = db.collection("away").doc(id); const cur = await ref.get();
+      if (!cur.exists) return;
+      const a = norm(id, cur.data());
+      const { bks } = await deskData(a.desk);
+      const clash = bks.filter(b => b.date === a.date && b.uid !== S.me && b.s < a.e && b.e > a.s);
+      await ref.delete();
+      flash(clash.length ? `Plassen er din igjen, men ${clash.map(b => who(b)).join(", ")} har allerede booket den ${clash.map(b => span(b.s, b.e)).join(", ")}. Den bookingen gjelder fortsatt.` : `Du sitter på plassen igjen ${fmtShort(a.date)}.`, !!clash.length);
+    });
+  }
+  function saveFixed(desk, sched) {
+    guard(async () => {
+      const mine = { days: sched.days, hours: sched.hours };
+      const all = [...S.holders.values()].flat();
+      // Andre på samme pult som overlapper → de mister de dagene
+      const changes = []; // {h, removeDays}
+      for (const h of all) {
+        if (h.desk !== desk && h.uid !== S.me) continue;
+        if (h.desk === desk && h.uid === S.me) continue;
+        const rm = sched.days.filter(w => { const a = hSpan(h, w), b = hSpan(mine, w); return a && b && ovl(a[0], a[1], b[0], b[1]); });
+        if (rm.length) changes.push({ h, rm });
+      }
+      const others = changes.filter(c => c.h.uid !== S.me);
+      const myOther = changes.filter(c => c.h.uid === S.me);
+      if (others.length || myOther.length) {
+        const groups = [
+          ...others.map(c => ({ name: fullName(c.h.uid), kind: "fixed", ini: S.inits[c.h.uid] || iniFrom(fullName(c.h.uid)), items: c.rm.map(w => `${WD_CAP[w]} ${span(...hSpan(c.h, w))}`) })),
+          ...myOther.map(c => ({ name: `Din plass ${DESK[c.h.desk]?.num}`, kind: "mine", ini: String(DESK[c.h.desk]?.num || ""), items: c.rm.map(w => `${WD_CAP[w]} ${span(...hSpan(c.h, w))}`) })),
+        ];
+        const ch = await askChoice({
+          tone: "warn", icon: "⚠", title: "Dette overlapper med andre faste plasser",
+          lead: `Du vil ha plass ${DESK[desk].num} fast: <b>${esc(fmtSched(mine))}</b>.`,
+          groups, note: "Fortsetter du, mister de over sine faste dager som overlapper. De får beskjed neste gang de logger inn.",
+          actions: [{ key: "ok", label: "Ja, ta plassen", cls: "danger-solid" }, { key: "cancel", label: "Avbryt", cls: "ghost" }],
+        });
+        if (ch !== "ok") { flash("Ingenting ble endret."); return; }
+      }
+      for (const { h, rm } of changes) {
+        const left = hDays(h).filter(w => !rm.includes(w));
+        const ref = db.collection("fixed").doc(h.id);
+        if (!left.length) await ref.delete();
+        else {
+          const hours = {}; for (const w of left) { const sp = hSpan(h, w); hours[String(w)] = [toHHMM(sp[0]), toHHMM(sp[1])]; }
+          await ref.set({ desk: h.desk, uid: h.uid, note: h.note || "", at: Date.now(), days: left, hours });
+        }
+        if (h.uid !== S.me) await sendNotice(h.uid, `${fullName(S.me)} har tatt over plass ${DESK[h.desk]?.num} som fast plass på ${joinOg(rm.map(w => WD_LONG[w]))}.${left.length ? ` Du har den fortsatt på ${joinOg(left.map(w => WD_LONG[w]))}.` : " Du har ikke lenger fast plass der."}`);
+      }
+      const myId = `${desk}__${S.me}`;
+      const legacy = holdersOf(desk).find(h => h.uid === S.me && h.id !== myId);
+      await db.collection("fixed").doc(myId).set({ desk, uid: S.me, note: legacy?.note || "", at: Date.now(), days: mine.days, hours: mine.hours });
+      if (legacy) await db.collection("fixed").doc(legacy.id).delete();
+      flash(`Plass ${DESK[desk].num} er din faste plass: ${fmtSched(mine)}.`);
+    });
+  }
+  function releaseFixed(hid) {
+    if (!confirm("Gi fra deg den faste plassen?")) return;
+    guard(async () => { await db.collection("fixed").doc(hid).delete(); flash("Du har ikke lenger denne faste plassen."); });
+  }
+  function saveInitials(v) {
+    const ini = String(v || "").trim().toUpperCase().replace(/[^A-ZÆØÅ0-9]/g, "").slice(0, 3);
+    if (!ini) { flash("Skriv 1–3 bokstaver.", true); return; }
+    guard(async () => { await db.collection("members").doc(S.me).update({ initials: ini }); flash(`Initialene dine er nå ${ini}.`); });
+  }
+
+  // ---------- banner og abonnementer ----------
+  const banner = document.getElementById("banner");
+  let fresh = false, slowTimer = null;
+  function setBanner(text, warn) { banner.hidden = !text; banner.textContent = text || ""; banner.classList.toggle("warn", !!warn); }
+  function markFresh() { if (fresh) return; if (S.loaded.fixed && S.loaded.bookings && S.loaded.away) { fresh = true; clearTimeout(slowTimer); setBanner(""); } }
+  function onErr(e) { clearTimeout(slowTimer); setBanner(e?.code === "permission-denied" ? "Du har ikke (lenger) tilgang. Last inn siden på nytt." : "Kunne ikke hente bookinger. Last inn siden på nytt.", true); }
+
+  // ---------- innlogging med personlig kode ----------
+  const gate = document.getElementById("gate");
+  function renderGate() {
+    const st = S.auth;
+    gate.hidden = st === "in";
+    if (st === "in") return;
+    const err = gateMsg ? `<div class="msg err" role="status">${esc(gateMsg)}</div>` : "";
+    if (st === "config") { gate.innerHTML = `<h2>Firebase er ikke satt opp</h2><p>Lim inn firebaseConfig øverst i index.html (se README).</p>`; return; }
+    if (st === "loading") { gate.innerHTML = `<p>Logger inn…</p>`; return; }
+    if (gate.querySelector("#codeForm")) { const m = gate.querySelector(".msg"); if (m) m.remove(); if (err) gate.querySelector("#codeForm").insertAdjacentHTML("beforebegin", err); return; }
+    gate.innerHTML = `<h2>Logg inn</h2>
+      <p>Skriv inn den personlige koden du har fått.</p>
+      ${err}
+      <form id="codeForm" style="width:100%"><div class="addrow">
+        <input id="codeIn" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Din kode" aria-label="Kode" required>
+        <button class="btn" type="submit">Logg inn</button></div></form>`;
+    gate.querySelector("#codeForm").addEventListener("submit", ev => { ev.preventDefault(); loginCode(gate.querySelector("#codeIn").value); });
+    gate.querySelector("#codeIn").focus();
+  }
+  async function loginCode(raw) {
+    const code = normCode(raw);
+    if (!code) return;
+    if (!CODE_RE.test(code)) { gateMsg = "Ukjent kode. Sjekk at du har skrevet den riktig."; render(); return; }
+    gateMsg = ""; loggingIn = true; stopAll(); S.auth = "loading"; gate.innerHTML = ""; render();
+    try {
+      if (!auth.currentUser) await auth.signInAnonymously();
+      await db.collection("sessions").doc(auth.currentUser.uid).set({ code, at: Date.now() });
+      loggingIn = false;
+      await enter(auth.currentUser);
+    } catch (e) {
+      loggingIn = false;
+      gateMsg = e?.code === "permission-denied" ? "Ukjent kode. Sjekk at du har skrevet den riktig."
+        : e?.code === "auth/operation-not-allowed" || e?.code === "auth/admin-restricted-operation" ? "Anonym innlogging er ikke slått på i Firebase (Authentication → Sign-in method → Anonymous)."
+        : "Innloggingen mislyktes: " + (e?.message || e);
+      S.auth = "out"; render();
+    }
+  }
+  async function logout() {
+    try { if (auth.currentUser) await db.collection("sessions").doc(auth.currentUser.uid).delete(); } catch (e) {}
+    gateMsg = ""; stopAll(); S.auth = "out"; gate.innerHTML = ""; render();
+  }
+  function stopAll() {
+    subs.forEach(u => u()); subs = [];
+    rangeUnsubs.forEach(u => u()); rangeUnsubs = []; rangeKey = null;
+    S.holders = new Map(); S.bIdx = new Map(); S.aIdx = new Map(); S.myBookings = []; S.myAway = []; S.codes = []; S.notices = []; S.members = {}; S.figure = null; S.figure2 = null;
+    S.loaded = { fixed: false, bookings: false, away: false }; S.me = null; S.admin = false; S.dbOk = null; S.selected = null; S.code = "";
+    fresh = false; panelSig = ""; mineSig = ""; adminSig = "";
+    setupWalker();
+    const chip = document.getElementById("me"); chip.hidden = true; chip.innerHTML = "";
+  }
+  async function enter(u) {
+    if (loggingIn) return;
+    stopAll();
+    if (!u) { S.auth = "out"; setBanner(""); render(); return; }
+    S.auth = "loading"; render();
+    let code = null, info = null;
+    try {
+      const s = await db.collection("sessions").doc(u.uid).get();
+      code = s.exists ? s.data().code : null;
+      if (code) { const c = await db.collection("codes").doc(code).get(); info = c.exists ? c.data() : null; }
+    } catch (e) { console.warn(e); }
+    if (!info) {
+      if (code) gateMsg = "Koden din er ikke gyldig lenger. Be om en ny kode.";
+      S.auth = "out"; setBanner(""); gate.innerHTML = ""; render(); return;
+    }
+    S.auth = "in"; S.me = info.member; S.code = code; S.admin = info.admin === true; S.dbOk = true; S.canWrite = true;
+    S.names[S.me] = info.name || "Deg";
+
+    const chip = document.getElementById("me");
+    chip.hidden = false; chip.innerHTML = "";
+    const sp = document.createElement("span"); sp.textContent = info.name || "Deg"; sp.style.paddingLeft = "8px";
+    const out = document.createElement("button"); out.type = "button"; out.textContent = "Logg ut"; out.addEventListener("click", logout);
+    chip.append(sp, out);
+
+    setBanner("Henter reservasjoner…");
+    clearTimeout(slowTimer);
+    slowTimer = setTimeout(() => { if (!fresh) setBanner("Får ikke kontakt med databasen ennå. Det som vises kan være utdatert.", true); }, 10000);
+    subs.push(db.collection("fixed").onSnapshot(snap => {
+      const m = new Map();
+      snap.docs.forEach(d => { const v = d.data(); const desk = v.desk || d.id; if (!DESK[desk]) return; if (!m.has(desk)) m.set(desk, []); m.get(desk).push({ id: d.id, desk, uid: v.uid, note: v.note || "", days: v.days, hours: v.hours || null }); });
+      S.holders = m; S.loaded.fixed = true; if (!snap.metadata.fromCache) markFresh(); render();
+    }, onErr));
+    subs.push(db.collection("members").onSnapshot(snap => {
+      const mem = {};
+      snap.docs.forEach(d => { const v = d.data(); if (v.name) S.names[d.id] = v.name; else if (!S.names[d.id]) S.names[d.id] = "En kollega"; mem[d.id] = S.names[d.id]; if (v.initials) S.inits[d.id] = v.initials; else delete S.inits[d.id]; });
+      S.members = mem; render();
+    }, () => {}));
+    subs.push(db.collection("bookings").where("uid", "==", S.me).onSnapshot(snap => { S.myBookings = snap.docs.map(d => norm(d.id, d.data())).filter(b => b.date >= TODAY); render(); }, () => {}));
+    subs.push(db.collection("away").where("uid", "==", S.me).onSnapshot(snap => { S.myAway = snap.docs.map(d => norm(d.id, d.data())).filter(b => b.date >= TODAY); render(); }, () => {}));
+    subs.push(db.collection("notices").where("to", "==", S.me).onSnapshot(snap => { S.notices = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.at || 0) - (a.at || 0)); render(); }, () => {}));
+    subs.push(db.collection("assets").doc("figure").onSnapshot(d => { S.figure = d.exists ? d.data() : null; setupWalker(); render(); }, () => {}));
+    subs.push(db.collection("assets").doc("figure2").onSnapshot(d => { S.figure2 = d.exists ? d.data() : null; setupWalker(); render(); }, () => {}));
+    if (S.admin) subs.push(db.collection("codes").onSnapshot(snap => {
+      S.codes = snap.docs.map(d => ({ code: d.id, ...d.data() })).sort((a, b) => String(a.name).localeCompare(String(b.name), "nb"));
+      render();
+    }, () => {}));
+    ensureRange();
+    render();
+  }
+
+  // ---------- kontroller ----------
+  document.getElementById("prevW").addEventListener("click", () => setDate(addDays(monday(S.date), -7)));
+  document.getElementById("nextW").addEventListener("click", () => setDate(addDays(monday(S.date), 7)));
+  document.getElementById("todayBtn").addEventListener("click", () => setDate(TODAY));
+  document.getElementById("jumpDate").addEventListener("change", e => { if (e.target.value) setDate(e.target.value); });
+  document.getElementById("prevM").addEventListener("click", () => { S.calMonth = addMonths(S.calMonth, -1); ensureRange(); render(); });
+  document.getElementById("nextM").addEventListener("click", () => { S.calMonth = addMonths(S.calMonth, 1); ensureRange(); render(); });
+  document.getElementById("thisM").addEventListener("click", () => { S.calMonth = monthOf(TODAY); ensureRange(); render(); });
+  window.addEventListener("hashchange", route);
+
+  drawBase(); drawDesks();
+  // På mobil: start kartet midt på i stedet for helt til venstre
+  let centered = false;
+  const centerPlan = () => { const sc = document.querySelector(".planscroll"); if (!centered && sc && sc.scrollWidth > sc.clientWidth && sc.clientWidth > 0) { sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.6; centered = true; } };
+  new MutationObserver(centerPlan).observe(document.getElementById("viewPlan"), { attributes: true });
+  (function start() {
+    route();
+    const cfg = FIREBASE_CONFIG;
+    if (!window.firebase || !cfg.apiKey || cfg.apiKey === "LIM-INN") { S.auth = "config"; setBanner(""); render(); return; }
+    firebase.initializeApp(cfg);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    auth.onAuthStateChanged(u => { enter(u).catch(e => { console.error(e); setBanner("Noe gikk galt ved innlogging. Last inn siden på nytt.", true); }); });
+    render();
+  })();
+})();
+</script>
+</body>
+</html>
