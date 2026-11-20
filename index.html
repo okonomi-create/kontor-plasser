@@ -518,6 +518,34 @@ details.cta[open] > summary { margin-bottom: 10px; }
 .te-undo { border: 0; background: transparent; color: var(--accent); font-size: 1.1rem; padding: 0; width: 28px; }
 .pk-sum b.ok { color: var(--accent); }
 @media (max-width: 520px) { .te-list li { grid-template-columns: minmax(0, 1fr) 28px; } .te-t { grid-column: 1 / 2; } }
+/* v12: tydelige moduser, tidskalender, egen plass rød med gul ring */
+.mk-headrow { display: flex; gap: 12px; align-items: flex-start; }
+.mode-ic { flex: 0 0 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.1rem; }
+.mode-ic.rm { background: var(--booked-soft); color: var(--danger); }
+.mode-ic.tm { background: var(--accent-soft); color: var(--accent); font-size: 1.3rem; }
+.mkp { border-top: 6px solid var(--mine); }
+.tep { border-top: 6px solid var(--accent); width: min(760px, 100%); }
+.tm-cnt { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: 0.68rem; font-weight: 700; margin-left: 2px; }
+.pk-d.tm { position: relative; flex-direction: column; gap: 0; height: 46px; border-radius: 9px; margin: 1px; cursor: pointer; }
+.pk-d.tm .mk-n { font-weight: 700; line-height: 1.1; }
+.pk-d.tm .mk-t { font-family: var(--f-mono); font-size: 0.6rem; line-height: 1.1; }
+.pk-d.tm.cur { background: var(--accent-soft); color: var(--ink); }
+.pk-d.tm.new { background: var(--accent); color: var(--accent-ink); }
+.pk-d.tm.pick { box-shadow: inset 0 0 0 3px var(--ink); }
+.pk-d.tm .tm-chk { position: absolute; top: -5px; right: -5px; width: 17px; height: 17px; border-radius: 50%; background: var(--ink); color: var(--bg); font-size: 0.65rem; display: flex; align-items: center; justify-content: center; }
+button.pk-d.tm:hover { box-shadow: inset 0 0 0 2px var(--accent); }
+button.pk-d.tm.pick:hover { box-shadow: inset 0 0 0 3px var(--ink); }
+.te-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px 16px; padding: 10px 16px; background: var(--accent-soft); border-top: 1px solid var(--line); }
+.te-sel { font-size: 0.88rem; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.te-sel .linkbtn { margin-left: 0; }
+.te-pick { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 0.86rem; font-weight: 600; }
+.te-pick .tsel { width: auto; padding: 6px 6px; font-size: 0.86rem; }
+.te-err { flex-basis: 100%; color: var(--danger); font-weight: 500; font-size: 0.8rem; }
+.pk-legend .lg-cur { background: var(--accent-soft); border-radius: 3px; border: 1px solid var(--accent); }
+.pk-legend .lg-new { background: var(--accent); border-radius: 3px; }
+.pk-legend .lg-pick { background: transparent; border: 2px solid var(--ink); border-radius: 3px; width: 6px; height: 6px; }
+.desk.mine .frame { stroke: var(--mine); stroke-width: 9; }
+.desk.mine.sel .frame { stroke: var(--mine); stroke-width: 11; }
 </style>
 </head>
 <body>
@@ -850,15 +878,18 @@ details.cta[open] > summary { margin-bottom: 10px; }
     for (const d of DESKS) {
       const E = deskEls[d.id];
       const info = dayInfo(S.date, d.id);
-      E.body.setAttribute("class", "body k-" + info.kind);
+      // Din plass vises som opptatt (rød) med gul ring, uansett om du har den hele eller deler av dagen
+      E.body.setAttribute("class", "body k-" + (info.mine && info.kind !== "closed" ? "booked" : info.kind));
       E.grp.classList.toggle("sel", S.selected === d.id);
       E.grp.classList.toggle("mine", info.mine);
       E.txt.innerHTML = "";
       const lines = [];
       if (info.ints.length && info.kind !== "closed") { // bare initialer på kartet – klokkeslett vises når musen holdes over
         const seen = new Map(); for (const i of info.ints) { const k = i.guest ? "g:" + i.guest : i.uid; if (!seen.has(k)) seen.set(k, initials(i)); }
+        // Er du på plassen, vises bare dine egne initialer. Ellers første person (+antall andre)
+        const mineI = info.ints.find(i => i.uid === S.me && !i.guest);
         const ini = [...seen.values()];
-        const label = ini.length === 1 ? ini[0] : ini.length === 2 ? `${ini[0]}/${ini[1]}` : `${ini[0]}+${ini.length - 1}`;
+        const label = mineI ? initials(mineI) : ini.length === 1 ? ini[0] : `${ini[0]}+${ini.length - 1}`;
         lines.push([label.length > 3 ? "dini sm" : "dini", label]);
       }
       const lh = 22, top = E.y + E.h / 2 - (lines.length - 1) * lh / 2 + (E.h > 70 ? 8 : 6);
@@ -902,7 +933,12 @@ details.cta[open] > summary { margin-bottom: 10px; }
     const name = el("text", { x: 0, y: h / 2 + 28, "text-anchor": "middle", class: "wname" }, g); name.textContent = fig.name || "";
     const hint = el("text", { x: 0, y: h / 2 + 50, "text-anchor": "middle", class: "whint" }, g); hint.textContent = main ? "trykk på meg" : "";
     const bub = bubbleEl(body, main ? -1 : 1, -h / 2 + 6);
-    return { g, body, name, hint, bub, x: 0, y: 0, h };
+    // Egen boble som ikke snurrer med figuren (brukes ved plass 20)
+    const yab = el("g", { class: "bubble yab", opacity: 0, "pointer-events": "none", transform: `translate(0 ${-h / 2 + 6})` }, g);
+    el("rect", { x: -340, y: -86, width: 320, height: 76, rx: 24 }, yab);
+    el("path", { d: "M-60 -11 L-22 16 L-90 -11 Z", fill: "#fff", stroke: "none" }, yab);
+    const yt = el("text", { x: -180, y: -37, "text-anchor": "middle" }, yab); yt.textContent = "Yabba dabba doo!";
+    return { g, body, name, hint, bub, yab, x: 0, y: 0, h };
   }
   function place(w, x, y, rot = 0, bob = 0) {
     w.x = x; w.y = y;
@@ -1032,9 +1068,11 @@ details.cta[open] > summary { margin-bottom: 10px; }
     ws.forEach(w => w.bub.setAttribute("opacity", 0));
     // Videre til plass 20: ut av rom E, ned korridoren, gjennom døra til backoffice og inn til rom H
     await walkPath(w1, TO20, SPEED);
+    w1.yab.setAttribute("opacity", 1);
     await spin(w1, 3, 2200);
     await hopAll([w1], 1);
-    await sleep(400);
+    await sleep(700);
+    w1.yab.setAttribute("opacity", 0);
     // Ut igjen samme vei, og ut av bygget
     const rev = [...TO20.slice(2).reverse(), ...WALK.slice(0, 8).reverse()], dOut = pathLen(rev) - pathLen(WALK, 1);
     let hidden = false;
@@ -1370,8 +1408,8 @@ details.cta[open] > summary { margin-bottom: 10px; }
     const nBook = all.filter(d => map.get(d).bks.length).length;
     mkEl.innerHTML = `<div class="pk mkp">
       <div class="pk-head">
-        <div><div class="eyebrow">Mine dager</div><h3 class="mk-title">Plass ${DESK[MK.desk].num} <small>${esc(DESK[MK.desk].room)}</small></h3>
-          <p class="hint" style="margin:2px 0 0">${h ? `Fast plass: <b>${esc(fmtSched(h))}</b>. ` : ""}${nBook ? `${nBook} ${nBook === 1 ? "booking" : "bookinger"} fremover. ` : ""}Trykk på en dag du ikke kommer, så blir plassen ledig for andre. Trykk igjen for å angre.</p></div>
+        <div class="mk-headrow"><span class="mode-ic rm" aria-hidden="true">✕</span><div><div class="eyebrow">Fjern dager</div><h3 class="mk-title">Plass ${DESK[MK.desk].num} <small>${esc(DESK[MK.desk].room)}</small></h3>
+          <p class="hint" style="margin:2px 0 0">${h ? `Fast plass: <b>${esc(fmtSched(h))}</b>. ` : ""}${nBook ? `${nBook} ${nBook === 1 ? "booking" : "bookinger"} fremover. ` : ""}Trykk på en dag du ikke kommer, så blir plassen ledig for andre. Trykk igjen for å angre.</p></div></div>
         <button type="button" class="pk-x" data-mk="close" aria-label="Lukk">×</button>
       </div>
       <div class="pk-strip">${months.map(m => { const c = cnt(m); return `<button type="button" data-mm="${m}" class="${shown.includes(m) ? "on" : ""}">${esc(parse(m + "-01").toLocaleDateString("nb-NO", { month: "short" }).replace(".", ""))}${m.slice(0, 4) !== TODAY.slice(0, 4) ? ` <small>${m.slice(0, 4)}</small>` : ""}${c ? ` <span class="mk-cnt">${c}</span>` : ""}</button>`; }).join("")}</div>
@@ -1420,13 +1458,13 @@ details.cta[open] > summary { margin-bottom: 10px; }
     renderMine2();
   });
 
-  // ---------- endre klokkeslett på dager du allerede har ----------
-  const TE = { desk: null, edits: new Map(), limit: 15, all: ["", ""] };
+  // ---------- endre klokkeslett: kalender (blå/turkis – skiller seg fra «Fjern dager» som er gul/rød) ----------
+  const TE = { desk: null, view: null, sel: new Set(), edits: new Map(), pick: ["09:00", "15:00"] };
   const teEl = document.createElement("div"); teEl.className = "pk-overlay"; teEl.hidden = true;
   teEl.setAttribute("role", "dialog"); teEl.setAttribute("aria-modal", "true"); teEl.setAttribute("aria-label", "Endre klokkeslett");
   document.body.appendChild(teEl);
   function teRows(desk) {
-    const { map } = mkData(desk), rows = [];
+    const { map, h } = mkData(desk), rows = [];
     for (const [d, v] of map) {
       for (const b of v.bks) rows.push({ key: "b:" + b.id, date: d, kind: "booking", b, s: b.s, e: b.e, guest: b.guest });
       if (!v.bks.length && v.fx && v.fx.state === "on") {
@@ -1435,79 +1473,120 @@ details.cta[open] > summary { margin-bottom: 10px; }
         if (left.length) rows.push({ key: "f:" + d, date: d, kind: "fixed", fx: v.fx, s: left[0][0], e: left[left.length - 1][1] });
       }
     }
-    return rows;
+    return { rows, h };
   }
+  const teByDate = rows => { const m = new Map(); for (const r of rows) { if (!m.has(r.date)) m.set(r.date, []); m.get(r.date).push(r); } return m; };
+  const teChanged = (r, ed) => ed && (toMin(ed[0]) !== r.s || toMin(ed[1]) !== r.e);
   const teKey = e => { if (e.key === "Escape") closeTimes(); };
   function openTimes(desk) {
-    if (!teRows(desk).length) return;
-    Object.assign(TE, { desk, edits: new Map(), limit: 15, all: [STD[0], STD[1]] });
+    const { rows } = teRows(desk); if (!rows.length) return;
+    Object.assign(TE, { desk, view: monthOf(rows[0].date), sel: new Set(), edits: new Map(), pick: ["09:00", "15:00"] });
     teEl.hidden = false; document.body.classList.add("pk-lock"); document.addEventListener("keydown", teKey); renderTimes();
   }
   function closeTimes() { teEl.hidden = true; document.body.classList.remove("pk-lock"); document.removeEventListener("keydown", teKey); }
-  function renderTimes() {
-    const rows = teRows(TE.desk), shown = rows.slice(0, TE.limit);
-    const changed = rows.filter(r => { const ed = TE.edits.get(r.key); return ed && (toMin(ed[0]) !== r.s || toMin(ed[1]) !== r.e); });
-    teEl.innerHTML = `<div class="pk tep">
-      <div class="pk-head"><div><div class="eyebrow">Endre klokkeslett</div><h3 class="mk-title">Plass ${DESK[TE.desk].num} <small>${esc(DESK[TE.desk].room)}</small></h3>
-        <p class="hint" style="margin:2px 0 0">Velg nye tider for de dagene du kommer senere eller går tidligere. Resten av tiden blir plassen ledig for andre.</p></div>
-        <button type="button" class="pk-x" data-te="close" aria-label="Lukk">×</button></div>
-      <div class="te-all"><span>Samme tid på alle dagene under:</span>${timeSel("teAllS", TE.all[0], "Fra kl.")}<span>–</span>${timeSel("teAllE", TE.all[1], "Til kl.")}<button type="button" class="btn small ghost" data-te="all">Bruk på alle</button></div>
-      <ul class="te-list">${shown.map(r => { const ed = TE.edits.get(r.key) || [toHHMM(r.s), toHHMM(r.e)]; const ch = toMin(ed[0]) !== r.s || toMin(ed[1]) !== r.e;
-        return `<li class="${ch ? "ch" : ""}"><span class="te-d"><b>${esc(fmtShort(r.date))}</b><small>${r.kind === "fixed" ? "Fast plass" : "Booking"}${r.guest ? " · " + esc(r.guest) : ""} · nå ${span(r.s, r.e)}</small></span>
-          <span class="te-t">${timeSel("teS-" + r.key.replace(/[^a-zA-Z0-9]/g, "_"), ed[0], "Fra kl.").replace("<select ", `<select data-k="${esc(r.key)}" data-p="0" `)}<span>–</span>${timeSel("teE-" + r.key.replace(/[^a-zA-Z0-9]/g, "_"), ed[1], "Til kl.").replace("<select ", `<select data-k="${esc(r.key)}" data-p="1" `)}</span>
-          ${ch ? `<button type="button" class="te-undo" data-undo="${esc(r.key)}" title="Angre">↺</button>` : `<span class="te-undo"></span>`}</li>`; }).join("")}</ul>
-      ${rows.length > TE.limit ? `<div style="padding:0 16px 8px"><button type="button" class="btn small ghost" data-te="more">Vis flere dager (${rows.length - TE.limit} til)</button></div>` : ""}
-      <div class="pk-foot"><div class="pk-sum">${changed.length ? `<b class="ok">${changed.length} ${changed.length === 1 ? "dag" : "dager"} får nye tider</b>` : "Ingen endringer ennå"}</div>
-        <div class="pk-btns"><button type="button" class="btn ghost small" data-te="close">Lukk</button><button type="button" class="btn pk-done" data-te="save" ${changed.length ? "" : "disabled"}>Lagre tider</button></div></div>
-    </div>`;
+  function teMonth(m, bd) {
+    const wd = ["M", "T", "O", "T", "F", "L", "S"];
+    let html = `<div class="pk-month"><div class="pk-mtitle">${esc(fmtMonth(m))}</div><div class="pk-grid">${wd.map((w, i) => `<span class="pk-wd${i >= 5 ? " we" : ""}">${w}</span>`).join("")}`;
+    for (let d = monday(m + "-01"), end = addDays(monday(monthEnd(m)), 6); d <= end; d = addDays(d, 1)) {
+      if (monthOf(d) !== m) { html += `<span></span>`; continue; }
+      const rs = bd.get(d);
+      const base = ["pk-d", isWeekend(d) ? "we" : "", holiday(d) ? "hol" : "", d === TODAY ? "today" : ""];
+      if (!rs) { html += `<span class="${[...base, "dis"].join(" ")}">${parse(d).getDate()}</span>`; continue; }
+      const r = rs[0], ed = TE.edits.get(d), ch = teChanged(r, ed), picked = TE.sel.has(d);
+      const t = ch ? `${shortT(toMin(ed[0]))}–${shortT(toMin(ed[1]))}` : `${shortT(r.s)}–${shortT(r.e)}`;
+      html += `<button type="button" class="${[...base, "tm", ch ? "new" : "cur", picked ? "pick" : ""].join(" ")}" data-td="${d}" aria-pressed="${picked}" title="${esc(`${fmtShort(d)}: nå ${span(r.s, r.e)}${ch ? ` → ny tid ${span(toMin(ed[0]), toMin(ed[1]))}` : ""}`)}"><span class="mk-n">${parse(d).getDate()}</span><span class="mk-t">${esc(t)}</span>${picked ? `<span class="tm-chk" aria-hidden="true">✓</span>` : ""}</button>`;
+    }
+    return html + `</div></div>`;
   }
-  teEl.addEventListener("change", e => {
-    const t = e.target;
-    if (t.id === "teAllS") TE.all[0] = t.value; else if (t.id === "teAllE") TE.all[1] = t.value;
-    else if (t.dataset.k) { const r = teRows(TE.desk).find(x => x.key === t.dataset.k); if (!r) return; const cur = TE.edits.get(r.key) || [toHHMM(r.s), toHHMM(r.e)]; cur[Number(t.dataset.p)] = t.value; TE.edits.set(r.key, cur); renderTimes(); }
-  });
+  function renderTimes() {
+    const { rows, h } = teRows(TE.desk);
+    if (!rows.length) { closeTimes(); return; }
+    const bd = teByDate(rows), dates = [...bd.keys()];
+    const months = h ? Array.from({ length: 12 }, (_, i) => addMonths(monthOf(TODAY), i)) : [...new Set(dates.map(monthOf))].sort();
+    if (!months.includes(MK.view) && !months.includes(TE.view)) TE.view = months[0];
+    const shown = [TE.view, addMonths(TE.view, 1)];
+    const nCh = dates.filter(d => teChanged(bd.get(d)[0], TE.edits.get(d))).length;
+    const visible = dates.filter(d => shown.includes(monthOf(d)));
+    teEl.innerHTML = `<div class="pk tep">
+      <div class="pk-head"><div class="mk-headrow"><span class="mode-ic tm" aria-hidden="true">◷</span><div><div class="eyebrow">Endre klokkeslett</div><h3 class="mk-title">Plass ${DESK[TE.desk].num} <small>${esc(DESK[TE.desk].room)}</small></h3>
+        <p class="hint" style="margin:2px 0 0">1. Trykk på dagene du vil endre. 2. Velg ny tid nederst. 3. Trykk <b>Sett tid</b>. Resten av dagen blir ledig for andre.</p></div></div>
+        <button type="button" class="pk-x" data-te="close" aria-label="Lukk">×</button></div>
+      <div class="pk-strip">${months.map(m => { const c = dates.filter(d => monthOf(d) === m).length; return `<button type="button" data-tm="${m}" class="${shown.includes(m) ? "on" : ""}">${esc(parse(m + "-01").toLocaleDateString("nb-NO", { month: "short" }).replace(".", ""))}${m.slice(0, 4) !== TODAY.slice(0, 4) ? ` <small>${m.slice(0, 4)}</small>` : ""}${c ? ` <span class="tm-cnt">${c}</span>` : ""}</button>`; }).join("")}</div>
+      <div class="pk-body">
+        <button type="button" class="pk-nav" data-tn="-1" aria-label="Forrige måned" ${TE.view <= months[0] ? "disabled" : ""}>‹</button>
+        <div class="pk-months">${shown.map(m => teMonth(m, bd)).join("")}</div>
+        <button type="button" class="pk-nav" data-tn="1" aria-label="Neste måned" ${addMonths(TE.view, 1) >= months[months.length - 1] ? "disabled" : ""}>›</button>
+      </div>
+      <div class="te-bar">
+        <div class="te-sel"><b>${TE.sel.size}</b> ${TE.sel.size === 1 ? "dag valgt" : "dager valgt"}
+          <button type="button" class="linkbtn" data-te="selall" ${visible.length ? "" : "disabled"}>Velg alle i ${shown.length > 1 ? "månedene" : "måneden"} som vises</button>${TE.sel.size ? `<button type="button" class="linkbtn" data-te="selnone">Fjern valg</button>` : ""}</div>
+        <div class="te-pick"><span>Ny tid</span>${timeSel("teS", TE.pick[0], "Fra kl.")}<span>–</span>${timeSel("teE", TE.pick[1], "Til kl.")}
+          <button type="button" class="btn small" data-te="apply" ${TE.sel.size ? "" : "disabled"}>Sett tid</button></div>
+      </div>
+      <div class="pk-foot">
+        <div class="pk-legend"><span><i class="lg-cur"></i>Din tid nå</span><span><i class="lg-new"></i>Ny tid</span><span><i class="lg-pick"></i>Valgt</span></div>
+        <div class="pk-sum">${nCh ? `<b class="ok">${nCh} ${nCh === 1 ? "dag" : "dager"} får nye tider</b> <button type="button" class="linkbtn" data-te="reset">Angre alle</button>` : "Ingen endringer ennå"}</div>
+        <div class="pk-btns"><button type="button" class="btn ghost small" data-te="close">Lukk</button><button type="button" class="btn pk-done" data-te="save" ${nCh ? "" : "disabled"}>Lagre tider</button></div>
+      </div></div>`;
+  }
+  teEl.addEventListener("change", e => { const t = e.target; if (t.id === "teS") TE.pick[0] = t.value; else if (t.id === "teE") TE.pick[1] = t.value; });
   teEl.addEventListener("click", e => {
     if (e.target === teEl) return closeTimes();
-    const t = e.target.closest("[data-te],[data-undo]"); if (!t) return;
-    if (t.dataset.undo) { TE.edits.delete(t.dataset.undo); return renderTimes(); }
-    const a = t.dataset.te;
-    if (a === "close") return closeTimes();
-    if (a === "more") { TE.limit += 30; return renderTimes(); }
-    if (a === "all") { if (toMin(TE.all[1]) <= toMin(TE.all[0])) { flash("Til-tiden må være etter fra-tiden.", true); return; } teRows(TE.desk).slice(0, TE.limit).forEach(r => TE.edits.set(r.key, [TE.all[0], TE.all[1]])); return renderTimes(); }
-    if (a === "save") {
-      const rows = teRows(TE.desk), desk = TE.desk;
-      const todo = rows.map(r => ({ r, ed: TE.edits.get(r.key) })).filter(x => x.ed && (toMin(x.ed[0]) !== x.r.s || toMin(x.ed[1]) !== x.r.e));
-      const bad = todo.find(x => toMin(x.ed[1]) <= toMin(x.ed[0]));
-      if (bad) { flash(`Til-tiden må være etter fra-tiden (${fmtShort(bad.r.date)}).`, true); return; }
-      closeTimes();
-      guard(async () => {
-        const { bks } = await deskData(desk);
-        let ok = 0; const skipped = [];
-        for (const { r, ed } of todo) {
-          const ns = toMin(ed[0]), ne = toMin(ed[1]);
-          const others = bks.filter(b => b.date === r.date && b.uid !== S.me && b.s < ne && b.e > ns);
-          if (r.kind === "booking") {
-            if (others.length) { skipped.push(r.date); continue; }
-            const doc = { desk, date: r.date, start: ed[0], end: ed[1], uid: r.b.uid, by: S.me, note: r.b.note || "", at: Date.now() };
-            if (r.b.guest) doc.guest = r.b.guest;
-            await db.collection("bookings").add(doc);
-            await db.collection("bookings").doc(r.b.id).delete();
-          } else {
-            const f = r.fx;
-            for (const a of f.aw.filter(a => !a.by || a.by === S.me)) await db.collection("away").doc(a.id).delete();
-            for (const [a, b] of subtract([f.s, f.e], [[ns, ne]])) await db.collection("away").add({ desk, date: r.date, start: toHHMM(a), end: toHHMM(b), uid: S.me, by: S.me, note: "Annen tid", at: Date.now() });
-            const extra = subtract([ns, ne], [[f.s, f.e]]);
-            for (const [a, b] of extra) {
-              if (bks.some(x => x.date === r.date && x.uid !== S.me && x.s < b && x.e > a)) { skipped.push(r.date); continue; }
-              await db.collection("bookings").add({ desk, date: r.date, start: toHHMM(a), end: toHHMM(b), uid: S.me, by: S.me, note: "", at: Date.now() });
-            }
-          }
-          ok++;
-        }
-        flash(`Nye tider lagret for ${ok} ${ok === 1 ? "dag" : "dager"} på plass ${DESK[desk].num}.${skipped.length ? ` Hoppet over ${[...new Set(skipped)].map(fmtShort).join(", ")} fordi noen andre har plassen da.` : ""}`, !!skipped.length && !ok);
-      });
+    const t = e.target.closest("[data-td],[data-tm],[data-tn],[data-te]"); if (!t) return;
+    const { rows } = teRows(TE.desk), bd = teByDate(rows);
+    if (t.dataset.td) { const d = t.dataset.td; TE.sel.has(d) ? TE.sel.delete(d) : TE.sel.add(d); }
+    else if (t.dataset.tm) TE.view = t.dataset.tm;
+    else if (t.dataset.tn) TE.view = addMonths(TE.view, Number(t.dataset.tn));
+    else {
+      const a = t.dataset.te;
+      if (a === "close") return closeTimes();
+      if (a === "selall") [...bd.keys()].filter(d => [TE.view, addMonths(TE.view, 1)].includes(monthOf(d))).forEach(d => TE.sel.add(d));
+      if (a === "selnone") TE.sel.clear();
+      if (a === "reset") TE.edits.clear();
+      if (a === "apply") {
+        if (toMin(TE.pick[1]) <= toMin(TE.pick[0])) { alertBox("Til-tiden må være etter fra-tiden."); return; }
+        for (const d of TE.sel) TE.edits.set(d, [TE.pick[0], TE.pick[1]]);
+        TE.sel.clear();
+      }
+      if (a === "save") {
+        const desk = TE.desk;
+        const todo = [];
+        for (const [d, rs] of bd) { const ed = TE.edits.get(d); for (const r of rs) if (teChanged(r, ed)) todo.push({ r, ed }); }
+        closeTimes();
+        saveTimes(desk, todo);
+        return;
+      }
     }
+    renderTimes();
   });
+  function alertBox(msg) { const b = teEl.querySelector(".te-pick"); if (!b) return; let m = b.querySelector(".te-err"); if (!m) { m = document.createElement("span"); m.className = "te-err"; b.appendChild(m); } m.textContent = msg; }
+  function saveTimes(desk, todo) {
+    guard(async () => {
+      const { bks } = await deskData(desk);
+      const days = new Set(); const skipped = new Set();
+      for (const { r, ed } of todo) {
+        const ns = toMin(ed[0]), ne = toMin(ed[1]);
+        if (r.kind === "booking") {
+          if (bks.some(b => b.date === r.date && b.uid !== S.me && b.id !== r.b.id && b.s < ne && b.e > ns)) { skipped.add(r.date); continue; }
+          const doc = { desk, date: r.date, start: ed[0], end: ed[1], uid: r.b.uid, by: S.me, note: r.b.note || "", at: Date.now() };
+          if (r.b.guest) doc.guest = r.b.guest;
+          await db.collection("bookings").add(doc);
+          await db.collection("bookings").doc(r.b.id).delete();
+        } else {
+          const f = r.fx;
+          for (const a of f.aw.filter(a => !a.by || a.by === S.me)) await db.collection("away").doc(a.id).delete();
+          for (const [a, b] of subtract([f.s, f.e], [[ns, ne]])) await db.collection("away").add({ desk, date: r.date, start: toHHMM(a), end: toHHMM(b), uid: S.me, by: S.me, note: "Annen tid", at: Date.now() });
+          for (const [a, b] of subtract([ns, ne], [[f.s, f.e]])) {
+            if (bks.some(x => x.date === r.date && x.uid !== S.me && x.s < b && x.e > a)) { skipped.add(r.date); continue; }
+            await db.collection("bookings").add({ desk, date: r.date, start: toHHMM(a), end: toHHMM(b), uid: S.me, by: S.me, note: "", at: Date.now() });
+          }
+        }
+        days.add(r.date);
+      }
+      const n = days.size;
+      flash(`Nye tider lagret for ${n} ${n === 1 ? "dag" : "dager"} på plass ${DESK[desk].num}.${skipped.size ? ` Hoppet over ${[...skipped].map(fmtShort).join(", ")} fordi noen andre har plassen da.` : ""}`, !!skipped.size && !n);
+    });
+  }
 
   // ---------- panel ----------
   const panel = document.getElementById("panel");
