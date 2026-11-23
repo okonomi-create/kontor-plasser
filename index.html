@@ -666,6 +666,12 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
 .adm-t b { display: block; font-family: var(--f-display); font-size: 1.05rem; } .adm-t small { color: var(--muted); font-size: .8rem; }
 .adm-body { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
 .admsub > summary { cursor: pointer; font-weight: 600; font-size: .92rem; padding: 4px 0; }
+
+.wk-month { display: inline-block; background: var(--accent); color: var(--accent-ink); font-size: .95rem; font-weight: 600; padding: 3px 12px; border-radius: 999px; vertical-align: middle; margin-left: 6px; }
+.me-n { display: inline-flex; flex-direction: column; line-height: 1.15; }
+.me-n b { font-weight: 600; }
+.me-days select { font: inherit; font-size: .72rem; color: var(--muted); border: 0; background: transparent; padding: 0 14px 0 0; margin: 0; cursor: pointer; appearance: auto; }
+.me-days select:hover { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -1933,6 +1939,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   // ---------- ukesoversikt: hvem mangler plass hvilke dager ----------
   const DAY_H = 7.5, FULL_H = 37.5;
   const hoursOf = uid => (typeof S.hours[uid] === "number" ? S.hours[uid] : FULL_H);
+  const daysOf = uid => Math.max(0, Math.min(5, Math.round(hoursOf(uid) / DAY_H))); // dager på kontoret i uka (standard 5 = heltid)
+  const daysTxt = n => n >= 5 ? "Heltid · 5 dager" : n === 0 ? "Ikke på kontoret" : `Deltid · ${n} ${n === 1 ? "dag" : "dager"} i uka`;
+  const daysOptions = n => [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${v === 5 ? "5 dager (heltid)" : v === 0 ? "0 (ikke på kontoret)" : `${v} ${v === 1 ? "dag" : "dager"}`}</option>`).join("");
   function weekData(mon) {
     const days = [0, 1, 2, 3, 4].map(i => addDays(mon, i));
     const work = days.filter(d => !holiday(d));
@@ -1953,8 +1962,8 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       freeByDay[d] = free;
     }
     const rows = Object.keys(S.members).map(uid => {
-      const hrs = hoursOf(uid), full = hrs >= FULL_H - 0.01;
-      const need = hrs <= 0 ? 0 : Math.min(work.length, Math.ceil(hrs / DAY_H * work.length / 5 - 0.05));
+      const nd = daysOf(uid), hrs = nd * DAY_H, full = nd >= 5;
+      const need = Math.min(work.length, nd);
       const cells = days.map(d => {
         if (holiday(d)) return { d, kind: "hol" };
         const segs = (segsByUid.get(uid + "|" + d) || []).sort((a, b) => a.s - b.s);
@@ -1963,7 +1972,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       const have = cells.filter(c => c.kind === "seat").length;
       const missing = Math.max(0, need - have);
       for (const c of cells) if (c.kind === "none") c.kind = missing === 0 ? "off" : full ? "miss" : "open";
-      return { uid, name: fullName(uid), ini: S.inits[uid] || iniFrom(fullName(uid)), hrs, full, need, have, missing, me: uid === S.me, cells };
+      return { uid, name: fullName(uid), ini: S.inits[uid] || iniFrom(fullName(uid)), hrs, nd, full, need, have, missing, me: uid === S.me, cells };
     }).sort((a, b) => (b.me - a.me) || (b.missing > 0) - (a.missing > 0) || a.name.localeCompare(b.name, "nb"));
     return { days, rows, freeByDay };
   }
@@ -1975,14 +1984,16 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     if (sig === weekSig) return; weekSig = sig;
     const fri = addDays(mon, 4);
     const title = `Uke ${isoWeek(mon)}`;
+    const cap = x => x.charAt(0).toUpperCase() + x.slice(1);
+    const monthLbl = monthOf(mon) === monthOf(fri) ? cap(fmtMonth(monthOf(mon))) : `${cap(parse(mon).toLocaleDateString("nb-NO", { month: "long" }))} / ${parse(fri).toLocaleDateString("nb-NO", { month: "long", year: "numeric" })}`;
     const sub = `${parse(mon).getDate()}.${parse(mon).getMonth() !== parse(fri).getMonth() ? " " + parse(mon).toLocaleDateString("nb-NO", { month: "short" }).replace(".", "") : ""}–${parse(fri).getDate()}. ${parse(fri).toLocaleDateString("nb-NO", { month: "short", year: "numeric" }).replace(".", "")}`;
-    if (!ready()) { box.innerHTML = `<div class="wk-head"><div><h2>${title} <small>${esc(sub)}</small></h2></div></div><p class="muted">Henter…</p>`; return; }
+    if (!ready()) { box.innerHTML = `<div class="wk-head"><div><h2>${title} <span class="wk-month">${esc(monthLbl)}</span></h2></div></div><p class="muted">Henter…</p>`; return; }
     const { days, rows, freeByDay } = weekData(mon);
     const nMiss = rows.filter(r => r.missing > 0).length, nOk = rows.filter(r => r.need > 0 && r.missing === 0).length, nPart = rows.filter(r => !r.full).length;
     const filt = S.weekFilter || "miss";
     const shown = filt === "miss" ? rows.filter(r => r.missing > 0 || r.me) : rows;
     const dn = ["Man", "Tir", "Ons", "Tor", "Fre"];
-    const head = `<tr><th class="wk-name">Person</th>${days.map((d, i) => `<th class="${d === TODAY ? "today" : ""}${holiday(d) ? " hol" : ""}"><button type="button" class="wk-day" data-wkday="${d}"><b>${dn[i]} ${parse(d).getDate()}.</b><small>${holiday(d) ? esc(holiday(d)) : `${freeByDay[d]} ledige`}</small></button></th>`).join("")}<th class="wk-sum">Dager</th></tr>`;
+    const head = `<tr><th class="wk-name">Person</th>${days.map((d, i) => `<th class="${d === TODAY ? "today" : ""}${holiday(d) ? " hol" : ""}"><button type="button" class="wk-day" data-wkday="${d}"><b>${dn[i]} ${parse(d).getDate()}. ${esc(parse(d).toLocaleDateString("nb-NO", { month: "short" }).replace(".", ""))}</b><small>${holiday(d) ? esc(holiday(d)) : `${freeByDay[d]} ledige`}</small></button></th>`).join("")}<th class="wk-sum">Dager</th></tr>`;
     const cell = (r, c) => {
       const past = c.d < TODAY ? " past" : "";
       if (c.kind === "hol") return `<td><span class="wk-c hol${past}">Stengt</span></td>`;
@@ -1992,10 +2003,10 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       if (c.kind === "open") return `<td><button type="button" class="wk-c open${past}" data-wkgo="${c.d}|" title="Ingen plass denne dagen (deltid – kanskje fri)">–</button></td>`;
       return `<td><span class="wk-c off${past}" title="Ingen plass – men nok dager denne uka">–</span></td>`;
     };
-    const sumCell = r => r.need === 0 ? `<td class="wk-sum"><span class="wk-tag">${r.hrs <= 0 ? "Ikke på kontoret" : "–"}</span></td>`
+    const sumCell = r => r.need === 0 ? `<td class="wk-sum"><span class="wk-tag">${r.nd <= 0 ? "Ikke på kontoret" : "–"}</span></td>`
       : `<td class="wk-sum"><div class="wk-prog ${r.missing ? "bad" : "ok"}"><span><b>${r.have}</b>/${r.need}</span><i><em style="width:${Math.min(100, 100 * r.have / r.need)}%"></em></i></div>${r.missing ? `<small class="wk-missing">mangler ${r.missing}</small>` : `<small class="wk-okt">✓ ok</small>`}</td>`;
     box.innerHTML = `<div class="wk-head">
-        <div><h2>${title} <small>${esc(sub)}</small></h2><p class="hint">Hvem mangler plass denne uka? Deltidsansatte vises bare når de har plass færre dager enn de jobber.</p></div>
+        <div><h2>${title} <span class="wk-month">${esc(monthLbl)}</span> <small>${esc(sub)}</small></h2><p class="hint">Hvem mangler plass denne uka? Alle regnes som heltid (5 dager) hvis ikke annet er valgt. Deltidsansatte vises bare når de har plass færre dager enn de er på kontoret. En dag teller så lenge du har plass en del av dagen.</p></div>
         <div class="calnav"><button class="iconbtn" id="wkPrev" aria-label="Forrige uke">←</button><button class="iconbtn" id="wkThis">Denne uka</button><button class="iconbtn" id="wkNext" aria-label="Neste uke">→</button></div>
       </div>
       <div class="wk-bar">
@@ -2003,7 +2014,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
         <div class="seg" role="tablist"><button type="button" data-wkf="miss" class="${filt === "miss" ? "on" : ""}">Mangler plass (${nMiss})</button><button type="button" data-wkf="all" class="${filt === "all" ? "on" : ""}">Alle (${rows.length})</button></div>
       </div>
       ${shown.length ? `<div class="wk-scroll"><table class="wk"><colgroup><col class="c-name">${days.map(() => "<col>").join("")}<col class="c-sum"></colgroup><thead>${head}</thead><tbody>${shown.map(r => `<tr class="${r.me ? "wk-me" : ""}${r.missing ? " needs" : ""}">
-        <th class="wk-name" scope="row"><span class="wk-person">${avatar(r.name, r.ini)}<span><b>${esc(r.name)}</b>${r.me ? ` <span class="badge">deg</span>` : ""}<small>${r.full ? "Heltid" : `Deltid · ${String(r.hrs).replace(".", ",")} t/uke`}</small></span></span></th>
+        <th class="wk-name" scope="row"><span class="wk-person">${avatar(r.name, r.ini)}<span><b>${esc(r.name)}</b>${r.me ? ` <span class="badge">deg</span>` : ""}<small>${esc(daysTxt(r.nd))}</small></span></span></th>
         ${r.cells.map(c => cell(r, c)).join("")}${sumCell(r)}</tr>`).join("")}</tbody></table></div>`
         : `<div class="wk-empty"><b>Alle har plass denne uka</b><span>Ingen mangler plass i uke ${isoWeek(mon)}.</span></div>`}
       <div class="wk-legend"><span><i class="wk-c seat sw"></i>Booket</span><span><i class="wk-c seat fx sw"></i>Fast plass</span><span><i class="wk-c miss sw"></i>Ingen plass</span><span><i class="wk-c open sw"></i>Ingen plass (deltid)</span><span>Trykk på en dag for å se plantegningen den dagen.</span></div>`;
@@ -2016,10 +2027,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     box.querySelectorAll("[data-wkgo]").forEach(b => b.onclick = () => { const [d, dk] = b.dataset.wkgo.split("|"); go(d, dk); });
     box.querySelectorAll("[data-wkday]").forEach(b => b.onclick = () => go(b.dataset.wkday, null));
   }
-  function saveHours(v) {
-    const h = Math.round(Number(String(v).replace(",", ".")) * 2) / 2;
-    if (!isFinite(h) || h < 0 || h > 60) { flash("Skriv antall timer i uka, mellom 0 og 60.", true); return; }
-    guard(async () => { await db.collection("members").doc(S.me).update({ hours: h }); flash(h >= FULL_H ? "Du står som heltid." : h === 0 ? "Du står med 0 timer – du vises ikke i ukesoversikten." : `Du står som deltid med ${String(h).replace(".", ",")} timer i uka.`); });
+  function saveDays(uid, n) {
+    n = Math.max(0, Math.min(5, Number(n) || 0));
+    guard(async () => { await db.collection("members").doc(uid).update({ hours: n * DAY_H }); flash(`${uid === S.me ? "Du" : fullName(uid)}: ${daysTxt(n).toLowerCase()}.`); });
   }
 
   // ---------- mine ----------
@@ -2027,7 +2037,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   let mineSig = "";
   function renderMine() {
     const myFixed = [...S.holders.values()].flat().filter(h => h.uid === S.me);
-    const sig = JSON.stringify([S.me, S.myBookings, S.myAway, myFixed, S.dbOk, S.notices, S.inits[S.me], S.names[S.me], S.busy, S.hours[S.me]]);
+    const sig = JSON.stringify([S.me, S.myBookings, S.myAway, myFixed, S.dbOk, S.notices, S.inits[S.me], S.names[S.me], S.busy, S.hours[S.me]]); // inkl. dager
     if (sig === mineSig) return; mineSig = sig;
     if (!S.me || !S.dbOk) { mineEl.hidden = true; return; }
     mineEl.hidden = false;
@@ -2050,9 +2060,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
         <div class="actions">${[...new Set(bk.map(b => b.desk))].map(dk => `<button class="btn small ghost" data-mydesk="${dk}">Endre plass ${DESK[dk]?.num} i kalender</button>`).join("")}<button class="btn small ghost" id="icsBtn">Legg i kalender (Outlook/Google)</button></div></details>` : ""}
       ${aw.length ? `<details class="mybk" id="myAw"><summary>Dager jeg har frigitt fast plass (${aw.length})</summary>
       <ul class="list">${aw.map(a => `<li><span class="lt"><b>${esc(fmtShort(a.date))}</b> · Plass ${DESK[a.desk]?.num} · ${span(a.s, a.e)}${a.by && a.by !== S.me ? `<span class="note">overtatt av ${esc(nameOf(a.by))}</span>` : ""}${a.note ? `<span class="note">«${esc(a.note)}»</span>` : ""}</span><button class="btn small ghost" data-undoaway="${a.id}">Angre</button></li>`).join("")}</ul></details>` : ""}
-      <div class="field">Timer i uka (stilling)
-        <form class="inirow" id="hrsForm"><input id="hrsIn" inputmode="decimal" maxlength="4" value="${esc(String(hoursOf(S.me)).replace(".", ","))}" aria-label="Timer i uka" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form>
-        <span class="hint">Heltid = 37,5. Jobber du deltid, skriv timene dine – da vises du i ukesoversikten bare hvis du har plass færre dager enn du jobber.</span></div>
+      <label class="field">Dager på kontoret i uka
+        <select id="daysSel" data-fresh="1">${daysOptions(daysOf(S.me))}</select>
+        <span class="hint">Standard er heltid (5 dager). Er du deltid, velg hvor mange dager du er på kontoret.</span></label>
       <div class="field">Initialene dine på kartet
         <form class="inirow" id="iniForm"><input id="iniIn" maxlength="3" value="${esc(myIni)}" aria-label="Initialer" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form></div>`;
     withKeep(mineEl, html);
@@ -2064,7 +2074,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     mineEl.querySelectorAll("[data-mydesk]").forEach(b => b.addEventListener("click", () => openMine(b.dataset.mydesk)));
     mineEl.querySelectorAll("[data-mytimes]").forEach(b => b.addEventListener("click", () => openTimes(b.dataset.mytimes)));
     mineEl.querySelector("#iniForm").addEventListener("submit", e => { e.preventDefault(); saveInitials(mineEl.querySelector("#iniIn").value); });
-    mineEl.querySelector("#hrsForm").addEventListener("submit", e => { e.preventDefault(); saveHours(mineEl.querySelector("#hrsIn").value); });
+    mineEl.querySelector("#daysSel").addEventListener("change", e => saveDays(S.me, e.target.value));
   }
   function downloadIcs() {
     const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
@@ -2116,7 +2126,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
         <button class="btn" type="submit">Lag bruker</button>
       </form>
       ${S.codes.length ? `<details id="admUsers" class="admsub"><summary>Brukere og koder (${S.codes.length})</summary><ul class="list admlist">${S.codes.map(c => `<li><span class="lt">${esc(c.name || "Uten navn")}${c.admin ? `<span class="badge">admin</span>` : ""}<span class="note" style="font-family:var(--f-mono);font-style:normal">${esc(c.code)}</span></span>
-        <span class="actions"><button class="btn small ghost" data-copy="${esc(c.code)}">Kopier</button><button class="btn small ghost" data-hrs="${esc(c.member)}" title="Timer i uka">${esc(String(hoursOf(c.member)).replace(".", ","))} t</button>${c.code === S.code ? "" : `<button class="btn small ghost" data-adm="${esc(c.code)}">${c.admin ? "Fjern admin" : "Gjør til admin"}</button><button class="btn small ghost" data-renew="${esc(c.code)}">Ny kode</button><button class="btn small danger" data-revoke="${esc(c.code)}">Slett</button>`}</span></li>`).join("")}</ul></details>` : `<p class="muted">Ingen brukere ennå.</p>`}
+        <span class="actions"><button class="btn small ghost" data-copy="${esc(c.code)}">Kopier</button><button class="btn small ghost" data-hrs="${esc(c.member)}" title="Dager på kontoret i uka">${daysOf(c.member)} d/uke</button>${c.code === S.code ? "" : `<button class="btn small ghost" data-adm="${esc(c.code)}">${c.admin ? "Fjern admin" : "Gjør til admin"}</button><button class="btn small ghost" data-renew="${esc(c.code)}">Ny kode</button><button class="btn small danger" data-revoke="${esc(c.code)}">Slett</button>`}</span></li>`).join("")}</ul></details>` : `<p class="muted">Ingen brukere ennå.</p>`}
       <details id="figDet"><summary>Figurer på kartet</summary>
         <div style="display:flex;flex-direction:column;gap:12px">
           <p class="hint">Bruk helst et bilde med gjennomsiktig bakgrunn (PNG), så følger figuren omrisset av personen. Et vanlig bilde vises som et rektangel. Bildene lagres bak innloggingen, ikke i den offentlige koden.</p>
@@ -2153,10 +2163,10 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       guard(async () => { let n = 0; for (const m of list) n += await purgeMember(m); flash(`Ryddet opp: ${list.length} ${list.length === 1 ? "person" : "personer"} og ${n} ${n === 1 ? "booking" : "bookinger"} er fjernet.`); });
     });
     adminEl.querySelectorAll("[data-hrs]").forEach(b => b.addEventListener("click", () => {
-      const m = b.dataset.hrs, v = prompt(`Timer i uka for ${fullName(m)} (heltid = 37,5, 0 = ikke på kontoret):`, String(hoursOf(m)).replace(".", ","));
-      if (v === null) return; const h = Math.round(Number(v.replace(",", ".")) * 2) / 2;
-      if (!isFinite(h) || h < 0 || h > 60) { flash("Skriv et tall mellom 0 og 60.", true); return; }
-      guard(async () => { await db.collection("members").doc(m).update({ hours: h }); flash(`${fullName(m)}: ${String(h).replace(".", ",")} timer i uka.`); });
+      const m = b.dataset.hrs, v = prompt(`Hvor mange dager er ${fullName(m)} på kontoret i uka? (5 = heltid, 0 = ikke på kontoret)`, String(daysOf(m)));
+      if (v === null) return; const n = Number(v);
+      if (!Number.isInteger(n) || n < 0 || n > 5) { flash("Skriv et helt tall fra 0 til 5.", true); return; }
+      saveDays(m, n);
     }));
     adminEl.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy)));
     adminEl.querySelectorAll("[data-adm]").forEach(b => b.addEventListener("click", () => {
@@ -2271,6 +2281,8 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     document.getElementById("todaybar").innerHTML = `I dag: <b>${esc(fmtLong(TODAY))}</b> · uke ${isoWeek(TODAY)}`;
     if (!inside) return;
     renderAdmin();
+    const md = document.getElementById("meDays");
+    if (md && document.activeElement !== md) { const n = daysOf(S.me); if (md.dataset.n !== String(n)) { md.innerHTML = [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${v === 5 ? "Heltid · 5 dager" : v === 0 ? "Ikke på kontoret" : `Deltid · ${v} ${v === 1 ? "dag" : "dager"}`}</option>`).join(""); md.dataset.n = String(n); } }
     if (S.view === "plan") { renderDays(); renderPlan(); renderPanel(); renderMine(); }
     else if (S.view === "week") renderWeek();
     else renderCal();
@@ -2655,7 +2667,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
 
     const chip = document.getElementById("me");
     chip.hidden = false; chip.innerHTML = "";
-    const sp = document.createElement("span"); sp.textContent = info.name || "Deg"; sp.style.paddingLeft = "8px";
+    const sp = document.createElement("span"); sp.className = "me-n"; sp.style.paddingLeft = "8px";
+    sp.innerHTML = `<b>${esc(info.name || "Deg")}</b><label class="me-days" title="Dager på kontoret i uka"><select id="meDays" aria-label="Dager på kontoret i uka"></select></label>`;
+    sp.querySelector("#meDays").addEventListener("change", e => saveDays(S.me, e.target.value));
     const out = document.createElement("button"); out.type = "button"; out.textContent = "Logg ut"; out.addEventListener("click", logout);
     chip.append(sp, out);
 
