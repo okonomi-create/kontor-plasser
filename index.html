@@ -592,6 +592,80 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
 @keyframes fpfade { 0% { opacity: 0; } 3% { opacity: 1; } 70% { opacity: .9; } 100% { opacity: 0; } }
 :root[data-tema="jul"] .planprints ellipse { fill: #a9bccb; fill-opacity: .55; stroke: #ffffff; stroke-width: 1.2; }
 :root[data-tema="sommer"] .planprints ellipse { fill: #b08a58; fill-opacity: .38; }
+
+/* knapp tilbake til dagsoversikten når en plass er valgt */
+.ovbtn { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font: inherit; color: var(--ink); background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); border-radius: 12px; padding: 9px 12px; margin-bottom: 12px; cursor: pointer; transition: transform .12s, box-shadow .12s; }
+.ovbtn:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); transform: translateY(-1px); }
+.ovbtn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.ovbtn .ovb-ic { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); }
+.ovbtn b { display: block; font-size: .92rem; }
+.ovbtn small { display: block; color: var(--muted); font-size: .8rem; }
+.ovbtn .ovb-arr { margin-left: auto; font-size: 1.4rem; color: var(--accent); line-height: 1; }
+
+/* ---------- ukesoversikt ---------- */
+.wk-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.wk-head h2 { font-size: 1.4rem; }
+.wk-head h2 small { font-size: .95rem; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.wk-head .hint { margin: 2px 0 0; }
+.wk-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; }
+.wk-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+.wk-stat { background: var(--surface2); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: .85rem; color: var(--muted); }
+.wk-stat b { color: var(--ink); font-size: 1rem; margin-right: 2px; }
+.wk-stat.bad { background: var(--booked-soft); border-color: transparent; } .wk-stat.ok { background: var(--free-soft); border-color: transparent; }
+.seg { display: inline-flex; background: var(--surface2); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { font: inherit; font-size: .85rem; font-weight: 600; border: 0; background: none; color: var(--muted); padding: 6px 12px; border-radius: 7px; cursor: pointer; }
+.seg button.on { background: var(--accent); color: var(--accent-ink); }
+.wk-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+table.wk { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 720px; table-layout: fixed; }
+.wk col.c-name { width: 210px; } .wk col.c-sum { width: 104px; }
+@media (max-width: 600px) { .wk col.c-name { width: 150px; } .wk .wk-name { min-width: 0; } .wk-person .av { display: none; } }
+.wk th, .wk td { padding: 6px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: middle; }
+.wk tbody tr:last-child th, .wk tbody tr:last-child td { border-bottom: 0; }
+.wk thead th { background: var(--surface2); position: sticky; top: 0; z-index: 1; }
+.wk thead th.today { box-shadow: inset 0 -3px 0 var(--accent); }
+.wk thead th.hol { color: var(--muted); }
+.wk-day { font: inherit; border: 0; background: none; cursor: pointer; color: var(--ink); padding: 2px 4px; border-radius: 6px; }
+.wk-day:hover { background: var(--accent-soft); }
+.wk-day b { display: block; font-size: .9rem; } .wk-day small { display: block; color: var(--muted); font-size: .74rem; font-weight: 500; }
+.wk .wk-name { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 2; min-width: 190px; }
+.wk thead .wk-name { background: var(--surface2); font-size: .8rem; color: var(--muted); font-weight: 600; z-index: 3; }
+.wk-person { display: flex; align-items: center; gap: 8px; }
+.wk-person b { font-size: .9rem; } .wk-person small { display: block; color: var(--muted); font-size: .74rem; font-weight: 500; }
+.wk tr.wk-me th.wk-name, .wk tr.wk-me td { background: color-mix(in srgb, var(--mine-soft) 55%, var(--surface)); }
+.wk-c { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 42px; border-radius: 8px; font: inherit; font-size: .8rem; border: 1px solid transparent; padding: 3px 4px; line-height: 1.2; }
+button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+.wk-c small { font-size: .72rem; opacity: .85; }
+.wk-c.seat { background: var(--free-soft); color: var(--ink); border-color: color-mix(in srgb, var(--free) 45%, transparent); }
+.wk-c.seat.fx { background: var(--fixed-soft); border-color: color-mix(in srgb, var(--fixed) 50%, transparent); }
+.wk-c.miss { background: var(--booked-soft); color: var(--danger); border: 1px dashed color-mix(in srgb, var(--booked) 70%, transparent); }
+.wk-c.open { background: none; color: var(--muted); border: 1px dashed var(--line); }
+.wk-c.off { color: var(--muted); opacity: .6; }
+.wk-c.hol { background: var(--hol); color: var(--muted); }
+.wk-c.past { opacity: .55; }
+.wk-sum { min-width: 96px; }
+.wk-prog { display: flex; align-items: center; gap: 6px; justify-content: center; font-size: .82rem; }
+.wk-prog i { display: block; width: 44px; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.wk-prog em { display: block; height: 100%; background: var(--free); }
+.wk-prog.bad em { background: var(--booked); }
+.wk-missing { color: var(--danger); font-size: .74rem; font-weight: 600; } .wk-okt { color: #2f8a5a; font-size: .74rem; font-weight: 600; }
+.wk-tag { color: var(--muted); font-size: .78rem; }
+.wk-empty { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 28px; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); }
+.wk-empty b { color: var(--ink); font-size: 1.05rem; }
+.wk-legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: .8rem; color: var(--muted); align-items: center; }
+.wk-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.wk-legend .sw { display: inline-block; width: 18px; min-height: 12px; height: 12px; padding: 0; border-radius: 4px; }
+/* neste dager i «Mine plasser» */
+.nextdays ul { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.nextdays li { display: flex; justify-content: space-between; gap: 10px; font-size: .88rem; padding: 6px 10px; background: var(--surface2); border-radius: 8px; }
+.nextdays li span { text-align: right; color: var(--muted); } .nextdays em { font-style: normal; font-size: .75rem; color: var(--accent); }
+/* admin sammenleggbar */
+.admdet > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.admdet > summary::-webkit-details-marker { display: none; }
+.admdet > summary::before { content: "▸"; color: var(--accent); font-size: 1.1rem; transition: transform .15s; }
+.admdet[open] > summary::before { transform: rotate(90deg); }
+.adm-t b { display: block; font-family: var(--f-display); font-size: 1.05rem; } .adm-t small { color: var(--muted); font-size: .8rem; }
+.adm-body { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.admsub > summary { cursor: pointer; font-weight: 600; font-size: .92rem; padding: 4px 0; }
 </style>
 </head>
 <body>
@@ -605,6 +679,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     <div class="topright">
       <nav class="tabs" aria-label="Visning">
         <a href="#plan" id="tabPlan">Plantegning</a>
+        <a href="#uke" id="tabWeek">Ukesoversikt</a>
         <a href="#kalender" id="tabCal">Kalender</a>
       </nav>
       <label class="temapick">Tema
@@ -653,6 +728,10 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
         </aside>
       </main>
     </div>
+  </div>
+
+  <div id="viewWeek" hidden>
+    <section class="calbox weekbox" id="weekbox"></section>
   </div>
 
   <div id="viewCal" hidden>
@@ -805,7 +884,8 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       if (last && last.to === w - 1 && last.s === sp[0] && last.e === sp[1]) last.to = w;
       else groups.push({ from: w, to: w, s: sp[0], e: sp[1] });
     }
-    return groups.map(g => `${WD_NAMES[g.from]}${g.to > g.from ? (g.to - g.from > 1 ? "–" : ", ") + WD_NAMES[g.to] : ""} ${span(g.s, g.e)}`).join(" · ") || "ingen dager";
+    const txt = groups.map(g => `${WD_NAMES[g.from]}${g.to > g.from ? (g.to - g.from > 1 ? "–" : ", ") + WD_NAMES[g.to] : ""} ${span(g.s, g.e)}`).join(" · ") || "ingen dager";
+    return h?.from && h.from > TODAY ? `${txt} (fra ${fmtShort(h.from)})` : txt;
   }
 
   // ---------- state ----------
@@ -813,7 +893,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     view: "plan", date: weekday(TODAY), calMonth: monthOf(TODAY), selected: null,
     me: null, canWrite: true, admin: false, dbOk: null, auth: "loading", code: "",
     holders: new Map(), bIdx: new Map(), aIdx: new Map(), myBookings: [], myAway: [], notices: [], codes: [], members: {},
-    loaded: { fixed: false, bookings: false, away: false }, names: {}, inits: {}, msg: null, busy: false, figure: null,
+    loaded: { fixed: false, bookings: false, away: false }, names: {}, inits: {}, hours: {}, weekFilter: "miss", msg: null, busy: false, figure: null,
   };
   let db = null, auth = null, rangeUnsubs = [], rangeKey = null, subs = [], gateMsg = "", loggingIn = false;
   const ready = () => S.dbOk && S.loaded.fixed && S.loaded.bookings && S.loaded.away;
@@ -843,7 +923,9 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     return parts;
   }
   const holdersOf = desk => S.holders.get(desk) || [];
+  const activeOn = (h, date) => !h.from || date >= h.from; // fast plass kan starte en senere dato
   function fixedParts(h, date, bks, aways) { // tidsrom innehaveren faktisk har plassen denne dagen
+    if (!activeOn(h, date)) return [];
     const sp = hSpan(h, dow(date)); if (!sp) return [];
     const mine = aways.filter(a => a.uid === h.uid);
     return subtract(sp, mine.map(a => [a.s, a.e])).flatMap(p => subtract(p, bks.map(b => [b.s, b.e])));
@@ -1433,16 +1515,19 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       const end = addMonths(monthOf(TODAY), 12) + "-01";
       for (let d = TODAY; d < end; d = addDays(d, 1)) {
         if (isWeekend(d) || holiday(d)) continue;
+        if (!activeOn(h, d)) continue;
         const sp = hSpan(h, dow(d)); if (!sp) continue;
         const aw = S.myAway.filter(a => a.desk === desk && a.date === d);
         const leftMin = subtract(sp, aw.map(a => [a.s, a.e])).reduce((t, [a, b]) => t + b - a, 0);
         const taken = aw.find(a => a.by && a.by !== S.me);
         if (!map.has(d)) map.set(d, { bks: [], fx: null });
-        map.get(d).fx = { s: sp[0], e: sp[1], state: leftMin === 0 ? (taken ? "taken" : "freed") : "on", by: taken?.by, note: taken?.note, aw };
+        const act = subtract(sp, aw.map(a => [a.s, a.e])); // faktisk tid etter endringer
+        map.get(d).fx = { s: sp[0], e: sp[1], act, state: leftMin === 0 ? (taken ? "taken" : "freed") : "on", by: taken?.by, note: taken?.note, aw };
       }
     }
     return { map: new Map([...map].sort((a, b) => a[0].localeCompare(b[0]))), h };
   }
+  const actTxt = f => (f.act && f.act.length ? f.act : [[f.s, f.e]]).map(([a, b]) => span(a, b)).join(", ");
   const isActive = (d, v) => v.bks.length ? !MK.rmB.has(d) : v.fx ? (v.fx.state === "on" ? !MK.free.has(d) : v.fx.state === "freed" && MK.restore.has(d)) : false;
   const mkKey = e => { if (e.key === "Escape") closeMine(); };
   function openMine(desk) {
@@ -1465,7 +1550,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
         const t = v.bks.length > 1 ? `${v.bks.length}×` : `${shortT(v.bks[0].s)}–${shortT(v.bks[0].e)}`;
         html += `<button type="button" class="${[...base, "mk", off ? "off" : "on"].join(" ")}" data-md="${d}" title="${esc(`${fmtShort(d)}: booking ${v.bks.map(b => span(b.s, b.e) + (b.guest ? " (" + b.guest + ")" : "")).join(", ")} – ${off ? "trykk for å beholde" : "trykk for å fjerne"}`)}" aria-pressed="${!off}">${n}<span class="mk-t">${esc(t)}</span></button>`;
       } else if (v && v.fx) {
-        const f = v.fx, t = `${shortT(f.s)}–${shortT(f.e)}`;
+        const f = v.fx, t = f.act && f.act.length ? `${shortT(f.act[0][0])}–${shortT(f.act[f.act.length - 1][1])}` : `${shortT(f.s)}–${shortT(f.e)}`;
         if (f.state === "taken") html += `<span class="${[...base, "mk", "taken"].join(" ")}" title="${esc(`${fmtShort(d)}: ${f.note && /^Booket av/.test(f.note) ? f.note : `overtatt av ${fullName(f.by)}`}`)}">${n}<span class="mk-t">${f.note && /^Booket av/.test(f.note) ? "booket" : "overtatt"}</span></span>`;
         else if (f.state === "freed") { const back = MK.restore.has(d);
           html += `<button type="button" class="${[...base, "mk", back ? "back" : "freed"].join(" ")}" data-md="${d}" title="${esc(`${fmtShort(d)}: ${back ? "du tar plassen tilbake" : "frigitt – trykk for å ta plassen tilbake"}`)}">${n}<span class="mk-t">${back ? "tilbake" : "frigitt"}</span></button>`; }
@@ -1724,7 +1809,9 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       const d = DESK[sel];
       const myH = info.holders.find(h => h.uid === S.me);
       const others = info.holders.filter(h => h.uid !== S.me);
-      html = `<div class="deskhead"><h3>Plass ${d.num}</h3><span class="room">${esc(d.room)}</span></div>
+      const st = ready() && !holiday(S.date) ? dayStats(S.date) : null, nIn = st ? whoIsIn(S.date).length : 0;
+      html = `<button type="button" class="ovbtn" id="toOverview"><span class="ovb-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="9" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c.6-3.3 3-5 5.5-5s4.9 1.7 5.5 5M14 14.6c.8-.4 1.6-.6 2.5-.6 2 0 3.7 1.3 4.2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span><b>Hvem er på kontoret ${S.date === TODAY ? "i dag" : esc(fmtShort(S.date))}?</b><small>${st ? `${nIn} ${nIn === 1 ? "person" : "personer"} · ${st.free} av ${DESKS.length} ledige` : "Se oversikten over dagen"}</small></span><span class="ovb-arr" aria-hidden="true">›</span></button>
+        <div class="deskhead"><h3>Plass ${d.num}</h3><span class="room">${esc(d.room)}</span></div>
         <div class="eyebrow">${esc(fmtLong(S.date))}${S.date === TODAY ? " · i dag" : ""}</div>
         ${info.kind !== "unknown" && info.kind !== "closed" ? timelineHTML(info) : ""}
         ${info.kind === "free" ? `<p class="muted">Ledig hele dagen.</p>` : info.kind === "closed" ? `<p class="muted">${esc(holiday(S.date))} – helligdag, kontoret er stengt.</p>` : info.kind === "unknown" ? `<p class="muted">Henter…</p>` :
@@ -1737,7 +1824,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
         const act = [...mk.map].filter(([, v]) => v.bks.length || v.fx?.state === "on");
         const freed = [...mk.map].filter(([, v]) => !v.bks.length && v.fx && v.fx.state !== "on").length;
         const nb = [...mk.map].filter(([, v]) => v.bks.length).length;
-        const chip = ([d, v]) => `<span class="md-chip${v.bks.length ? "" : " fxc"}">${esc(fmtShort(d))} · ${v.bks.length ? v.bks.map(b => span(b.s, b.e)).join(", ") : span(v.fx.s, v.fx.e)}</span>`;
+        const chip = ([d, v]) => `<span class="md-chip${v.bks.length ? "" : " fxc"}">${esc(fmtShort(d))} · ${v.bks.length ? v.bks.map(b => span(b.s, b.e)).join(", ") : actTxt(v.fx)}</span>`;
         html += `<div class="mybox">
           <div class="mybox-h"><span class="mybox-ic" aria-hidden="true">★</span><div>${mk.h
             ? `<b>Dette er din faste plass</b><small>${esc(fmtSched(mk.h))}${nb ? ` · pluss ${nb} ${nb === 1 ? "booking" : "bookinger"}` : ""}${freed ? ` · ${freed} ${freed === 1 ? "dag" : "dager"} frigitt` : ""}</small>`
@@ -1771,12 +1858,14 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
           <form id="fxForm"><p class="hint">Velg hvilke dager du sitter her fast, og eventuelt bare fra et klokkeslett til et annet. Plassen er da reservert til deg disse tidene hver uke, og ledig for andre resten av tiden.</p>
           ${others.length ? `<p class="hint">Plassen deles allerede (se under). Overlapper du med noen, får du spørsmål før noe endres.</p>` : ""}
           <label class="field">For hvem?<select id="fxFor">${memberOptions(false)}</select></label>
+          <label class="field" id="fxFromWrap">Fast plass fra dato<input type="date" id="fxFrom" value="${TODAY}" min="${TODAY}"></label>
           ${schedHTML("fx", null)}<button class="btn" type="submit" id="fxBtn" ${S.busy ? "disabled" : ""}>Gjør til min faste plass</button></form></details>`;
       }
       if (can && myH && Object.keys(S.members).some(id => id !== S.me)) {
         html += `<details id="foNew"><summary>Gi plassen fast til en kollega</summary>
           <form id="foForm"><p class="hint">Velg hvem som skal ha plassen fast, og hvilke dager og tider. Personen får beskjed.</p>
           <label class="field">Hvem får plassen?<select id="foFor">${memberOptions(false).replace('<option value="">Meg selv</option>', "")}</select></label>
+          <label class="field">Fast plass fra dato<input type="date" id="foFrom" value="${TODAY}" min="${TODAY}"></label>
           ${schedHTML("fo", null)}<button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Gi plassen fast</button></form></details>`;
       }
       // faste plasser
@@ -1784,18 +1873,8 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       if (can && myH) {
         html += `<details id="fxEdit"><summary>Endre mine faste dager og tider</summary>
           <form id="fxForm"><p class="hint">Huk av dagene du sitter her fast, og velg klokkeslett for hver dag. Andre dager og tider er plassen ledig for andre.</p>
+          <label class="field">Fast plass fra dato<input type="date" id="fxFrom" value="${myH.from && myH.from > TODAY ? myH.from : TODAY}" min="${TODAY}"></label>
           ${schedHTML("fx", myH)}<button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Lagre</button></form></details>
-          <details id="awDet"><summary>Jeg sitter ikke her en dag (ferie, hjemmekontor)</summary>
-          <form id="awayForm">
-            <p class="hint">Plassen blir ledig for andre i tidsrommet du velger.</p>
-            ${rangeFieldHTML("aw", "Hvilke dager?")}
-            <div class="row2">
-              <label class="field">Fra kl.${timeSel("awS", "07:00", "Fra kl.")}</label>
-              <label class="field">Til kl.${timeSel("awE", "18:00", "Til kl.")}</label>
-            </div>
-            <label class="field">Notat (valgfritt)<input type="text" id="awNote" maxlength="120" placeholder="F.eks. «Ferie»"></label>
-            <button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Frigi plassen</button>
-          </form></details>
           ${info.aways.filter(a => a.uid === S.me).length ? `<div class="actions">${info.aways.filter(a => a.uid === S.me).map(a => `<button class="btn small ghost" data-undoaway="${a.id}">Angre frigitt ${span(a.s, a.e)}</button>`).join("")}</div>` : ""}
           <div class="actions"><button class="btn danger small" type="button" id="releaseFixed" data-hid="${esc(myH.id)}">Gi fra meg fast plass</button></div>`;
       }
@@ -1808,6 +1887,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     const q = s => panel.querySelector(s);
     panel.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => select(b.dataset.pick)));
     q("#closeSel")?.addEventListener("click", () => select(null));
+    q("#toOverview")?.addEventListener("click", () => select(null));
     q("#openMine")?.addEventListener("click", () => openMine(S.selected));
     q("#openTimes")?.addEventListener("click", () => openTimes(S.selected));
     wireRange(panel, "bk", S.selected); wireRange(panel, "aw", null);
@@ -1838,11 +1918,11 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       const fxFor = q("#fxFor"), fxBtn = q("#fxBtn");
       const upd = () => { if (fxFor && fxBtn) fxBtn.textContent = fxFor.value ? `Gi plassen fast til ${fullName(fxFor.value.slice(2))}` : "Gjør til min faste plass"; };
       fxFor?.addEventListener("change", upd); upd();
-      q("#fxForm").addEventListener("submit", e => { e.preventDefault(); const r = readSched(panel, "fx"); if (r.error) { flash(r.error, true); return; } saveFixed(S.selected, r, fxFor?.value ? fxFor.value.slice(2) : S.me); });
+      q("#fxForm").addEventListener("submit", e => { e.preventDefault(); const r = readSched(panel, "fx"); if (r.error) { flash(r.error, true); return; } r.from = q("#fxFrom")?.value || TODAY; saveFixed(S.selected, r, fxFor?.value ? fxFor.value.slice(2) : S.me); });
     }
     if (q("#foForm")) {
       wireSched(panel, "fo");
-      q("#foForm").addEventListener("submit", e => { e.preventDefault(); const t = q("#foFor").value; if (!t) { flash("Velg hvem som skal få plassen.", true); return; } const r = readSched(panel, "fo"); if (r.error) { flash(r.error, true); return; } saveFixed(S.selected, r, t.slice(2)); });
+      q("#foForm").addEventListener("submit", e => { e.preventDefault(); const t = q("#foFor").value; if (!t) { flash("Velg hvem som skal få plassen.", true); return; } const r = readSched(panel, "fo"); if (r.error) { flash(r.error, true); return; } r.from = q("#foFrom")?.value || TODAY; saveFixed(S.selected, r, t.slice(2)); });
     }
     panel.querySelectorAll("[data-cancel]").forEach(b => b.addEventListener("click", () => cancel(b.dataset.cancel)));
     panel.querySelectorAll("[data-undoaway]").forEach(b => b.addEventListener("click", () => undoAway(b.dataset.undoaway)));
@@ -1850,12 +1930,104 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     q("#releaseFixed")?.addEventListener("click", ev => releaseFixed(ev.currentTarget.dataset.hid));
   }
 
+  // ---------- ukesoversikt: hvem mangler plass hvilke dager ----------
+  const DAY_H = 7.5, FULL_H = 37.5;
+  const hoursOf = uid => (typeof S.hours[uid] === "number" ? S.hours[uid] : FULL_H);
+  function weekData(mon) {
+    const days = [0, 1, 2, 3, 4].map(i => addDays(mon, i));
+    const work = days.filter(d => !holiday(d));
+    const segsByUid = new Map();
+    const freeByDay = {};
+    for (const d of days) {
+      let free = 0;
+      for (const dk of DESKS) {
+        const info = dayInfo(d, dk.id);
+        if (info.kind === "free") free++;
+        for (const i of info.ints) {
+          if (i.guest) continue;
+          const k = i.uid + "|" + d;
+          if (!segsByUid.has(k)) segsByUid.set(k, []);
+          segsByUid.get(k).push({ desk: dk, s: i.s, e: i.e, src: i.src });
+        }
+      }
+      freeByDay[d] = free;
+    }
+    const rows = Object.keys(S.members).map(uid => {
+      const hrs = hoursOf(uid), full = hrs >= FULL_H - 0.01;
+      const need = hrs <= 0 ? 0 : Math.min(work.length, Math.ceil(hrs / DAY_H * work.length / 5 - 0.05));
+      const cells = days.map(d => {
+        if (holiday(d)) return { d, kind: "hol" };
+        const segs = (segsByUid.get(uid + "|" + d) || []).sort((a, b) => a.s - b.s);
+        return segs.length ? { d, kind: "seat", segs } : { d, kind: "none" };
+      });
+      const have = cells.filter(c => c.kind === "seat").length;
+      const missing = Math.max(0, need - have);
+      for (const c of cells) if (c.kind === "none") c.kind = missing === 0 ? "off" : full ? "miss" : "open";
+      return { uid, name: fullName(uid), ini: S.inits[uid] || iniFrom(fullName(uid)), hrs, full, need, have, missing, me: uid === S.me, cells };
+    }).sort((a, b) => (b.me - a.me) || (b.missing > 0) - (a.missing > 0) || a.name.localeCompare(b.name, "nb"));
+    return { days, rows, freeByDay };
+  }
+  let weekSig = "";
+  function renderWeek() {
+    const box = document.getElementById("weekbox"); if (!box) return;
+    const mon = monday(S.date);
+    const sig = JSON.stringify([mon, S.weekFilter, ready(), S.members, S.hours, S.inits, ready() ? [0, 1, 2, 3, 4].map(i => DESKS.map(d => dayInfo(addDays(mon, i), d.id).ints)) : null]);
+    if (sig === weekSig) return; weekSig = sig;
+    const fri = addDays(mon, 4);
+    const title = `Uke ${isoWeek(mon)}`;
+    const sub = `${parse(mon).getDate()}.${parse(mon).getMonth() !== parse(fri).getMonth() ? " " + parse(mon).toLocaleDateString("nb-NO", { month: "short" }).replace(".", "") : ""}–${parse(fri).getDate()}. ${parse(fri).toLocaleDateString("nb-NO", { month: "short", year: "numeric" }).replace(".", "")}`;
+    if (!ready()) { box.innerHTML = `<div class="wk-head"><div><h2>${title} <small>${esc(sub)}</small></h2></div></div><p class="muted">Henter…</p>`; return; }
+    const { days, rows, freeByDay } = weekData(mon);
+    const nMiss = rows.filter(r => r.missing > 0).length, nOk = rows.filter(r => r.need > 0 && r.missing === 0).length, nPart = rows.filter(r => !r.full).length;
+    const filt = S.weekFilter || "miss";
+    const shown = filt === "miss" ? rows.filter(r => r.missing > 0 || r.me) : rows;
+    const dn = ["Man", "Tir", "Ons", "Tor", "Fre"];
+    const head = `<tr><th class="wk-name">Person</th>${days.map((d, i) => `<th class="${d === TODAY ? "today" : ""}${holiday(d) ? " hol" : ""}"><button type="button" class="wk-day" data-wkday="${d}"><b>${dn[i]} ${parse(d).getDate()}.</b><small>${holiday(d) ? esc(holiday(d)) : `${freeByDay[d]} ledige`}</small></button></th>`).join("")}<th class="wk-sum">Dager</th></tr>`;
+    const cell = (r, c) => {
+      const past = c.d < TODAY ? " past" : "";
+      if (c.kind === "hol") return `<td><span class="wk-c hol${past}">Stengt</span></td>`;
+      if (c.kind === "seat") { const g = c.segs[0], more = c.segs.length - 1, fx = c.segs.every(x => x.src === "fixed");
+        return `<td><button type="button" class="wk-c seat${fx ? " fx" : ""}${past}" data-wkgo="${c.d}|${g.desk.id}" title="${esc(c.segs.map(x => `Plass ${x.desk.num} ${span(x.s, x.e)}${x.src === "fixed" ? " (fast)" : ""}`).join(", "))}"><b>Plass ${g.desk.num}</b><small>${span(g.s, g.e)}${more ? ` +${more}` : ""}</small></button></td>`; }
+      if (c.kind === "miss") return `<td><button type="button" class="wk-c miss${past}" data-wkgo="${c.d}|" title="Ingen plass – trykk for å se ledige plasser"><b>Ingen plass</b><small>${r.me ? "Finn plass" : ""}</small></button></td>`;
+      if (c.kind === "open") return `<td><button type="button" class="wk-c open${past}" data-wkgo="${c.d}|" title="Ingen plass denne dagen (deltid – kanskje fri)">–</button></td>`;
+      return `<td><span class="wk-c off${past}" title="Ingen plass – men nok dager denne uka">–</span></td>`;
+    };
+    const sumCell = r => r.need === 0 ? `<td class="wk-sum"><span class="wk-tag">${r.hrs <= 0 ? "Ikke på kontoret" : "–"}</span></td>`
+      : `<td class="wk-sum"><div class="wk-prog ${r.missing ? "bad" : "ok"}"><span><b>${r.have}</b>/${r.need}</span><i><em style="width:${Math.min(100, 100 * r.have / r.need)}%"></em></i></div>${r.missing ? `<small class="wk-missing">mangler ${r.missing}</small>` : `<small class="wk-okt">✓ ok</small>`}</td>`;
+    box.innerHTML = `<div class="wk-head">
+        <div><h2>${title} <small>${esc(sub)}</small></h2><p class="hint">Hvem mangler plass denne uka? Deltidsansatte vises bare når de har plass færre dager enn de jobber.</p></div>
+        <div class="calnav"><button class="iconbtn" id="wkPrev" aria-label="Forrige uke">←</button><button class="iconbtn" id="wkThis">Denne uka</button><button class="iconbtn" id="wkNext" aria-label="Neste uke">→</button></div>
+      </div>
+      <div class="wk-bar">
+        <div class="wk-stats"><span class="wk-stat bad"><b>${nMiss}</b> mangler plass</span><span class="wk-stat ok"><b>${nOk}</b> har nok dager</span>${nPart ? `<span class="wk-stat"><b>${nPart}</b> deltid</span>` : ""}</div>
+        <div class="seg" role="tablist"><button type="button" data-wkf="miss" class="${filt === "miss" ? "on" : ""}">Mangler plass (${nMiss})</button><button type="button" data-wkf="all" class="${filt === "all" ? "on" : ""}">Alle (${rows.length})</button></div>
+      </div>
+      ${shown.length ? `<div class="wk-scroll"><table class="wk"><colgroup><col class="c-name">${days.map(() => "<col>").join("")}<col class="c-sum"></colgroup><thead>${head}</thead><tbody>${shown.map(r => `<tr class="${r.me ? "wk-me" : ""}${r.missing ? " needs" : ""}">
+        <th class="wk-name" scope="row"><span class="wk-person">${avatar(r.name, r.ini)}<span><b>${esc(r.name)}</b>${r.me ? ` <span class="badge">deg</span>` : ""}<small>${r.full ? "Heltid" : `Deltid · ${String(r.hrs).replace(".", ",")} t/uke`}</small></span></span></th>
+        ${r.cells.map(c => cell(r, c)).join("")}${sumCell(r)}</tr>`).join("")}</tbody></table></div>`
+        : `<div class="wk-empty"><b>Alle har plass denne uka</b><span>Ingen mangler plass i uke ${isoWeek(mon)}.</span></div>`}
+      <div class="wk-legend"><span><i class="wk-c seat sw"></i>Booket</span><span><i class="wk-c seat fx sw"></i>Fast plass</span><span><i class="wk-c miss sw"></i>Ingen plass</span><span><i class="wk-c open sw"></i>Ingen plass (deltid)</span><span>Trykk på en dag for å se plantegningen den dagen.</span></div>`;
+    const q = s => box.querySelector(s);
+    q("#wkPrev").onclick = () => setDate(addDays(mon, -7));
+    q("#wkNext").onclick = () => setDate(addDays(mon, 7));
+    q("#wkThis").onclick = () => setDate(TODAY);
+    box.querySelectorAll("[data-wkf]").forEach(b => b.onclick = () => { S.weekFilter = b.dataset.wkf; weekSig = ""; renderWeek(); });
+    const go = (d, desk) => { S.date = d; S.calMonth = monthOf(d); S.selected = desk || null; S.msg = null; location.hash = "plan"; ensureRange(); render(); };
+    box.querySelectorAll("[data-wkgo]").forEach(b => b.onclick = () => { const [d, dk] = b.dataset.wkgo.split("|"); go(d, dk); });
+    box.querySelectorAll("[data-wkday]").forEach(b => b.onclick = () => go(b.dataset.wkday, null));
+  }
+  function saveHours(v) {
+    const h = Math.round(Number(String(v).replace(",", ".")) * 2) / 2;
+    if (!isFinite(h) || h < 0 || h > 60) { flash("Skriv antall timer i uka, mellom 0 og 60.", true); return; }
+    guard(async () => { await db.collection("members").doc(S.me).update({ hours: h }); flash(h >= FULL_H ? "Du står som heltid." : h === 0 ? "Du står med 0 timer – du vises ikke i ukesoversikten." : `Du står som deltid med ${String(h).replace(".", ",")} timer i uka.`); });
+  }
+
   // ---------- mine ----------
   const mineEl = document.getElementById("mine");
   let mineSig = "";
   function renderMine() {
     const myFixed = [...S.holders.values()].flat().filter(h => h.uid === S.me);
-    const sig = JSON.stringify([S.me, S.myBookings, S.myAway, myFixed, S.dbOk, S.notices, S.inits[S.me], S.names[S.me], S.busy]);
+    const sig = JSON.stringify([S.me, S.myBookings, S.myAway, myFixed, S.dbOk, S.notices, S.inits[S.me], S.names[S.me], S.busy, S.hours[S.me]]);
     if (sig === mineSig) return; mineSig = sig;
     if (!S.me || !S.dbOk) { mineEl.hidden = true; return; }
     mineEl.hidden = false;
@@ -1866,12 +2038,21 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     const html = `<h3>Mine plasser</h3>
       ${S.notices.map(n => `<div class="notice"><span>${esc(n.text)}</span><button class="btn small ghost" data-dismiss="${esc(n.id)}">OK</button></div>`).join("")}
       ${myFixed.length ? myFixed.map(h => `<div class="fixedbox mine"><span>Fast plass: <b>Plass ${DESK[h.desk]?.num}</b> · ${esc(DESK[h.desk]?.room || "")}<br>${esc(fmtSched(h))}</span><div class="actions"><button class="btn small" data-mydesk="${h.desk}">Fjern dager</button><button class="btn small ghost" data-mytimes="${h.desk}">Endre klokkeslett</button><button class="btn small ghost" data-pick="${h.desk}">Vis / endre</button></div></div>`).join("") : `<p class="muted">Du har ingen fast plass.</p>`}
-      <p class="muted" style="margin:0">${next ? `Neste booking: <b>${esc(fmtShort(next.date))}</b> · plass ${DESK[next.desk]?.num} · ${span(next.s, next.e)}${next.guest ? ` (for ${esc(next.guest)})` : ""}` : "Ingen bookinger fremover."}</p>
+      ${(() => { // neste dager du har plass – med faktisk tid (endrede klokkeslett og frigitte dager er tatt med)
+        const days = new Map();
+        for (const b of bk) if (!b.guest) { if (!days.has(b.date)) days.set(b.date, []); days.get(b.date).push({ desk: b.desk, t: span(b.s, b.e), s: b.s }); }
+        for (const h of myFixed) for (const [d, v] of mkData(h.desk).map) if (v.fx && v.fx.state === "on") { if (!days.has(d)) days.set(d, []); days.get(d).push({ desk: h.desk, t: actTxt(v.fx), s: v.fx.act?.[0]?.[0] ?? v.fx.s, fx: true }); }
+        const list = [...days].sort((a, b) => a[0].localeCompare(b[0])).slice(0, 4);
+        return list.length ? `<div class="nextdays"><div class="eyebrow">Neste dager på kontoret</div><ul>${list.map(([d, xs]) => `<li><b>${esc(fmtShort(d))}${d === TODAY ? " · i dag" : ""}</b><span>${xs.sort((a, b) => a.s - b.s).map(x => `Plass ${DESK[x.desk]?.num} · ${esc(x.t)}${x.fx ? "" : " <em>booket</em>"}`).join("<br>")}</span></li>`).join("")}</ul></div>` : `<p class="muted" style="margin:0">Ingen plass fremover.</p>`;
+      })()}
       ${bk.length ? `<details class="mybk" id="myBk"><summary>Mine bookinger (${bk.length})</summary>
         <ul class="list">${bk.slice(0, 120).map(b => `<li><span class="lt"><b>${esc(fmtShort(b.date))}</b> · Plass ${DESK[b.desk]?.num} · ${span(b.s, b.e)}${b.guest ? `<span class="note">for ${esc(b.guest)}</span>` : ""}${b.by && b.by !== S.me ? `<span class="note">booket av ${esc(nameOf(b.by))}</span>` : ""}${b.note ? `<span class="note">«${esc(b.note)}»</span>` : ""}</span><button class="btn small danger" data-cancel="${b.id}">Avbestill</button></li>`).join("")}</ul>
         <div class="actions">${[...new Set(bk.map(b => b.desk))].map(dk => `<button class="btn small ghost" data-mydesk="${dk}">Endre plass ${DESK[dk]?.num} i kalender</button>`).join("")}<button class="btn small ghost" id="icsBtn">Legg i kalender (Outlook/Google)</button></div></details>` : ""}
       ${aw.length ? `<details class="mybk" id="myAw"><summary>Dager jeg har frigitt fast plass (${aw.length})</summary>
       <ul class="list">${aw.map(a => `<li><span class="lt"><b>${esc(fmtShort(a.date))}</b> · Plass ${DESK[a.desk]?.num} · ${span(a.s, a.e)}${a.by && a.by !== S.me ? `<span class="note">overtatt av ${esc(nameOf(a.by))}</span>` : ""}${a.note ? `<span class="note">«${esc(a.note)}»</span>` : ""}</span><button class="btn small ghost" data-undoaway="${a.id}">Angre</button></li>`).join("")}</ul></details>` : ""}
+      <div class="field">Timer i uka (stilling)
+        <form class="inirow" id="hrsForm"><input id="hrsIn" inputmode="decimal" maxlength="4" value="${esc(String(hoursOf(S.me)).replace(".", ","))}" aria-label="Timer i uka" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form>
+        <span class="hint">Heltid = 37,5. Jobber du deltid, skriv timene dine – da vises du i ukesoversikten bare hvis du har plass færre dager enn du jobber.</span></div>
       <div class="field">Initialene dine på kartet
         <form class="inirow" id="iniForm"><input id="iniIn" maxlength="3" value="${esc(myIni)}" aria-label="Initialer" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form></div>`;
     withKeep(mineEl, html);
@@ -1883,6 +2064,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     mineEl.querySelectorAll("[data-mydesk]").forEach(b => b.addEventListener("click", () => openMine(b.dataset.mydesk)));
     mineEl.querySelectorAll("[data-mytimes]").forEach(b => b.addEventListener("click", () => openTimes(b.dataset.mytimes)));
     mineEl.querySelector("#iniForm").addEventListener("submit", e => { e.preventDefault(); saveInitials(mineEl.querySelector("#iniIn").value); });
+    mineEl.querySelector("#hrsForm").addEventListener("submit", e => { e.preventDefault(); saveHours(mineEl.querySelector("#hrsIn").value); });
   }
   function downloadIcs() {
     const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
@@ -1919,11 +2101,13 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
   }
   const orphans = () => S.codesLoaded ? Object.keys(S.members).filter(m => m !== S.me && !S.codes.some(c => c.member === m)) : [];
   function renderAdmin() {
-    const sig = JSON.stringify([S.admin, S.codes, S.code, orphans(), S.figure?.at, S.figure?.name, S.figure2?.at, S.figure2?.name]);
+    const sig = JSON.stringify([S.admin, S.codes, S.code, orphans(), S.hours, S.figure?.at, S.figure?.name, S.figure2?.at, S.figure2?.name]);
     if (sig === adminSig) return; adminSig = sig;
     adminEl.hidden = !S.admin;
     if (!S.admin) return;
-    const html = `<h3>Tilgang (admin)</h3>
+    const html = `${orphans().length ? `<div class="warnbox orph"><b>Tidligere slettede brukere står fortsatt i lista «For hvem?»:</b> ${esc(orphans().map(m => S.members[m]).join(", "))}. <button class="btn small danger" type="button" id="purgeOrph">Rydd opp</button><br><small>Fjerner navnene og alle bookingene og faste plassene deres.</small></div>` : ""}
+      <details id="admDet" class="admdet"><summary><span class="adm-t"><b>Tilgang (admin)</b><small>${S.codes.length} ${S.codes.length === 1 ? "bruker" : "brukere"} · bare synlig for admin</small></span></summary>
+      <div class="adm-body">
       <p class="muted">Lag en bruker til hver person. Koden er det eneste de trenger for å logge inn.</p>
       <form class="admform" id="addForm">
         <input type="text" id="addName" placeholder="Navn, f.eks. Kari Nordmann" maxlength="60" required aria-label="Navn">
@@ -1931,9 +2115,8 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
         <p class="hint">Små bokstaver, tall og bindestrek, minst 4 tegn (ikke æ, ø, å).</p>
         <button class="btn" type="submit">Lag bruker</button>
       </form>
-      ${orphans().length ? `<div class="warnbox orph"><b>Tidligere slettede brukere står fortsatt i lista «For hvem?»:</b> ${esc(orphans().map(m => S.members[m]).join(", "))}. <button class="btn small danger" type="button" id="purgeOrph">Rydd opp</button><br><small>Fjerner navnene og alle bookingene og faste plassene deres.</small></div>` : ""}
-      ${S.codes.length ? `<ul class="list admlist">${S.codes.map(c => `<li><span class="lt">${esc(c.name || "Uten navn")}${c.admin ? `<span class="badge">admin</span>` : ""}<span class="note" style="font-family:var(--f-mono);font-style:normal">${esc(c.code)}</span></span>
-        <span class="actions"><button class="btn small ghost" data-copy="${esc(c.code)}">Kopier</button>${c.code === S.code ? "" : `<button class="btn small ghost" data-adm="${esc(c.code)}">${c.admin ? "Fjern admin" : "Gjør til admin"}</button><button class="btn small ghost" data-renew="${esc(c.code)}">Ny kode</button><button class="btn small danger" data-revoke="${esc(c.code)}">Slett</button>`}</span></li>`).join("")}</ul>` : `<p class="muted">Ingen brukere ennå.</p>`}
+      ${S.codes.length ? `<details id="admUsers" class="admsub"><summary>Brukere og koder (${S.codes.length})</summary><ul class="list admlist">${S.codes.map(c => `<li><span class="lt">${esc(c.name || "Uten navn")}${c.admin ? `<span class="badge">admin</span>` : ""}<span class="note" style="font-family:var(--f-mono);font-style:normal">${esc(c.code)}</span></span>
+        <span class="actions"><button class="btn small ghost" data-copy="${esc(c.code)}">Kopier</button><button class="btn small ghost" data-hrs="${esc(c.member)}" title="Timer i uka">${esc(String(hoursOf(c.member)).replace(".", ","))} t</button>${c.code === S.code ? "" : `<button class="btn small ghost" data-adm="${esc(c.code)}">${c.admin ? "Fjern admin" : "Gjør til admin"}</button><button class="btn small ghost" data-renew="${esc(c.code)}">Ny kode</button><button class="btn small danger" data-revoke="${esc(c.code)}">Slett</button>`}</span></li>`).join("")}</ul></details>` : `<p class="muted">Ingen brukere ennå.</p>`}
       <details id="figDet"><summary>Figurer på kartet</summary>
         <div style="display:flex;flex-direction:column;gap:12px">
           <p class="hint">Bruk helst et bilde med gjennomsiktig bakgrunn (PNG), så følger figuren omrisset av personen. Et vanlig bilde vises som et rektangel. Bildene lagres bak innloggingen, ikke i den offentlige koden.</p>
@@ -1944,7 +2127,8 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
             <label class="field">Velg bilde (lagres med en gang)<input type="file" id="fig${n}File" accept="image/*"></label>
             <div class="actions"><button class="btn small" type="button" data-figsave="${n}">Lagre navn</button>${f?.img ? `<button class="btn small danger" type="button" data-figdel="${n}">Fjern</button>` : ""}</div>
           </div>`).join("")}
-        </div></details>`;
+        </div></details>
+      </div></details>`;
     withKeep(adminEl, html);
     const q = s => adminEl.querySelector(s);
     q("#genCode").addEventListener("click", () => { const n = q("#addName").value.trim(); q("#addCode").value = (n ? slug(n) + "-" : "") + rand(6); });
@@ -1968,6 +2152,12 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       if (!confirm(`Fjerne ${list.map(m => S.members[m]).join(", ")} for godt, med alle bookinger og faste plasser?`)) return;
       guard(async () => { let n = 0; for (const m of list) n += await purgeMember(m); flash(`Ryddet opp: ${list.length} ${list.length === 1 ? "person" : "personer"} og ${n} ${n === 1 ? "booking" : "bookinger"} er fjernet.`); });
     });
+    adminEl.querySelectorAll("[data-hrs]").forEach(b => b.addEventListener("click", () => {
+      const m = b.dataset.hrs, v = prompt(`Timer i uka for ${fullName(m)} (heltid = 37,5, 0 = ikke på kontoret):`, String(hoursOf(m)).replace(".", ","));
+      if (v === null) return; const h = Math.round(Number(v.replace(",", ".")) * 2) / 2;
+      if (!isFinite(h) || h < 0 || h > 60) { flash("Skriv et tall mellom 0 og 60.", true); return; }
+      guard(async () => { await db.collection("members").doc(m).update({ hours: h }); flash(`${fullName(m)}: ${String(h).replace(".", ",")} timer i uka.`); });
+    }));
     adminEl.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => copy(b.dataset.copy)));
     adminEl.querySelectorAll("[data-adm]").forEach(b => b.addEventListener("click", () => {
       const c = S.codes.find(x => x.code === b.dataset.adm); if (!c) return;
@@ -2076,17 +2266,20 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     document.querySelector(".tabs").hidden = !inside;
     document.getElementById("viewPlan").hidden = !inside || S.view !== "plan";
     document.getElementById("viewCal").hidden = !inside || S.view !== "cal";
+    document.getElementById("viewWeek").hidden = !inside || S.view !== "week";
+    for (const [id, v] of [["tabPlan", "plan"], ["tabWeek", "week"], ["tabCal", "cal"]]) { const t = document.getElementById(id); if (t) { if (S.view === v) t.setAttribute("aria-current", "page"); else t.removeAttribute("aria-current"); } }
     document.getElementById("todaybar").innerHTML = `I dag: <b>${esc(fmtLong(TODAY))}</b> · uke ${isoWeek(TODAY)}`;
     if (!inside) return;
     renderAdmin();
     if (S.view === "plan") { renderDays(); renderPlan(); renderPanel(); renderMine(); }
+    else if (S.view === "week") renderWeek();
     else renderCal();
   }
   function ensureRange() {
     if (!db || S.auth !== "in") return;
     const m = S.view === "cal" ? S.calMonth : monthOf(S.date);
     let from = monday(m + "-01"), to = addDays(monday(monthEnd(m)), 6);
-    if (S.view === "plan") { const mon = monday(S.date); if (mon < from) from = mon; const sun = addDays(mon, 6); if (sun > to) to = sun; }
+    if (S.view !== "cal") { const mon = monday(S.date); if (mon < from) from = mon; const sun = addDays(mon, 6); if (sun > to) to = sun; }
     const key = from + "|" + to;
     if (key === rangeKey) return;
     rangeKey = key;
@@ -2098,7 +2291,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       }, onErr));
   }
   function route() {
-    S.view = location.hash === "#kalender" ? "cal" : "plan";
+    S.view = location.hash === "#kalender" ? "cal" : location.hash === "#uke" ? "week" : "plan";
     if (S.view === "cal" && !S._calSet) { S.calMonth = monthOf(S.date); S._calSet = true; }
     ensureRange(); render();
   }
@@ -2283,13 +2476,14 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
   function saveFixed(desk, sched, T = S.me) {
     guard(async () => {
       const forOther = T !== S.me, tName = fullName(T), me = fullName(S.me), N = DESK[desk].num;
-      const mine = { days: sched.days, hours: sched.hours };
+      const from = sched.from && sched.from > TODAY ? sched.from : "";
+      const mine = { days: sched.days, hours: sched.hours, from };
       const schedItems = h => hDays(h).filter(w => hSpan(h, w)).map(w => `${WD_CAP[w]} ${span(...hSpan(h, w))}`);
       // 1) Tydelig spørsmål når du gir plassen til en annen
       if (forOther) {
         const ch = await askChoice({
           tone: "warn", icon: "★", title: `Du gir en fast plass til ${tName}`,
-          lead: `Plass ${N} blir den faste plassen til <b>${esc(tName)}</b>. Plassen reserveres til ${esc(tName)} hver uke disse tidene, helt til den blir fjernet:`,
+          lead: `Plass ${N} blir den faste plassen til <b>${esc(tName)}</b> fra <b>${esc(from ? fmtLong(from) : "i dag")}</b>. Plassen reserveres til ${esc(tName)} hver uke disse tidene, helt til den blir fjernet:`,
           groups: [{ name: tName, kind: "fixed", ini: S.inits[T] || iniFrom(tName), items: schedItems(mine) }],
           note: `${esc(tName)} får beskjed om dette. <b>Er du sikker på at du vil gjøre dette?</b>`,
           actions: [{ key: "ok", label: `Ja, gi plassen til ${tName}`, cls: "danger-solid" }, { key: "cancel", label: "Avbryt", cls: "ghost" }],
@@ -2321,7 +2515,7 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
       const { bks } = await deskData(desk);
       const hit = [];
       for (const b of bks) {
-        if (b.date < TODAY || holiday(b.date) || (b.uid === T && !b.guest)) continue;
+        if (b.date < (from || TODAY) || holiday(b.date) || (b.uid === T && !b.guest)) continue;
         const sp = hSpan(mine, dow(b.date)); if (!sp || !ovl(b.s, b.e, sp[0], sp[1])) continue;
         hit.push({ b, s: Math.max(b.s, sp[0]), e: Math.min(b.e, sp[1]), sp });
       }
@@ -2349,14 +2543,17 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
         if (!left.length) await ref.delete();
         else {
           const hours = {}; for (const w of left) { const sp = hSpan(h, w); hours[String(w)] = [toHHMM(sp[0]), toHHMM(sp[1])]; }
-          await ref.set({ desk: h.desk, uid: h.uid, note: h.note || "", at: Date.now(), days: left, hours });
+          const od = { desk: h.desk, uid: h.uid, note: h.note || "", at: Date.now(), days: left, hours }; if (h.from) od.from = h.from;
+          await ref.set(od);
         }
         if (h.uid === T && forOther) await sendNotice(T, `Fordi du har fått plass ${N} fast på ${joinOg(rm.map(w => WD_LONG[w]))}, er den faste plassen din på plass ${DESK[h.desk]?.num} fjernet de dagene.`);
         else if (h.uid !== S.me && h.uid !== T) await sendNotice(h.uid, `${me} har gjort plass ${N} til ${forOther ? `den faste plassen til ${tName}` : "sin faste plass"} på ${joinOg(rm.map(w => WD_LONG[w]))}.${left.length ? ` Du har den fortsatt på ${joinOg(left.map(w => WD_LONG[w]))}.` : " Du har ikke lenger fast plass der."}`);
       }
       const myId = `${desk}__${T}`;
       const legacy = holdersOf(desk).find(h => h.uid === T && h.id !== myId);
-      await db.collection("fixed").doc(myId).set({ desk, uid: T, note: legacy?.note || "", at: Date.now(), days: mine.days, hours: mine.hours });
+      const fdoc = { desk, uid: T, note: legacy?.note || "", at: Date.now(), days: mine.days, hours: mine.hours };
+      if (from) fdoc.from = from;
+      await db.collection("fixed").doc(myId).set(fdoc);
       if (legacy) await db.collection("fixed").doc(legacy.id).delete();
       if (mode === "skip") {
         const byDay = new Map();
@@ -2467,12 +2664,12 @@ body { background-image: var(--tema-bg, none), var(--tema-glow, none); backgroun
     slowTimer = setTimeout(() => { if (!fresh) setBanner("Får ikke kontakt med databasen ennå. Det som vises kan være utdatert.", true); }, 10000);
     subs.push(db.collection("fixed").onSnapshot(snap => {
       const m = new Map();
-      snap.docs.forEach(d => { const v = d.data(); const desk = v.desk || d.id; if (!DESK[desk]) return; if (!m.has(desk)) m.set(desk, []); m.get(desk).push({ id: d.id, desk, uid: v.uid, note: v.note || "", days: v.days, hours: v.hours || null }); });
+      snap.docs.forEach(d => { const v = d.data(); const desk = v.desk || d.id; if (!DESK[desk]) return; if (!m.has(desk)) m.set(desk, []); m.get(desk).push({ id: d.id, desk, uid: v.uid, note: v.note || "", days: v.days, hours: v.hours || null, from: v.from || "" }); });
       S.holders = m; S.loaded.fixed = true; markFresh(); render();
     }, onErr));
     subs.push(db.collection("members").onSnapshot(snap => {
       const mem = {};
-      snap.docs.forEach(d => { const v = d.data(); if (v.name) S.names[d.id] = v.name; else if (!S.names[d.id]) S.names[d.id] = "En kollega"; mem[d.id] = S.names[d.id]; if (v.initials) S.inits[d.id] = v.initials; else delete S.inits[d.id]; });
+      snap.docs.forEach(d => { const v = d.data(); if (v.name) S.names[d.id] = v.name; else if (!S.names[d.id]) S.names[d.id] = "En kollega"; mem[d.id] = S.names[d.id]; if (v.initials) S.inits[d.id] = v.initials; else delete S.inits[d.id]; if (typeof v.hours === "number") S.hours[d.id] = v.hours; else delete S.hours[d.id]; });
       S.members = mem; render();
     }, () => {}));
     subs.push(db.collection("bookings").where("uid", "==", S.me).onSnapshot(snap => { S.myBookings = snap.docs.map(d => norm(d.id, d.data())).filter(b => b.date >= TODAY); render(); }, () => {}));
