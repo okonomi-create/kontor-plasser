@@ -672,6 +672,15 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
 .me-n b { font-weight: 600; }
 .me-days select { font: inherit; font-size: .72rem; color: var(--muted); border: 0; background: transparent; padding: 0 14px 0 0; margin: 0; cursor: pointer; appearance: auto; }
 .me-days select:hover { color: var(--accent); }
+
+/* stengt plass (Eifel) */
+.k-shut { fill: var(--unknown); }
+.desk.shut .dnum { fill: #fff; paint-order: stroke; stroke: rgba(0,0,0,.55); stroke-width: 4px; }
+.shut-badge { fill: rgba(20, 32, 42, .82); }
+.shut-txt { fill: #fff; font: 700 12px var(--f-body); letter-spacing: .08em; }
+.shutbox { display: flex; gap: 12px; align-items: center; background: var(--surface2); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.shutbox img { width: 92px; height: 92px; border-radius: 12px; object-fit: cover; flex: none; }
+.shutbox b { font-size: 1rem; } .shutbox p { margin: 4px 0 0; font-size: .88rem; }
 </style>
 </head>
 <body>
@@ -679,7 +688,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   <header class="top">
     <div class="brand">
       <h1>Måseskjæret</h1>
-      <p>Kontorplasser · 20 pulter · kjernetid 09–15 · åpent 07–18</p>
+      <p id="subline">Kontorplasser · 20 pulter · kjernetid 09–15 · åpent 07–18</p>
       <div class="todaybar" id="todaybar"></div>
     </div>
     <div class="topright">
@@ -811,6 +820,11 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     ["p20", [62,66,6,3], "Rom H"],
   ].map(([id, r, room]) => ({ id, num: Number(id.slice(1)), x: r[0], y: r[1], w: r[2], h: r[3], room }));
   const DESK = Object.fromEntries(DESKS.map(d => [d.id, d]));
+  // Stengte plasser (admin kan åpne/stenge). Plass 11 er stengt til en admin åpner den.
+  const EIFEL = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAEEAQQDASIAAhEBAxEB/8QAHAABAAIDAQEBAAAAAAAAAAAAAAUGAwQHAQII/8QAPBAAAQQBAwIEAwUGBQQDAAAAAQACAxEEBRIhMUEGE1FhInGBBxQjMpEVQlKhscEkYtHw8Rc0cuFDY6L/xAAbAQEAAwEBAQEAAAAAAAAAAAAAAQIDBAUGB//EACsRAQEAAgEEAQIFBAMAAAAAAAABAhEDBAUhMRITQSJRYXGxMzSB0TKRwf/aAAwDAQACEQMRAD8ApKIi4X6gIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiIERESIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIsRmpxAaSB1IXhlBHDlOqy+vx22S+YzIt3SNF1DVpf8NhzzRj8zmDgK4M+zSd7QfOc2/T+4KacXL3Tg4svjlVCXhK6A37LM2SQtGXsA6Fwu16z7Kcsy1JmNaz1rlNM73npfzc/RdPf9kkQjGzV5A/3iBCjsj7KdTb/22fjy/wDkwtTSce89JfeWv8KCis+ofZ/4i0+MyHFbkMHXyHWR9FWXtdHIY5GuY9vBa4UQo07eHquHm/p5SvEREdAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgL4fyWtBqyBa+1uaLgHU9fw8QMLw+QFwHoOqmTdc/V8n0uHLP8ovOg+AIZsW3yAh4B3Hm1ddK8HaVpcW1uLjyvP5nujFn9VJ4uOzGx2RgNbQ6AcLPuF8Wta/PsuXPK22+3jcZkIDWQsY0dA1oA/kvraAbC9Ehb3XhePRU0rtkY5fMpuvdfBkqiFgmynRN3Ftt9E0bZJclsbg0GytV+oRNvcXOr+ErTyw3Ii3wPcCb3Nvoq4/U8dmScaWWSCUd6tSLe3UcZwq3NHr2UPrWgaVrke/Jga93aaPh4+o/utE5GVixtkZLHPC7pba/4KHUWtfujDonH8zT0VbGvHncbvG6rnfiDwxk6LlVDunxn8scevyKiotPzJnU2Hb7u4XVp5I8jFdDPTmO5afQqnZLnY8xicLaDw4GlWV7GPd+oxw+O/8AKFfoUzI97p2A+lcLQkxp43lpZuru0qWydWONIWzxgtHHKxMzcOc0xgb35BVtKcfd+oxu7dokG/Yr1bckeE6Y7N73O7A0F8ZWIIoPMYyq7kqLi9ji7zxZ2Y68tdF4OQvVD2RERAREQEREBERAREQEREBERA6BdT+zXR48bSzqj2XPkmmkjlrR2Comi+GsrWix3mMhgcep5c4ewXasTHi07BihjJpjQ0E9StcMLPNfKd87hhyScHFd+fLadJtPK+PPA5WrNkACzwO3qVG5WpxwNtzunura2+bTLcjfLRPuV47JLtxaeG817KF0zUG5TpZLtrG8rYiyDGzziLDiWkeyn4m0g3K6Ou2k1Sw+eWSyRFzXg8hp7rQxJmuyJIr+EHcCtTU3OYx7rp4kppUfFO2xKBHP5sDnN9Wkmv0UVrjgXxSMoSVyOxC3MLUfPxd2QQ4NcQT3FKE1rVIMHPbDO/8ADcRtf1FFLimVs4OU7IhcwOBaRVE0vjHeJ45IDZkju2PPxD/fqoTKyJdN1RkTSAJuYz2LvT6j+a2HakzKbHqEQcxwO2TjlhHX/foosXlSMOSyUOhc4iRvT3WhqTWHHLwAXNN8LHk/94MmI7HEjcOwJ7/Ir5jyfPnka9m17OHN62FlZ92uN34QepshlgudhII4cFU55m4sxia1zmdR8Vq1aqCyOV17Q1x2gdlTMtwklsgBp7V/ulfFXJL4eU55HwhvzClMmM5EDetgcc0q7hyNjH4jG+1/6qex8hrGWwEDv3TJfh5Lx5TKNLa5j9j+vVerYzS15jlaOTweKWus6+36DqPr8EzvsRER2iIiAiIgIiICIiAiIgL6iiORkRwNv4zRodB3XysmIzKfmtZiOc2V/Ft7BTj7c3WZZY8GVxurr3+ToOgyOfqGPjxQENjFb3dh8lfHgNjsm+O6594Yk+6Z8WHFJ95yXOp7+zVe813l47hfDRyfVdV8vznOayRObnsa5znv2xxtLnu9B6Bct1nX8/XNUniwnNgx8fh8rujfYe6nPEuouZG+NpvcbcPl0CqOgf4zTsmFmz7wZ3SOY8WHdOo7jivqmMRV58AZs8pmxpJBkRyMIEjRVEdir5Fjh2OGAGmm6Kpf2feFsvEi+8ylzQ5xNA7R9B6LpbIAOi18RllUKMURSuAH5mnaVg1THMmNCQLJPPzpTU8Ya5o73YWrkMHlGxwLNfRZ5XytJVcxYQIZYejdw59b6/1VG8Qb58ZkUoJki3N293DsugxRbXveQbIIv0rlVjWcWeV58sNaXdL4JVfk0kVL9oO1PQTjzO252G8eU4mrb2F+oWDH10uyWzRONStqeMjgPHf6rHrmBnYjPPawOLDbtnN/NVl2oZMocGQNic7guCrf0Xn6ug42osOC1znfCbY0+rDyB9OR9FkGUY8qGYHc2RnB9R3Cr2mQuk0RsUhLntf29Lv/AF/VSwjI0xkYsuifwO5BVcotjXuvuYcKdzSQ0tsH3VKEZlY03Z6BT2r5odpGSKJJoH/VV+N5dFGGv4cDtPuok0ta28YDlj9wB45F0pPHDoiGOB29ns7fRRuK57wHhvP7w91I+T8HnMtsg6gcf8qKmN+WNrw9geC4CzXr2PyWmOQCsjJhJEXvH4jAQHDiwVjAoAKlfUdhuXwz36ERFD3xERAREQEREBERAREQE3ujJex7muqraaRbWmxxy6jE2Wtgt1HuR0U4zdc/V548fBlnlNyRc/CDINGrIypG/eHNursguVv1ify8S3H8wtcyExyMt0gdTGVz/mvj9FbYsuTUsmOB5dHFG1oPqaHRdvx8PzbkzueVyqMxfD8usZbp8gFmODxfdauqfZxA7JbPgzyQEm30K/RXmHJjZM2ENoDopZuOJ3BnTjlXmMkZfO7a3hTRItL0iKEPke7q5xcSrGGAdFjiaI2Na0UBws/AbayyyWk3WpO0bmcVTrWlkNqN/wDlJ5W3mSAN469lqyvADgeS49FhcnRMUR5QDW7hRLfhb7KNnwd05cSDfUn+yn3wtBdI+3PcK2jsFpTxBzac5rPmVW1aYqjrGmRZEbwCWWCPh7rnWVo0um5IjnAIceHDp9V1TNxXx7nmRxHbaLpVrU9OdlY7ntdvINn2U45JuKDxIfIiAZy09utFSBlDoTdh7eopaMDXxN21dcEUtuJ4kdW02eDSm3ZJpC6uYo8aUygiGUUQ0ch3qFAYELZMWt1AHgqweJY92Ls20CQTagsaOSOCRjQbDbHzUz0X22ICXO5FObxY7rbZkP8AOY2zRHT1WpYhgY8/nI+Fp/qsuH8Uoe7v3TSNtqLcBtf1DjayrwlpktvQi16ssvb7ftGPx6TH9d/yIiKHpiIiAiIgIiICIiAiIgL1rzG9r29Wm14ielc8JnjccvVTrMlkePcMe5zzuBPQen1FKU0CYwZMbsqT4nA8+56qvabKHg4zqsW5h9fZb0+RDBR3klttDj0Btd2GXym35r1nTZdNzZcWX2/heocmPJ1WNkYIY26rurjp7Axhkfdn1XNPDWosZrbGSj848uP9LXRjk7ImbarvatlfDkmPlJRja2z1Xkkraq1AZeqOA4e0AdgVou1tjGEudW2z1XNctunHHSayJWg0D+9YWu+Te/cLNDlQjdTGRHHIDw49V6zUufzU0dAO6z06JPCZcZSLYAPe1oz4cpduMzd3yul9Q5Mso+EUPmkrpSKtvyUWIntqPjkjFSF7j/EKpQGq4gaTPG4MPdzDX6hWR0kjW/k5+dhQuoPiBcJ4b3cE9FnLdr2eFQyWlstujIDv3m9CviBrI33JwVI5EURlMVmiPhd1BHv7+6jMweRA65DfQd1rFKj9ac2XmwWDiyojAsZ5AAILeQ71WbLla2Njd17z+iy6M6P9oOBZu5oG+it6RPNR+fA6GUbnbh29gsmDcm1jOSTQUtqWOZpJWhv5eA0f3UXgQyRS0Wmtw5HZTtfk4/jlpubdr/ovVknczcwBwLuQaWNZV9t2zLfS47+wiIod4iIgIiICIiAiIgIiICIiAHOY4PYac02CpYlubpwcG/EdwcPQ9VErb0/KGNOWvry5OpPQH1W3Dn8bqvC770P1+H6mE/Fj/Dd0zdHquHvk2fG23fLgrspDXRbBRFdyuZ6V4cz9RzmSsjacdsm8uD6I+S6i+CMQAmwQKsdV05WPh5NK7qULWAvYSxw6jqqRqmcLcY5m+hBBFhWjxBqkeBgTTFxI6N91yTU9XmyZSW7mjrx2Weo1lqwDxBOMeGMygOjcWur09f8AfovnF1+dua2RzqibxsJ5d7qmNynNfuDjazHUHuA+FpVavNus4GvCRwO4c9ieVPwZLpq3EEH2XHtF1rZkxtcS0bqpdK03L3V8VhZ5tMFjDGFtH+qhNcaRhucG72t5PspaF4eADRHZa2p4xOM97L6c0sPu2+yiSTNsOY2h6DoVBarmea8RNd8NWQOy22vla58fO3eaPalCak7bkuAHxD060t5GNR+a8ySsa27b6KX0Jkv3pg8trnO4s9lGxBjTuDib56K5eDMd02YHlgLB3LUyvhOM8o/WYpcfOkuwD3WiBbeST9V0vxD4bGrxtOPtZOBQvofZc5lhkxpnwTMLJY3FrmnsQs97fWdpz4uXHWUnyjHtA7L1EUPbk0IiIkREQEREBERAREQEREBERAREQdM+zHNklw8vEebELwW31AI6fyV1zCCzbZ+i599mIDP2jL6ljfboVdsqfhxvoF1YXeMfnfdMcces5Jj625T9oua7GfjwBxEZt1epC55JmxOYRu5pX/7Tsf7xhMmYPiid8RHZp/8Aa5KceVrr2mvUdFeOKem07IBBp3KNzWd3G1ou/MU2Ei+yVMS8crJKc13xDkdl0/wtkPfgRmSy4cWuS4MRkyo4x1c8Cgut6ZG3GiY1poDgrLNtguGHI0vHxkexUpIQYzfIIVXhzWtFHr6KVxc0OjLd1tPS+y58o2lUXJxXxZ88b6sPJ+HpRVU1dsn39+1jgG/DY6n3V9z4G/tCd263E2FXM/R8jNznOZYbQPA6q+NZ2IfTsN+RLGGteTfPa117w7pkWHisLY9riObHKqGg6K+PLaXh28fouk47RDGLb0Cpldr4zTwtqTlU/wC0XRWwT4+rws2snqOYD+KuD9Rx9FbZJT8bxzQtZNW08694XmxCCJHRh8V9nDkf6Ku9V29Fz3g5sc/+/wBnFEXpBaSHAhwNEHsV4rPuJd+YIiICIiAiIgIiICIiAiIgIiICIiC6eAJtn39l9S0q05eUSfLZ0uiqD4Rzm4mqyRPNCdlD5hWPMzvLmq+vK6ML+F8D3jjuPWZ7+/lEaq774ycPb+E9zo+e4HBXMNX0LIwZi3HcZIDy3nkLpOZNUYAcAW889+eVW9VkcXNDOQRx86Wm9PNkc/kifE7bI0td6FfUWLNN+Rhr1Kk87HkyCH82ewHPH/C2cWF7YnBhIa5tUR0KfLwnT70nGbiTQueAXE9VfsaT8MOaQf3XBVLFj8tkQfXwFzt3oFKwZxhkIP5SAD78LO+WmN0sUczXEB3wlS2M9sZG78p91VmZDZGj4lIwZ34ex5vsVlY0lb+e3bnsde5rh68qWxYmCNoLAb9lAwyCdgJBI6C+ynMB3msDT24Ua8G/KThhYzkNA91nkkNULWBpDG0TYXw6baeXED1UaW22IB5srYz0ceeFZWs2s96VU0vKbkayyFjgQGOdYPcK2g2Fnl7a4+nGPHGlfszxJK5jahyh5zPYn8w/X+qri6h9pWnmbR4c1rbONL8R/wAruP60uXq0u4+v7XzfV6eb9zwIiKXoiIiAiIgIiICIiAiIgIiICIiD0PdG9sjDT2Hc0+6k4tTdlu2veBK4Egnjn0UWvC0HsrY5aeb1/bsOr826qXlx8vOtsMbnONFrfW+36qOydLzJIthik8xvYtIIV++zyD9p4uRHMwO8k7WuPWjyrmIRG10Lh8XQml14YTKbfB9TMun5cuO+4/PowJGSuErHBzjZaRyCtpunukaRtPIorseZpunOcA+CN5Aolw5/5UPl6bjCzFC1p9gr/S0w+ttzcYUnliPabqj7rWmwMnGla4E+URX/AIldAh02Jzug3Xa+8vTo3NpzA4D2Vbx3S05fKgMlljrg8Hn5KX0yGWaQOdwByCehHopR2nReYXeWPqFsxRFo2NbQ7BZ/Sv3a/VnqMkLWjhoohSGIdkoJ6O6qPa0iWum5SALYoyHdQeircUzJJOe4HoD6qL1rUI8XT5Hl1GqC+3ZTWxW5+0D1KrMULvEGoSySt/wkbtoF2HFUvhpPKS+zHEzMjV8nVJXE4zWOiYSfzEnmvYLrF0FW/D+Hj6bhNhx42xx9Q1o791OCVp6Lnyu7t0YzU019bxW6ho+ViOF+bGWj51x/NcGIc0lrhTgacPQjqu/TSgCr+S5H400r9m6++Rjagyx5zPQH94frz9VOP5Pb7LzzHkvHfv8A+K6iIrPphERAREQEREBERAREQEREBERAREQdN+ylrW4eY+jbpevbgLoORFFMz4m8+oVB+zJj2aPI917HTOIV/LrbYFr0OOfgj8y7llvq+T96q2sae+Mh8LnOaPzN7rQL4nROBIAaOeVZMu3ksDeo5Poq5qegt1bBdHFO/FyG2WyN6H2cO4V3HpoRhjnhzHfCe6+J8oA0RXoPVVE5+oeEjNDq0L/KfflvB3NJH8J/sqnl+N8qfIe9rCAQQ3np7/oq70v8XSDkRzZNtPBdQ966lSMTB5Zeel0FQtN8Q4gghJeGAxPc8u6tI/8Aa35fGmCPDxMMm7JDeGjqlqZFiyXQCdtOAJFBvqbQS3ue/kAXZXK4PE+bPnx5LwHBnAF1S35/E2dlQuaOGVzsBNAjuVndNJKsfiHUWZjodPxHkvcbkIPQeq14fD+qaPF9/wBBzJJC3434k3IeB1o+vstLRGQwlz5XtdI88vadw9gCLVjn8U4Gk41MLp8i6ZCxptzvRZWVrLItvhXxBB4g0SLOhaYn7iyWM9WPHUf79VYopbPKongHS8rS9DlfmM2ZGZO7IfF/BdUPnwrU2UMPsVz5YyXw6MbueUlJI15ABshV/wAc6Yc7w594Y25cQ+aPUt6OH6c/RTWKWucXXa3Z2MmxHRPALXNII9Qeqp6ro4eS8ecznuOBos+biuws7IxXCjDIWfQHj+SwK77rDOZ4zKeqIiIsIiICIiAiIgIiICIiAiIgLwmgSvUIsUeh4RGV1LXcPCuGMXwzgMaK/Ba4/M8qZB9TwsOleX+y4GxEFgjAFfJfclt4q16c8R+UcmVyzuV+7HOAehFLQLQLri1uPcSOi1JR2PVRURXNf0fF1bCfiZkZfG420tPLD6hUf/ppo7YNr58p0n8e4D+S6XPFYPqVGTQEP22o2vP0ce1f7P8AVcKbdp7X5eMQaIID2+xF/wBFHY/hXxGGcaVK5jga3loq/mV3ORjRFRrgLWFBob2HKirS1zTQfBmTCXzarBEXH8sV3R9TXCuGFp8MLdromtA6ACgpZzQ42scjRuaPflUq8u0bk6Fpj3eYcGEOsW5g2n9RSlMLRtMwfjgw4WSu/wDkDbd+p5XzkN/DAafykEqQiZcbaHCi+YtPFe40roi5h7LO6XzB0+aOgB5HBrukLW0SByFz5R04VJYXDLsrefJ+EQfRaUBAi+XC8mkIbXVY6a7c48a4vk64MgCm5Edn/wAm8H+VKuK7eOGB+Hiy8bmyV9CFSVZ9f2nk+fSzf28CIiPSEREBERAREQEREBERAREQF478p+S9Xjvyn5Ii+nd/Ckfk+GNPZd/gNP6hSz22L7qN8NOa/wAP4BFbfIZ0+QUo/wCVL1NeH5TyXed3+bUe3haj+ZBY6LblNcBachoqFGq9m6ct7AWo7JYRJ06/yUq5jhbqoqNnO7zPW1SrxHZBLWH1B5K1GP3us9Fu5gE0A2OAJ6hRzGvY8blVpI2MiwwEVQ6LAwWN57rI526MAn4rX1BEHyMvo0lNLMzcffjl5HDh0WbFY9mOKN11WZ7Xfd6AodlkgpuMQR7KLNRMu30aDR2vpa1mWQHgdetLNK8ks9z1XzAAwkH8rifoufJ0YNyJ1MvmiF8h3mOIHVZWU2PbwQQtOSZkZIBp3ULLTXat+OTWBjjsZQqOrh4xlMmnwj+GYf0VPR9X2T+3v7/6EREewIiICIiAiIgIiICIiAiIgIiIOz+ApHHwnhFxLjtIF9gCQFZ3mwqx4GtnhPT76FhP/wCirP1C9TD/AIx+VdVr6+evzv8ALTlIBWpKQWH5rcnZZFetlaMgAJDuinTFjj3bnRk3XRas0QaDfqtwAh3NX2Pqsc7Lb6lUyi+N+yuzCpj/AAg1SGPezsfVbOVACwgcO6grHjgh9HusmzQlh+JjwOAOFkwCZpSOg/upCbGthIH0UfCfu0/HIJ4Ub8p1uJp7QzF2nrSwtO2Fzau+i+ciUmL6WT6L4xX+ZBu7Aq3sk09sBu02ea+qzxtDow2/ivr7rXYfxGb+A91rLI10LnOIJjPPH7qxyjfGvomQW08EHstOUb5zzz6LNPlNDD3JF2o6HIaZg5xWNjSVFeLYy3TGE9RK1U5XPxjMHafGwd5G0qYq19Z2P+3v7/6EREe0IiICIiAiIgIiICIiAiIgLw9CiIV2rwbx4T00f/SD/MqxhxLURepj6j8o6j+rl+9/lik/KT7rSyADaIrMowMp0LCR1NLDM4t6eqIq5+mmPtF5RIc2uz19MA3njuiLJq9yHua0getKGgeTO72ukRZ32vPT6yZpHFsZcdpJsDvS2cZxZHQ6F1IitBszioGnu00Fs7iWhp6FvKIqZLRXcl7mSODTw0kALUdK5ruK6WiLGt0R4jmfIzEDjxuP9FBoipk+w7J/a/5oiIoeuIiICIiAiIg//9k=";
+  const DEFAULT_SHUT = ["p11"];
+  const isShut = id => S.shut.has(id);
+  const openDesks = () => DESKS.filter(d => !isShut(d.id));
   const LABELS = [
     ["Støyskjerm", 49.5, 6.5, "v"], ["Sofa", 47, 19.6], ["Stumtjener", 39, 20.6, "s"], ["Møterom", 42.5, 30.5, "big"],
     ["Møterom", 52, 58.3, "big"], ["Teknisk", 4, 40.6],
@@ -899,7 +913,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     view: "plan", date: weekday(TODAY), calMonth: monthOf(TODAY), selected: null,
     me: null, canWrite: true, admin: false, dbOk: null, auth: "loading", code: "",
     holders: new Map(), bIdx: new Map(), aIdx: new Map(), myBookings: [], myAway: [], notices: [], codes: [], members: {},
-    loaded: { fixed: false, bookings: false, away: false }, names: {}, inits: {}, hours: {}, weekFilter: "miss", msg: null, busy: false, figure: null,
+    loaded: { fixed: false, bookings: false, away: false }, names: {}, inits: {}, hours: {}, shut: new Set(DEFAULT_SHUT), weekFilter: "miss", msg: null, busy: false, figure: null,
   };
   let db = null, auth = null, rangeUnsubs = [], rangeKey = null, subs = [], gateMsg = "", loggingIn = false;
   const ready = () => S.dbOk && S.loaded.fixed && S.loaded.bookings && S.loaded.away;
@@ -938,6 +952,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   }
   function dayInfo(date, deskId) {
     const hs = holdersOf(deskId);
+    if (isShut(deskId)) return { kind: "shut", ints: [], free: [], aways: [], holders: hs, mine: false };
     if (holiday(date)) return { kind: "closed", ints: [], free: [], aways: [], holders: hs, mine: false };
     if (!ready()) return { kind: "unknown", ints: [], free: [], aways: [], holders: hs, mine: false };
     const k = date + "|" + deskId;
@@ -956,7 +971,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   }
   function dayStats(date) {
     let free = 0, partial = 0, full = 0;
-    for (const d of DESKS) { const k = dayInfo(date, d.id).kind; if (k === "free") free++; else if (k === "partial") partial++; else full++; }
+    for (const d of openDesks()) { const k = dayInfo(date, d.id).kind; if (k === "free") free++; else if (k === "partial") partial++; else full++; }
     return { free, partial, full };
   }
   const nameOf = uid => (uid === S.me ? "Deg" : (S.names[uid] || "En kollega"));
@@ -1007,6 +1022,8 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       const x = d.x * CW, y = d.y * CH, w = d.w * CW, h = d.h * CH;
       const grp = el("g", { class: "desk", tabindex: "0", role: "button", "data-id": d.id }, g);
       const body = el("rect", { x, y, width: w, height: h, rx: 6, class: "body" }, grp);
+      const cp = el("clipPath", { id: "dclip-" + d.id }, grp); el("rect", { x, y, width: w, height: h, rx: 6 }, cp);
+      const pic = el("g", { class: "shutpic" }, grp);
       el("rect", { x, y, width: w, height: h, rx: 6, class: "frame" }, grp);
       el("text", { x: x + 7, y: y + 21, class: "dnum" }, grp).textContent = d.num;
       const txt = el("g", {}, grp);
@@ -1015,7 +1032,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       grp.addEventListener("pointermove", e => { if (e.pointerType !== "touch") moveTip(e); });
       grp.addEventListener("pointerleave", hideTip);
       grp.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(d.id); } });
-      deskEls[d.id] = { grp, body, txt, x, y, w, h, tip: "" };
+      deskEls[d.id] = { grp, body, txt, pic, x, y, w, h, tip: "" };
     }
   }
   // Infoboks når musen holdes over en pult (klokkeslett og navn)
@@ -1035,6 +1052,13 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       E.grp.classList.toggle("sel", S.selected === d.id);
       E.grp.classList.toggle("mine", info.mine);
       E.txt.innerHTML = "";
+      const shut = info.kind === "shut";
+      E.grp.classList.toggle("shut", shut);
+      if (shut && !E.pic.firstChild) { // Eifel passer på den stengte plassen
+        el("image", { href: EIFEL, x: E.x, y: E.y, width: E.w, height: E.h, preserveAspectRatio: "xMidYMid slice", "clip-path": `url(#dclip-${d.id})` }, E.pic);
+        const bw = Math.min(E.w - 8, 78); el("rect", { x: E.x + (E.w - bw) / 2, y: E.y + E.h - 26, width: bw, height: 20, rx: 10, class: "shut-badge" }, E.pic);
+        el("text", { x: E.x + E.w / 2, y: E.y + E.h - 11.5, "text-anchor": "middle", class: "shut-txt" }, E.pic).textContent = "STENGT";
+      } else if (!shut && E.pic.firstChild) E.pic.innerHTML = "";
       const lines = [];
       if (info.ints.length && info.kind !== "closed") { // bare initialer på kartet – klokkeslett vises når musen holdes over
         const seen = new Map(); for (const i of info.ints) { const k = i.guest ? "g:" + i.guest : i.uid; if (!seen.has(k)) seen.set(k, initials(i)); }
@@ -1046,11 +1070,11 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       }
       const lh = 22, top = E.y + E.h / 2 - (lines.length - 1) * lh / 2 + (E.h > 70 ? 8 : 6);
       lines.forEach(([cls, t], i) => { el("text", { x: E.x + E.w / 2, y: top + i * lh, "text-anchor": "middle", class: cls }, E.txt).textContent = t; });
-      const desc = info.kind === "closed" ? "stengt (helligdag)" : info.kind === "unknown" ? "ukjent" : info.kind === "free" ? "ledig hele dagen" :
+      const desc = shut ? "stengt" : info.kind === "closed" ? "stengt (helligdag)" : info.kind === "unknown" ? "ukjent" : info.kind === "free" ? "ledig hele dagen" :
         info.ints.map(i => `${span(i.s, i.e)} ${who(i)}${i.src === "fixed" ? " (fast)" : ""}`).join("; ");
       E.grp.setAttribute("aria-label", `Plass ${d.num}: ${desc}`);
       const freeTxt = info.kind === "partial" && info.free.length ? `<div class="dt-free">Ledig ${info.free.filter(([a, b]) => b - a >= 30).map(([a, b]) => span(a, b)).join(", ")}</div>` : "";
-      E.tip = `<div class="dt-h">Plass ${d.num} <span>${esc(d.room)}</span></div>` + (info.kind === "closed" ? `<div class="dt-free">Stengt – ${esc(holiday(S.date))}</div>` : info.kind === "free" ? `<div class="dt-free">Ledig hele dagen</div>` : info.kind === "unknown" ? "" :
+      E.tip = `<div class="dt-h">Plass ${d.num} <span>${esc(d.room)}</span></div>` + (shut ? `<div class="dt-free">Stengt – Eifel passer på plassen</div>` : info.kind === "closed" ? `<div class="dt-free">Stengt – ${esc(holiday(S.date))}</div>` : info.kind === "free" ? `<div class="dt-free">Ledig hele dagen</div>` : info.kind === "unknown" ? "" :
         info.ints.map(i => `<div class="dt-r"><i style="background:${tColor(i)}"></i><b>${span(i.s, i.e)}</b> ${esc(who(i))}${i.src === "fixed" ? ` <small>fast</small>` : ""}</div>`).join("") + freeTxt);
     }
   }
@@ -1255,7 +1279,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   function renderDays() {
     const mon = monday(S.date);
     dayList.innerHTML = "";
-    const n = DESKS.length;
+    const n = openDesks().length;
     for (let i = 0; i < 7; i++) {
       const date = addDays(mon, i);
       const isToday = date === TODAY;
@@ -1296,7 +1320,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     const end = addDays(monday(last), 6);
     const wd = ["Man", "Tir", "Ons", "Tor", "Fre", "Lør", "Søn"];
     let html = wd.map((w, i) => `<div class="calwd${i >= 5 ? " we" : ""}">${w}</div>`).join("");
-    const n = DESKS.length;
+    const n = openDesks().length;
     for (; d <= end; d = addDays(d, 1)) {
       const out = monthOf(d) !== m;
       const tTag = d === TODAY ? '<span class="todaybadge">I dag</span>' : "";
@@ -1787,7 +1811,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   function renderPanel() {
     const sel = S.selected;
     const info = sel ? dayInfo(S.date, sel) : null;
-    const sig = JSON.stringify([sel, S.date, S.me, S.admin, S.dbOk, S.msg, S.busy, info && [info.kind, info.ints, info.holders, info.aways], sel ? [myOnDesk(sel), S.myAway.filter(a => a.desk === sel)] : null, S.loaded, sel ? null : DESKS.map(d => dayInfo(S.date, d.id).ints).flat(), S.names, S.members]);
+    const sig = JSON.stringify([sel, [...S.shut], S.date, S.me, S.admin, S.dbOk, S.msg, S.busy, info && [info.kind, info.ints, info.holders, info.aways], sel ? [myOnDesk(sel), S.myAway.filter(a => a.desk === sel)] : null, S.loaded, sel ? null : DESKS.map(d => dayInfo(S.date, d.id).ints).flat(), S.names, S.members]);
     if (sig === panelSig) return;
     const sameSel = panelSig && JSON.parse(panelSig)[0] === sel && JSON.parse(panelSig)[1] === S.date;
     panelSig = sig;
@@ -1797,9 +1821,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     let html;
     if (!sel) {
       const free = [], part = []; let full = 0;
-      for (const d of DESKS) { const i = dayInfo(S.date, d.id); if (i.kind === "free") free.push(d); else if (i.kind === "partial") part.push([d, i.free.filter(([a, b]) => b - a >= 30).map(([a, b]) => span(a, b)).join(", ")]); else full++; }
+      for (const d of openDesks()) { const i = dayInfo(S.date, d.id); if (i.kind === "free") free.push(d); else if (i.kind === "partial") part.push([d, i.free.filter(([a, b]) => b - a >= 30).map(([a, b]) => span(a, b)).join(", ")]); else full++; }
       const people = ready() && !holiday(S.date) ? whoIsIn(S.date) : [];
-      const N = DESKS.length;
+      const N = openDesks().length;
       const tile = (d, cls, sub) => `<button type="button" class="ov-t ${cls}" data-pick="${d.id}" title="Plass ${d.num} · ${esc(d.room)} · ledig ${esc(sub.toLowerCase())}"><span class="ov-n">${d.num}</span><span class="ov-r">${esc(d.room)}</span><span class="ov-s">${esc(sub)}</span></button>`;
       html = `<div class="ov-head"><div class="eyebrow">${esc(fmtLong(S.date))}${S.date === TODAY ? " · i dag" : ""}</div>
           ${holiday(S.date) ? `<div class="ov-big hol">${esc(holiday(S.date))}<small>Kontoret er stengt</small></div>` : ready() ? `<div class="ov-big"><b>${free.length}</b> av ${N} pulter ledige<small>${part.length ? `${part.length} delvis ledige · ` : ""}${full} opptatt</small></div>
@@ -1816,11 +1840,13 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       const myH = info.holders.find(h => h.uid === S.me);
       const others = info.holders.filter(h => h.uid !== S.me);
       const st = ready() && !holiday(S.date) ? dayStats(S.date) : null, nIn = st ? whoIsIn(S.date).length : 0;
-      html = `<button type="button" class="ovbtn" id="toOverview"><span class="ovb-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="9" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c.6-3.3 3-5 5.5-5s4.9 1.7 5.5 5M14 14.6c.8-.4 1.6-.6 2.5-.6 2 0 3.7 1.3 4.2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span><b>Hvem er på kontoret ${S.date === TODAY ? "i dag" : esc(fmtShort(S.date))}?</b><small>${st ? `${nIn} ${nIn === 1 ? "person" : "personer"} · ${st.free} av ${DESKS.length} ledige` : "Se oversikten over dagen"}</small></span><span class="ovb-arr" aria-hidden="true">›</span></button>
+      const shutBox = info.kind === "shut" ? `<div class="shutbox"><img src="${EIFEL}" alt="Eifel, hunden"><div><b>Plassen er stengt</b><p>Plass ${d.num} blir sjelden brukt, så den er stengt. Eifel passer på den så lenge.</p><p class="hint">${S.admin ? "Du er admin og kan åpne plassen under." : "Trenger du plassen, kontakt en admin."}</p></div></div>` : "";
+      html = `<button type="button" class="ovbtn" id="toOverview"><span class="ovb-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="16.5" cy="9" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c.6-3.3 3-5 5.5-5s4.9 1.7 5.5 5M14 14.6c.8-.4 1.6-.6 2.5-.6 2 0 3.7 1.3 4.2 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span><span><b>Hvem er på kontoret ${S.date === TODAY ? "i dag" : esc(fmtShort(S.date))}?</b><small>${st ? `${nIn} ${nIn === 1 ? "person" : "personer"} · ${st.free} av ${openDesks().length} ledige` : "Se oversikten over dagen"}</small></span><span class="ovb-arr" aria-hidden="true">›</span></button>
         <div class="deskhead"><h3>Plass ${d.num}</h3><span class="room">${esc(d.room)}</span></div>
         <div class="eyebrow">${esc(fmtLong(S.date))}${S.date === TODAY ? " · i dag" : ""}</div>
-        ${info.kind !== "unknown" && info.kind !== "closed" ? timelineHTML(info) : ""}
-        ${info.kind === "free" ? `<p class="muted">Ledig hele dagen.</p>` : info.kind === "closed" ? `<p class="muted">${esc(holiday(S.date))} – helligdag, kontoret er stengt.</p>` : info.kind === "unknown" ? `<p class="muted">Henter…</p>` :
+        ${shutBox}
+        ${info.kind !== "unknown" && info.kind !== "closed" && info.kind !== "shut" ? timelineHTML(info) : ""}
+        ${info.kind === "shut" ? "" : info.kind === "free" ? `<p class="muted">Ledig hele dagen.</p>` : info.kind === "closed" ? `<p class="muted">${esc(holiday(S.date))} – helligdag, kontoret er stengt.</p>` : info.kind === "unknown" ? `<p class="muted">Henter…</p>` :
           `<ul class="occ">${info.ints.map(i => `<li><i class="dot" style="background:${tColor(i)}"></i><span class="when">${span(i.s, i.e)}</span>
             <span class="who">${i.src === "fixed" ? "Fast: " : ""}${esc(who(i))}${i.src === "booking" && i.by && i.by !== i.uid ? `<span class="note">booket av ${esc(nameOf(i.by))}</span>` : i.src === "booking" && i.guest ? `<span class="note">booket av ${esc(nameOf(i.uid))}</span>` : ""}${i.note ? `<span class="note">«${esc(i.note)}»</span>` : ""}</span>
             <span>${can && i.src === "booking" && (i.uid === S.me || i.by === S.me || S.admin) ? `<button class="btn small danger" data-cancel="${i.id}">${i.uid === S.me || i.by === S.me ? "Avbestill" : "Fjern"}</button>` : ""}</span></li>`).join("")}</ul>`}
@@ -1842,7 +1868,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
           </div>
         </div>`;
       }
-      if (can && info.kind !== "closed" && info.kind !== "unknown") {
+      if (can && info.kind !== "closed" && info.kind !== "unknown" && info.kind !== "shut") {
         const [ds, de] = STD;
         html += `${myH ? `<details id="bkWrap"><summary>Book plassen for noen andre eller andre tider</summary>` : ""}<form id="bookForm">
           ${myH ? "" : `<div class="eyebrow">Book plassen</div>`}
@@ -1859,7 +1885,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
           <button class="btn" type="submit" ${S.busy ? "disabled" : ""}>Book plass ${d.num}</button>
         </form>${myH ? "</details>" : ""}`;
       }
-      if (can && !myH) {
+      if (can && !myH && info.kind !== "shut") {
         html += `<details id="fxNew" class="cta"><summary><span class="cta-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 3l6 6-3 1-4 4 1 4-2 2-4-4-5 5-1-1 5-5-4-4 2-2 4 1 4-4z" fill="currentColor"/></svg></span><span class="cta-t"><b>Gjør til min faste plass</b><small>Reserver plassen fast på ukedagene du velger</small></span></summary>
           <form id="fxForm"><p class="hint">Velg hvilke dager du sitter her fast, og eventuelt bare fra et klokkeslett til et annet. Plassen er da reservert til deg disse tidene hver uke, og ledig for andre resten av tiden.</p>
           ${others.length ? `<p class="hint">Plassen deles allerede (se under). Overlapper du med noen, får du spørsmål før noe endres.</p>` : ""}
@@ -1884,7 +1910,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
           ${info.aways.filter(a => a.uid === S.me).length ? `<div class="actions">${info.aways.filter(a => a.uid === S.me).map(a => `<button class="btn small ghost" data-undoaway="${a.id}">Angre frigitt ${span(a.s, a.e)}</button>`).join("")}</div>` : ""}
           <div class="actions"><button class="btn danger small" type="button" id="releaseFixed" data-hid="${esc(myH.id)}">Gi fra meg fast plass</button></div>`;
       }
-      html += `<div class="actions"><button class="btn small ghost" type="button" id="closeSel">Lukk</button></div>`;
+      html += `<div class="actions"><button class="btn small ghost" type="button" id="closeSel">Lukk</button>${can && S.admin ? `<button class="btn small ${isShut(sel) ? "" : "ghost"}" type="button" id="shutToggle">${isShut(sel) ? "Åpne plassen (admin)" : "Steng plassen (admin)"}</button>` : ""}</div>`;
     }
     withKeep(panel, html);
     wirePanel();
@@ -1894,6 +1920,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     panel.querySelectorAll("[data-pick]").forEach(b => b.addEventListener("click", () => select(b.dataset.pick)));
     q("#closeSel")?.addEventListener("click", () => select(null));
     q("#toOverview")?.addEventListener("click", () => select(null));
+    q("#shutToggle")?.addEventListener("click", () => setShut(S.selected, !isShut(S.selected)));
     q("#openMine")?.addEventListener("click", () => openMine(S.selected));
     q("#openTimes")?.addEventListener("click", () => openTimes(S.selected));
     wireRange(panel, "bk", S.selected); wireRange(panel, "aw", null);
@@ -1940,8 +1967,8 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   const DAY_H = 7.5, FULL_H = 37.5;
   const hoursOf = uid => (typeof S.hours[uid] === "number" ? S.hours[uid] : FULL_H);
   const daysOf = uid => Math.max(0, Math.min(5, Math.round(hoursOf(uid) / DAY_H))); // dager på kontoret i uka (standard 5 = heltid)
-  const daysTxt = n => n >= 5 ? "Heltid · 5 dager" : n === 0 ? "Ikke på kontoret" : `Deltid · ${n} ${n === 1 ? "dag" : "dager"} i uka`;
-  const daysOptions = n => [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${v === 5 ? "5 dager (heltid)" : v === 0 ? "0 (ikke på kontoret)" : `${v} ${v === 1 ? "dag" : "dager"}`}</option>`).join("");
+  const daysTxt = n => n === 0 ? "Ikke på kontoret" : `${n} ${n === 1 ? "dag" : "dager"} på kontoret`;
+  const daysOptions = n => [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${daysTxt(v)}</option>`).join("");
   function weekData(mon) {
     const days = [0, 1, 2, 3, 4].map(i => addDays(mon, i));
     const work = days.filter(d => !holiday(d));
@@ -2000,24 +2027,24 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       if (c.kind === "seat") { const g = c.segs[0], more = c.segs.length - 1, fx = c.segs.every(x => x.src === "fixed");
         return `<td><button type="button" class="wk-c seat${fx ? " fx" : ""}${past}" data-wkgo="${c.d}|${g.desk.id}" title="${esc(c.segs.map(x => `Plass ${x.desk.num} ${span(x.s, x.e)}${x.src === "fixed" ? " (fast)" : ""}`).join(", "))}"><b>Plass ${g.desk.num}</b><small>${span(g.s, g.e)}${more ? ` +${more}` : ""}</small></button></td>`; }
       if (c.kind === "miss") return `<td><button type="button" class="wk-c miss${past}" data-wkgo="${c.d}|" title="Ingen plass – trykk for å se ledige plasser"><b>Ingen plass</b><small>${r.me ? "Finn plass" : ""}</small></button></td>`;
-      if (c.kind === "open") return `<td><button type="button" class="wk-c open${past}" data-wkgo="${c.d}|" title="Ingen plass denne dagen (deltid – kanskje fri)">–</button></td>`;
+      if (c.kind === "open") return `<td><button type="button" class="wk-c open${past}" data-wkgo="${c.d}|" title="Ingen plass denne dagen – ikke på kontoret alle dager, så det kan være greit">–</button></td>`;
       return `<td><span class="wk-c off${past}" title="Ingen plass – men nok dager denne uka">–</span></td>`;
     };
     const sumCell = r => r.need === 0 ? `<td class="wk-sum"><span class="wk-tag">${r.nd <= 0 ? "Ikke på kontoret" : "–"}</span></td>`
       : `<td class="wk-sum"><div class="wk-prog ${r.missing ? "bad" : "ok"}"><span><b>${r.have}</b>/${r.need}</span><i><em style="width:${Math.min(100, 100 * r.have / r.need)}%"></em></i></div>${r.missing ? `<small class="wk-missing">mangler ${r.missing}</small>` : `<small class="wk-okt">✓ ok</small>`}</td>`;
     box.innerHTML = `<div class="wk-head">
-        <div><h2>${title} <span class="wk-month">${esc(monthLbl)}</span> <small>${esc(sub)}</small></h2><p class="hint">Hvem mangler plass denne uka? Alle regnes som heltid (5 dager) hvis ikke annet er valgt. Deltidsansatte vises bare når de har plass færre dager enn de er på kontoret. En dag teller så lenge du har plass en del av dagen.</p></div>
+        <div><h2>${title} <span class="wk-month">${esc(monthLbl)}</span> <small>${esc(sub)}</small></h2><p class="hint">Hvem mangler plass denne uka? Alle regnes med 5 dager på kontoret hvis ikke annet er valgt. Er man på kontoret færre dager, vises man bare når man har plass færre dager enn det. En dag teller så lenge man har plass en del av dagen.</p></div>
         <div class="calnav"><button class="iconbtn" id="wkPrev" aria-label="Forrige uke">←</button><button class="iconbtn" id="wkThis">Denne uka</button><button class="iconbtn" id="wkNext" aria-label="Neste uke">→</button></div>
       </div>
       <div class="wk-bar">
-        <div class="wk-stats"><span class="wk-stat bad"><b>${nMiss}</b> mangler plass</span><span class="wk-stat ok"><b>${nOk}</b> har nok dager</span>${nPart ? `<span class="wk-stat"><b>${nPart}</b> deltid</span>` : ""}</div>
+        <div class="wk-stats"><span class="wk-stat bad"><b>${nMiss}</b> mangler plass</span><span class="wk-stat ok"><b>${nOk}</b> har nok dager</span>${nPart ? `<span class="wk-stat"><b>${nPart}</b> færre enn 5 dager</span>` : ""}</div>
         <div class="seg" role="tablist"><button type="button" data-wkf="miss" class="${filt === "miss" ? "on" : ""}">Mangler plass (${nMiss})</button><button type="button" data-wkf="all" class="${filt === "all" ? "on" : ""}">Alle (${rows.length})</button></div>
       </div>
       ${shown.length ? `<div class="wk-scroll"><table class="wk"><colgroup><col class="c-name">${days.map(() => "<col>").join("")}<col class="c-sum"></colgroup><thead>${head}</thead><tbody>${shown.map(r => `<tr class="${r.me ? "wk-me" : ""}${r.missing ? " needs" : ""}">
         <th class="wk-name" scope="row"><span class="wk-person">${avatar(r.name, r.ini)}<span><b>${esc(r.name)}</b>${r.me ? ` <span class="badge">deg</span>` : ""}<small>${esc(daysTxt(r.nd))}</small></span></span></th>
         ${r.cells.map(c => cell(r, c)).join("")}${sumCell(r)}</tr>`).join("")}</tbody></table></div>`
         : `<div class="wk-empty"><b>Alle har plass denne uka</b><span>Ingen mangler plass i uke ${isoWeek(mon)}.</span></div>`}
-      <div class="wk-legend"><span><i class="wk-c seat sw"></i>Booket</span><span><i class="wk-c seat fx sw"></i>Fast plass</span><span><i class="wk-c miss sw"></i>Ingen plass</span><span><i class="wk-c open sw"></i>Ingen plass (deltid)</span><span>Trykk på en dag for å se plantegningen den dagen.</span></div>`;
+      <div class="wk-legend"><span><i class="wk-c seat sw"></i>Booket</span><span><i class="wk-c seat fx sw"></i>Fast plass</span><span><i class="wk-c miss sw"></i>Ingen plass</span><span><i class="wk-c open sw"></i>Ingen plass (færre dager på kontoret)</span><span>Trykk på en dag for å se plantegningen den dagen.</span></div>`;
     const q = s => box.querySelector(s);
     q("#wkPrev").onclick = () => setDate(addDays(mon, -7));
     q("#wkNext").onclick = () => setDate(addDays(mon, 7));
@@ -2062,7 +2089,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       <ul class="list">${aw.map(a => `<li><span class="lt"><b>${esc(fmtShort(a.date))}</b> · Plass ${DESK[a.desk]?.num} · ${span(a.s, a.e)}${a.by && a.by !== S.me ? `<span class="note">overtatt av ${esc(nameOf(a.by))}</span>` : ""}${a.note ? `<span class="note">«${esc(a.note)}»</span>` : ""}</span><button class="btn small ghost" data-undoaway="${a.id}">Angre</button></li>`).join("")}</ul></details>` : ""}
       <label class="field">Dager på kontoret i uka
         <select id="daysSel" data-fresh="1">${daysOptions(daysOf(S.me))}</select>
-        <span class="hint">Standard er heltid (5 dager). Er du deltid, velg hvor mange dager du er på kontoret.</span></label>
+        <span class="hint">Hvor mange dager i uka du er på kontoret – ikke hvor mange dager du jobber. Standard er 5.</span></label>
       <div class="field">Initialene dine på kartet
         <form class="inirow" id="iniForm"><input id="iniIn" maxlength="3" value="${esc(myIni)}" aria-label="Initialer" data-fresh="1"><button class="btn small" type="submit">Lagre</button></form></div>`;
     withKeep(mineEl, html);
@@ -2163,7 +2190,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
       guard(async () => { let n = 0; for (const m of list) n += await purgeMember(m); flash(`Ryddet opp: ${list.length} ${list.length === 1 ? "person" : "personer"} og ${n} ${n === 1 ? "booking" : "bookinger"} er fjernet.`); });
     });
     adminEl.querySelectorAll("[data-hrs]").forEach(b => b.addEventListener("click", () => {
-      const m = b.dataset.hrs, v = prompt(`Hvor mange dager er ${fullName(m)} på kontoret i uka? (5 = heltid, 0 = ikke på kontoret)`, String(daysOf(m)));
+      const m = b.dataset.hrs, v = prompt(`Hvor mange dager er ${fullName(m)} på kontoret i uka? (0–5, 0 = ikke på kontoret)`, String(daysOf(m)));
       if (v === null) return; const n = Number(v);
       if (!Number.isInteger(n) || n < 0 || n > 5) { flash("Skriv et helt tall fra 0 til 5.", true); return; }
       saveDays(m, n);
@@ -2281,8 +2308,9 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     document.getElementById("todaybar").innerHTML = `I dag: <b>${esc(fmtLong(TODAY))}</b> · uke ${isoWeek(TODAY)}`;
     if (!inside) return;
     renderAdmin();
+    const sl = document.getElementById("subline"); if (sl) sl.textContent = `Kontorplasser · ${openDesks().length} pulter · kjernetid 09–15 · åpent 07–18`;
     const md = document.getElementById("meDays");
-    if (md && document.activeElement !== md) { const n = daysOf(S.me); if (md.dataset.n !== String(n)) { md.innerHTML = [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${v === 5 ? "Heltid · 5 dager" : v === 0 ? "Ikke på kontoret" : `Deltid · ${v} ${v === 1 ? "dag" : "dager"}`}</option>`).join(""); md.dataset.n = String(n); } }
+    if (md && document.activeElement !== md) { const n = daysOf(S.me); if (md.dataset.n !== String(n)) { md.innerHTML = [5, 4, 3, 2, 1, 0].map(v => `<option value="${v}" ${v === n ? "selected" : ""}>${daysTxt(v)}</option>`).join(""); md.dataset.n = String(n); } }
     if (S.view === "plan") { renderDays(); renderPlan(); renderPanel(); renderMine(); }
     else if (S.view === "week") renderWeek();
     else renderCal();
@@ -2357,7 +2385,14 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
   const listItems = a => a.length > 4 ? `${a.slice(0, 4).join(", ")} og ${a.length - 4} til` : joinOg(a);
   const victimsFrom = list => { const v = new Map(); for (const { b, s, e } of list) { const t = `${fmtShort(b.date)} ${span(s, e)}`; addVictim(v, b.uid, t); if (b.by && b.by !== b.uid) addVictim(v, b.by, t); } return v; };
 
+  function setShut(desk, on) {
+    const n = DESK[desk].num;
+    if (on && !confirm(`Stenge plass ${n}? Ingen kan booke den før en admin åpner den igjen.`)) return;
+    const next = new Set(S.shut); if (on) next.add(desk); else next.delete(desk);
+    guard(async () => { await db.collection("settings").doc("desks").set({ closed: [...next].sort(), at: Date.now() }); S.shut = next; flash(on ? `Plass ${n} er stengt.` : `Plass ${n} er åpnet og kan bookes.`); });
+  }
   function book(desk, sched, d1, d2, note, target) {
+    if (isShut(desk)) { flash(`Plass ${DESK[desk].num} er stengt.`, true); return; }
     guard(async () => {
       const tOf = date => { const sp = hSpan(sched, dow(date)); return sp || null; };
       const dates = workdaysBetween(d1, d2).filter(d => sched.days.includes(dow(d)));
@@ -2486,6 +2521,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     });
   }
   function saveFixed(desk, sched, T = S.me) {
+    if (isShut(desk)) { flash(`Plass ${DESK[desk].num} er stengt.`, true); return; }
     guard(async () => {
       const forOther = T !== S.me, tName = fullName(T), me = fullName(S.me), N = DESK[desk].num;
       const from = sched.from && sched.from > TODAY ? sched.from : "";
@@ -2689,6 +2725,7 @@ button.wk-c { cursor: pointer; } button.wk-c:hover { filter: brightness(.96); bo
     subs.push(db.collection("bookings").where("uid", "==", S.me).onSnapshot(snap => { S.myBookings = snap.docs.map(d => norm(d.id, d.data())).filter(b => b.date >= TODAY); render(); }, () => {}));
     subs.push(db.collection("away").where("uid", "==", S.me).onSnapshot(snap => { S.myAway = snap.docs.map(d => norm(d.id, d.data())).filter(b => b.date >= TODAY); render(); }, () => {}));
     subs.push(db.collection("notices").where("to", "==", S.me).onSnapshot(snap => { S.notices = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.at || 0) - (a.at || 0)); render(); }, () => {}));
+    subs.push(db.collection("settings").doc("desks").onSnapshot(d => { S.shut = new Set(d.exists && Array.isArray(d.data().closed) ? d.data().closed : DEFAULT_SHUT); render(); }, () => {}));
     subs.push(db.collection("assets").doc("figure").onSnapshot(d => { S.figure = d.exists ? d.data() : null; setupWalker(); render(); }, () => {}));
     subs.push(db.collection("assets").doc("figure2").onSnapshot(d => { S.figure2 = d.exists ? d.data() : null; setupWalker(); render(); }, () => {}));
     if (S.admin) subs.push(db.collection("codes").onSnapshot(snap => {
